@@ -455,6 +455,7 @@
           <span id="netDot" class="online-dot wait"></span>
           <div id="netStatus" class="text-xs font-bold text-[#d6e3ff] flex-1 min-w-0 truncate">Connexion…</div>
           <button id="netRetry" class="btn-ghost px-2 py-0.5 text-xs font-bold hidden">Réessayer</button>
+          <button id="netSettings" class="btn-ghost px-2 py-0.5 text-xs font-bold" title="Serveur cloud">⚙️ Serveur</button>
         </div>
         <div class="flex items-center gap-2 mt-2">
           <div class="text-[11px] font-bold text-[var(--muted)] uppercase tracking-widest">Mon code</div>
@@ -1698,7 +1699,7 @@ function loop(now){
   const dt = Math.min(0.05, (now - B.last)/1000); B.last = now;
   if (!B.over){
     if (B.net && !B.net.host) guestStep(dt); else if (!B.net?.paused) { update(dt); updateParticles(dt); }
-    if (B.net?.host && !B.over){ B.net.acc += dt; if (B.net.acc >= 1/15){ B.net.acc = 0; netSendSnap(); } }
+    if (B.net?.host && !B.over){ B.net.acc += dt; if (B.net.acc >= (B.net.conn?.local ? 1/15 : 1/10)){ B.net.acc = 0; netSendSnap(); } }
     if (B.net) netWatchdog();
   }
   render();
@@ -3833,7 +3834,7 @@ function timeAlerts(a, b){
 }
 
 /* =====================================================================
-   JcJ — TROPHÉES, ARÈNES, AMIS & RÉSEAU (PeerJS, pair-à-pair)
+   JcJ — TROPHÉES, ARÈNES, AMIS & RÉSEAU (serveur cloud temps réel)
    ===================================================================== */
 const ARENAS = [
   [0,"Camp d'entraînement",'🏕️'], [300,'Stand de tir','🎯'], [600,'Parcours du combattant','🧗'],
@@ -3854,22 +3855,29 @@ function toast(text){
   el.innerHTML = text; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
 }
 
-const NET_PREFIX = 'coq5q-', HUB_ID = NET_PREFIX + 'hub-section-quonze', ROOM_PREFIX = NET_PREFIX + 'room-';
-// Serveurs ICE explicites : STUN publics de Google (traversée des box / 4G) + relais TURN publics de PeerJS
-// pour les réseaux qui bloquent les connexions directes (NAT symétrique des opérateurs mobiles).
-const ICE_SERVERS = [
-  { urls:'stun:stun.l.google.com:19302' },
-  { urls:'stun:stun1.l.google.com:19302' },
-  { urls:'stun:stun2.l.google.com:19302' },
-  { urls:'stun:stun.cloudflare.com:3478' },
-  // dernier recours si le pare-feu bloque tout le direct (4G) : relais TURN publics de PeerJS
-  { urls:['turn:eu-0.turn.peerjs.com:3478', 'turn:us-0.turn.peerjs.com:3478'], username:'peerjs', credential:'peerjsp' },
+/* ---------- Réseau CLOUD : tout passe par un relais temps réel centralisé (WebSocket sécurisé, aucun P2P) ----------
+   • Par défaut : relais MQTT publics gratuits (EMQX, HiveMQ, Mosquitto) en WebSocket TLS — aucune inscription.
+   • Recommandé pour le régiment : votre propre projet Supabase (Realtime, port 443). Renseignez l'URL et la clé
+     « anon public » ci-dessous avant d'envoyer le fichier aux potes, ou dans le jeu : onglet Amis → ⚙️ Serveur. */
+const CLOUD_CONFIG = { supabaseUrl:'', supabaseKey:'' };
+const CLOUD_NS = 'clashofquonze/v6';
+const MQTT_BROKERS = [
+  { name:'EMQX',      url:'wss://broker.emqx.io:8084/mqtt' },
+  { name:'HiveMQ',    url:'wss://broker.hivemq.com:8884/mqtt' },
+  { name:'Mosquitto', url:'wss://test.mosquitto.org:8081/mqtt' },
 ];
-const PEER_OPTS = { debug:0, secure:true, pingInterval:4000, config:{ iceServers:ICE_SERVERS, sdpSemantics:'unified-plan' } };
+const MQTT_LIB = ['https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js', 'https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js'];
+const SUPA_LIB = ['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js', 'https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'];
+const LOBBY = CLOUD_NS + '/lobby', INBOX = id => CLOUD_NS + '/c/' + id;
 const NET_GRACE = 30000;   // délai max d'absence (veille, coupure) avant forfait
-var NET = { peer:null, ready:false, status:'off', msg:'', hub:null, hubPeer:null, isHub:false, claiming:false,
-  members:[], pend:new Map(), myStatus:'idle', lastCard:'', outInvite:null, inInvite:null, pendingGuest:null, expect:null, searching:false, qTimer:0 };
-var HUB = { members:new Map(), tm:0 };
+var NET = { ready:false, status:'off', msg:'', members:[], myStatus:'idle', lastCard:'', outInvite:null, inInvite:null, pendingGuest:null,
+  expect:null, searching:false, qTimer:0, qAt:0 };
+var CLOUD = { id:'', kind:'', drivers:[], peers:new Map(), conns:new Map(), started:false };
+function cloudCfg(){
+  let c = {}; try{ c = JSON.parse(localStorage.getItem('coq_cloud_cfg')) || {}; }catch(e){}
+  const url = String(c.supabaseUrl || CLOUD_CONFIG.supabaseUrl || '').trim(), key = String(c.supabaseKey || CLOUD_CONFIG.supabaseKey || '').trim();
+  return { supabaseUrl:url, supabaseKey:key };
+}
 
 /* ---------- Mode local : deux onglets du même PC s'affrontent sans passer par le réseau ---------- */
 var LOCAL = { ch:null, post:null, id:'', slot:1, members:new Map(), conns:new Map(), pendRoom:null };
@@ -3956,10 +3964,9 @@ function localTick(){
   let ch = false;
   for (const [pid, x] of LOCAL.members) if (Date.now() - x.seen > 4500){ LOCAL.members.delete(pid); ch = true; }
   if (ch) netMergeMembers();
-  // matchmaking classé entre onglets de ce PC (le plus petit code joue l'hôte)
-  if (NET.searching){ const c = [...LOCAL.members.values()].find(x => x.status === 'queue'); if (c && save.pid < c.pid) netMatchFound({ opp:c.pid, host:true, name:c.name, trophies:c.trophies }); }
+  netMatchmake();
 }
-window.addEventListener('pagehide', e => { if (!e.persisted && LOCAL.id) lpost({ t:'bye' }); });
+window.addEventListener('pagehide', e => { if (e.persisted) return; if (LOCAL.id) lpost({ t:'bye' }); if (CLOUD.id) cloudPublishAll(LOBBY, { t:'bye', from:CLOUD.id }); });
 // Combat local : l'onglet hôte continue la partie même en arrière-plan, l'invité continue d'envoyer ses signes de vie
 setInterval(() => {
   if (!B?.net || B.over) return;
@@ -3973,149 +3980,201 @@ setInterval(() => {
 }, 200);
 let friendSeg = 'online';
 
-function loadPeerLib(){
-  if (window.Peer) return Promise.resolve();
-  const urls = ['https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js', 'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'];
+function loadScript(urls, globalName){
+  if (window[globalName]) return Promise.resolve();
   return urls.reduce((p, u) => p.catch(() => new Promise((res, rej) => {
     const s = document.createElement('script'); s.src = u;
-    s.onload = () => window.Peer ? res() : rej(); s.onerror = () => { s.remove(); rej(); };
+    s.onload = () => window[globalName] ? res() : rej(); s.onerror = () => { s.remove(); rej(); };
     document.head.appendChild(s);
   })), Promise.reject());
 }
-function netSetStatus(st, msg){ NET.status = st; NET.msg = msg || ''; renderNetUI(); }
-const myCard = () => ({ pid:save.pid, name:save.name, trophies:save.trophies, status:NET.myStatus, peer:NET.peer?.id || '' });
-function netAnnounce(force){ const c = JSON.stringify(myCard()); if (!force && c === NET.lastCard) return; NET.lastCard = c; hubSend({ t:'st', ...myCard() }); if (LOCAL.id) lpost({ t:'pres', card:myCard() }); }
-function netStatus(st){ NET.myStatus = st; netAnnounce(); }
-
-async function netStart(){
-  if (NET.peer && !NET.peer.destroyed) return;
-  netSetStatus('connecting', 'Connexion au serveur de signalisation…');
-  try { await loadPeerLib(); } catch(e){ netSetStatus('off', 'Erreur : module réseau introuvable, vérifiez votre connexion internet.'); return; }
-  let peer;
-  try { peer = new Peer(NET.altId || (NET_PREFIX + save.pid), PEER_OPTS); } catch(e){ netSetStatus('off', 'Réseau indisponible sur ce navigateur.'); return; }
-  NET.peer = peer;
-  peer.on('open', () => { NET.ready = true; NET.idTries = 0; netSetStatus('online', 'Connecté'); NET.lastCard = ''; hubJoin(); netAnnounce(true); });
-  peer.on('connection', conn => netWire(conn));
-  peer.on('disconnected', () => { if (peer.destroyed) return; NET.ready = false; netSetStatus('connecting', 'Reconnexion…'); setTimeout(() => { try{ if (!peer.destroyed && peer.disconnected) peer.reconnect(); }catch(e){} }, document.hidden ? 300 : 1200); });
-  peer.on('error', err => netError(err));
+// --- Pilote MQTT (relais public, WebSocket TLS) ---
+function mqttDriver(b, idx){
+  const D = { name:b.name, idx, ok:false, sub(){}, pub(){}, end(){}, wake(){} };
+  const subs = new Map();
+  let client;
+  try {
+    client = mqtt.connect(b.url, { clientId:'coq' + save.pid + Math.random().toString(36).slice(2, 8), keepalive:10, reconnectPeriod:1500,
+      connectTimeout:8000, clean:true, protocolVersion:4, will:{ topic:LOBBY, payload:JSON.stringify({ t:'bye', from:CLOUD.id }), qos:0, retain:false } });
+  } catch(e){ return D; }
+  client.on('connect', () => { for (const t of subs.keys()) client.subscribe(t, { qos:0 }); if (!D.ok){ D.ok = true; cloudOnDriver(D, true); } });
+  const down = () => { if (D.ok){ D.ok = false; cloudOnDriver(D, false); } };
+  client.on('close', down); client.on('offline', down); client.on('error', () => {});
+  client.on('message', (topic, payload) => {
+    const h = subs.get(topic); if (!h) return;
+    let m; try{ m = JSON.parse(typeof payload === 'string' ? payload : new TextDecoder().decode(payload)); }catch(e){ return; }
+    h(m, D);
+  });
+  D.sub = (t, h) => { subs.set(t, h); if (D.ok) client.subscribe(t, { qos:0 }); };
+  D.pub = (t, o) => { if (D.ok) try{ client.publish(t, JSON.stringify(o), { qos:0 }); }catch(e){} };
+  D.end = () => { try{ client.end(true); }catch(e){} };
+  D.wake = () => { if (!D.ok) try{ client.reconnect(); }catch(e){} };
+  return D;
 }
-function netRetryLater(ms=8000){
-  clearTimeout(NET.retryT);
-  NET.retryT = setTimeout(() => { if (NET.ready) return; try{ NET.peer?.destroy(); }catch(e){} NET.peer = null; netStart(); }, ms);
+// --- Pilote Supabase Realtime (canaux « broadcast », port 443) ---
+function supaDriver(url, key){
+  const D = { name:'Supabase', idx:0, ok:false, sub(){}, pub(){}, end(){}, wake(){} };
+  let sb;
+  try { sb = supabase.createClient(url, key, { realtime:{ params:{ eventsPerSecond:50 } }, auth:{ persistSession:false, autoRefreshToken:false } }); } catch(e){ return D; }
+  const chans = new Map(), handlers = new Map();
+  const join = t => {
+    let ch = chans.get(t); if (ch) return ch;
+    ch = sb.channel('coq-' + t.replace(/[^A-Za-z0-9]/g, '-').slice(-80), { config:{ broadcast:{ self:false, ack:false } } });
+    ch.on('broadcast', { event:'m' }, msg => { const h = handlers.get(t); if (h) h(msg.payload, D); });
+    ch.subscribe(st => {
+      if (t !== LOBBY) return;
+      if (st === 'SUBSCRIBED'){ if (!D.ok){ D.ok = true; cloudOnDriver(D, true); } }
+      else if (D.ok && (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT' || st === 'CLOSED')){ D.ok = false; cloudOnDriver(D, false); }
+    });
+    chans.set(t, ch); return ch;
+  };
+  D.sub = (t, h) => { handlers.set(t, h); join(t); };
+  D.pub = (t, o) => { try{ join(t).send({ type:'broadcast', event:'m', payload:o }); }catch(e){} };
+  D.end = () => { try{ sb.removeAllChannels(); }catch(e){} };
+  D.wake = () => { try{ if (!sb.realtime.isConnected()) sb.realtime.connect(); }catch(e){} };
+  return D;
 }
-function netError(err){
-  const type = err?.type || '', m = String(err?.message || '');
-  if (type === 'peer-unavailable'){
-    if (m.includes(HUB_ID)) return hubBecome();
-    for (const [id, p] of NET.pend) if (m.includes(id)) p.reject('offline');
-    return;
+async function cloudStart(){
+  if (CLOUD.started) return;
+  CLOUD.started = true;
+  if (!CLOUD.id) CLOUD.id = 'cl:' + save.pid + '.' + Math.random().toString(36).slice(2, 7);
+  const cfg = cloudCfg();
+  CLOUD.kind = cfg.supabaseUrl && cfg.supabaseKey ? 'supabase' : 'mqtt';
+  netSetStatus('connecting', 'Connexion au serveur cloud…');
+  try {
+    if (CLOUD.kind === 'supabase'){ await loadScript(SUPA_LIB, 'supabase'); CLOUD.drivers = [supaDriver(cfg.supabaseUrl, cfg.supabaseKey)]; }
+    else { await loadScript(MQTT_LIB, 'mqtt'); CLOUD.drivers = MQTT_BROKERS.map((b, i) => mqttDriver(b, i)); }
+  } catch(e){
+    CLOUD.started = false;
+    netSetStatus('off', 'Erreur : impossible de charger le module cloud, vérifiez votre connexion internet. Nouvel essai…');
+    setTimeout(cloudStart, 8000); return;
   }
-  if (type === 'unavailable-id'){
-    // Sur mobile, l'ancienne session (page tuée en arrière-plan) garde l'identifiant quelques secondes :
-    // on réessaie, puis on passe sur un identifiant de secours au lieu de rester « Hors ligne ».
-    NET.ready = false; NET.idTries = (NET.idTries || 0) + 1;
-    try{ NET.peer?.destroy(); }catch(e){} NET.peer = null;
-    if (NET.idTries >= 3) NET.altId = NET_PREFIX + save.pid + '-' + newPid().slice(0, 4);
-    netSetStatus('connecting', 'Reconnexion…'); setTimeout(netStart, NET.idTries >= 3 ? 50 : 2500); return;
-  }
-  if (['network','server-error','socket-error','socket-closed'].includes(type)){
-    NET.ready = false; netSetStatus('connecting', 'Erreur : serveur de signalisation injoignable, nouvel essai…'); netRetryLater(document.hidden ? 1500 : 3000);
-    return;
-  }
-  if (type === 'browser-incompatible'){ NET.ready = false; netSetStatus('off', 'Ce navigateur ne gère pas le JcJ (WebRTC). Essaie Chrome ou Safari à jour.'); }
+  for (const D of CLOUD.drivers){ D.sub(LOBBY, cloudLobbyMsg); D.sub(INBOX(CLOUD.id), cloudInboxMsg); }
+  if (!CLOUD.tick) CLOUD.tick = setInterval(cloudTick, 2500);
+  setTimeout(() => { if (!NET.ready) netSetStatus('connecting', 'Serveur cloud lent à répondre… reconnexion automatique'); }, 9000);
 }
-// Connexion directe vers un identifiant PeerJS complet (joueur, salon…)
-function netConnect(target, timeout=12000, peer=NET.peer){
-  if (String(target).startsWith('local:')) return localConnect(target, Math.min(timeout, 4000));
+function cloudOnDriver(D, up){
+  if (up){ D.pub(LOBBY, { t:'who', from:CLOUD.id }); D.pub(LOBBY, { t:'hb', from:CLOUD.id, card:myCard() }); }
+  const any = CLOUD.drivers.some(d => d.ok);
+  if (any !== NET.ready){
+    NET.ready = any;
+    netSetStatus(any ? 'online' : 'connecting', any ? 'Connecté' : 'Connexion au serveur cloud perdue, reconnexion…');
+  } else renderNetUI();
+  if (NET.room?.waiting) roomModal();
+}
+const cloudOk = () => NET.ready;
+function cloudPublishAll(topic, msg){ for (const D of CLOUD.drivers) if (D.ok) D.pub(topic, msg); }
+function cloudHeartbeat(){ cloudPublishAll(LOBBY, { t:'hb', from:CLOUD.id, card:myCard() }); }
+function cloudWake(){ for (const D of CLOUD.drivers) D.wake(); if (NET.ready){ cloudPublishAll(LOBBY, { t:'who', from:CLOUD.id }); cloudHeartbeat(); } }
+function cloudTick(){
+  cloudHeartbeat();
+  const now = Date.now(); let ch = false;
+  for (const [cid, p] of CLOUD.peers) if (now - p.seen > 9000){ CLOUD.peers.delete(cid); cloudPeerGone(cid); ch = true; }
+  if (ch) netMergeMembers();
+  netMatchmake();
+}
+function cloudPeerGone(cid){ for (const c of [...CLOUD.conns.values()]) if (c.peer === cid) c._remoteClosed(); }
+function cloudLobbyMsg(m, D){
+  if (!m || typeof m !== 'object' || !m.from || m.from === CLOUD.id) return;
+  if (m.t === 'hb' && m.card && m.card.pid){
+    const old = CLOUD.peers.get(m.from), card = m.card;
+    const p = old || { via:new Set() }; p.card = card; p.seen = Date.now(); p.via.add(D.idx);
+    CLOUD.peers.set(m.from, p);
+    if (!old || JSON.stringify(old._last) !== JSON.stringify(card)){ p._last = card; netMergeMembers(); }
+  } else if (m.t === 'who') D.pub(LOBBY, { t:'hb', from:CLOUD.id, card:myCard() });
+  else if (m.t === 'bye'){ if (CLOUD.peers.delete(m.from)){ cloudPeerGone(m.from); netMergeMembers(); } }
+}
+// --- Liaisons virtuelles via le relais (même interface que les liaisons locales) ---
+class CloudConn {
+  constructor(cid, remote, drv){ this.cid = cid; this.peer = remote; this.drv = drv; this.open = false; this.cloud = true; this._h = {}; CLOUD.conns.set(cid, this); }
+  on(e, f){ (this._h[e] = this._h[e] || []).push(f); return this; }
+  emit(e, ...a){ (this._h[e] || []).slice().forEach(f => { try{ f(...a); }catch(err){ console.error(err); } }); }
+  send(d){ if (!this.open) throw new Error('liaison fermée'); cloudSend(this.peer, { k:'d', cid:this.cid, d }, this.drv); }
+  close(){ if (this._closed) return; this._closed = true; this.open = false; CLOUD.conns.delete(this.cid); cloudSend(this.peer, { k:'x', cid:this.cid }, this.drv); setTimeout(() => this.emit('close'), 0); }
+  _remoteClosed(){ if (this._closed) return; this._closed = true; this.open = false; CLOUD.conns.delete(this.cid); this.emit('close'); }
+}
+function cloudPickDriver(to, pref){
+  const ok = CLOUD.drivers.filter(d => d.ok);
+  if (pref !== undefined && CLOUD.drivers[pref]?.ok) return CLOUD.drivers[pref];
+  const via = CLOUD.peers.get(to)?.via;
+  return (via && ok.find(d => via.has(d.idx))) || ok[0] || null;
+}
+function cloudSend(to, msg, pref){ const D = cloudPickDriver(to, pref); if (D) D.pub(INBOX(to), { ...msg, from:CLOUD.id }); }
+function cloudInboxMsg(m, D){
+  if (!m || typeof m !== 'object' || !m.from || m.from === CLOUD.id) return;
+  const p = CLOUD.peers.get(m.from); if (p){ p.seen = Date.now(); p.via.add(D.idx); }
+  switch (m.k){
+    case 'o': { if (CLOUD.conns.has(m.cid)) break; const c = new CloudConn(m.cid, m.from, D.idx); netWire(c); c.open = true; cloudSend(m.from, { k:'a', cid:m.cid }, D.idx); setTimeout(() => c.emit('open'), 0); break; }
+    case 'a': { const c = CLOUD.conns.get(m.cid); if (c && !c.open){ c.drv = D.idx; c.open = true; c.emit('open'); } break; }
+    case 'd': { const c = CLOUD.conns.get(m.cid); if (c && c.open) c.emit('data', m.d); else if (!c) cloudSend(m.from, { k:'x', cid:m.cid }, D.idx); break; }  // liaison inconnue : on prévient l'autre qu'elle est morte
+    case 'x': CLOUD.conns.get(m.cid)?._remoteClosed(); break;
+  }
+}
+function cloudConnect(target, timeout=8000){
   return new Promise((resolve, reject) => {
-    if (!peer || peer.destroyed || peer.disconnected || (peer === NET.peer && !NET.ready)) return reject('offline');
-    const conn = peer.connect(target, { reliable:true, serialization:'json' });
-    let settled = false;
-    const done = (ok, v) => { if (settled) return; settled = true; clearTimeout(tm); NET.pend.delete(target); if (!ok){ try{ conn.close(); }catch(e){} reject(v); } else resolve(v); };
-    const tm = setTimeout(() => done(false, 'timeout'), timeout);
-    NET.pend.set(target, { reject: r => done(false, r) });
-    netWire(conn);
-    conn.on('open', () => done(true, conn));
+    if (!NET.ready) return reject('offline');
+    const D = cloudPickDriver(target); if (!D) return reject('offline');
+    const cid = CLOUD.id + '>' + Math.random().toString(36).slice(2, 9);
+    const c = new CloudConn(cid, target, D.idx); netWire(c);
+    // on renvoie la demande sur tous les relais si le premier ne répond pas
+    const again = setTimeout(() => { if (!c.open) for (const d of CLOUD.drivers) if (d.ok && d !== D) d.pub(INBOX(target), { k:'o', cid, from:CLOUD.id }); }, 1500);
+    const tm = setTimeout(() => { clearTimeout(again); if (!c.open){ c._closed = true; CLOUD.conns.delete(cid); reject(CLOUD.peers.has(target) ? 'timeout' : 'offline'); } }, timeout);
+    c.on('open', () => { clearTimeout(tm); clearTimeout(again); resolve(c); });
+    D.pub(INBOX(target), { k:'o', cid, from:CLOUD.id });
   });
 }
+// Liaison vers un joueur : onglet de ce PC (« local: ») ou client cloud (« cl: »)
+function netConnect(target, timeout=8000){
+  target = String(target || '');
+  if (target.startsWith('local:')) return localConnect(target, Math.min(timeout, 4000));
+  if (target.startsWith('cl:')) return cloudConnect(target, timeout);
+  return Promise.reject('offline');
+}
+// Matchmaking classé : chaque client calcule les mêmes paires à partir de la file d'attente visible
+function netMatchmake(){
+  if (!NET.searching) return;
+  const me = { pid:save.pid, qAt:NET.qAt, trophies:save.trophies };
+  const q = [me, ...NET.members.filter(m => m.status === 'queue' && m.qAt)].sort((a,b) => (a.qAt - b.qAt) || (a.pid < b.pid ? -1 : 1));
+  const i = q.findIndex(x => x.pid === save.pid), j = i % 2 === 0 ? i + 1 : i - 1;
+  const o = q[j]; if (!o) return;
+  if (save.pid < o.pid) netMatchFound({ opp:o.pid, host:true, name:o.name, trophies:o.trophies });
+}
+function cloudSettingsModal(){
+  const cfg = cloudCfg(), sb = CLOUD.kind === 'supabase';
+  const relays = CLOUD.drivers.map(d => `<span class="inline-flex items-center gap-1 mr-2"><span class="online-dot ${d.ok ? 'on' : 'off'}"></span>${esc(d.name)}</span>`).join('');
+  openModal(`<div>
+    <div class="font-ops text-2xl text-[var(--khaki)] text-center">⚙️ Serveur cloud</div>
+    <div class="text-xs font-bold text-[#d6e3ff] mt-2">Actuel : ${sb ? 'Supabase Realtime (ton projet)' : 'Relais MQTT publics (sans inscription)'}</div>
+    <div class="text-[11px] mt-1">${relays || '–'}</div>
+    <div class="text-[11px] text-[var(--muted)] mt-2 leading-snug">Pour une connexion plus fiable (port 443, réseaux filtrés), crée un projet gratuit sur supabase.com puis colle ici l'URL du projet et la clé « anon public » (Project Settings → API). Tous les potes doivent utiliser le même serveur.</div>
+    <input id="sbUrl" placeholder="https://xxxx.supabase.co" value="${esc(cfg.supabaseUrl)}" class="w-full mt-2 bg-black/30 rounded-lg px-3 py-1.5 text-sm font-bold outline-none border-2 border-[var(--line)] focus:border-[#ffd34d] text-white placeholder:text-white/40">
+    <input id="sbKey" placeholder="clé anon public (eyJ…)" value="${esc(cfg.supabaseKey)}" class="w-full mt-2 bg-black/30 rounded-lg px-3 py-1.5 text-sm font-bold outline-none border-2 border-[var(--line)] focus:border-[#ffd34d] text-white placeholder:text-white/40">
+    <div class="flex gap-2 mt-4"><button id="sbPublic" class="btn-ghost flex-1 py-2 text-sm font-bold">Relais publics</button><button id="sbSave" class="btn-main flex-1 py-2">Enregistrer</button></div>
+    <button onclick="closeModal()" class="w-full text-xs text-[var(--muted)] underline mt-3">Fermer</button>
+  </div>`);
+  const apply = c => { try{ localStorage.setItem('coq_cloud_cfg', JSON.stringify(c)); }catch(e){} toast('Serveur enregistré : redémarrage du jeu…'); setTimeout(() => location.reload(), 700); };
+  $('#sbSave').addEventListener('click', () => { const u = $('#sbUrl').value.trim(), k = $('#sbKey').value.trim();
+    if (u && !/^https:\/\/[^\s]+$/.test(u)) return toast('URL invalide (https://…)'); if (!!u !== !!k) return toast('Il faut l\'URL ET la clé.'); apply({ supabaseUrl:u, supabaseKey:k }); });
+  $('#sbPublic').addEventListener('click', () => apply({}));
+}
+function netSetStatus(st, msg){ NET.status = st; NET.msg = msg || ''; renderNetUI(); }
+const myCard = () => ({ pid:save.pid, name:save.name, trophies:save.trophies, status:NET.myStatus, qAt:NET.myStatus === 'queue' ? NET.qAt : 0, room:NET.room?.waiting ? NET.room.code : '' });
+function netAnnounce(force){ const c = JSON.stringify(myCard()); if (!force && c === NET.lastCard) return; NET.lastCard = c; if (CLOUD.id && NET.ready) cloudHeartbeat(); if (LOCAL.id) lpost({ t:'pres', card:myCard() }); }
+function netStatus(st){ NET.myStatus = st; netAnnounce(); }
+
 function netWire(conn){
   if (conn._coq) return; conn._coq = true;
-  const raw = String(conn.peer || ''), pid = raw.startsWith('local:') ? raw.slice(6).split('.')[0] : raw.replace(NET_PREFIX, '');
+  const raw = String(conn.peer || ''), pid = raw.replace(/^(local|cl):/, '').split('.')[0];
   conn.on('data', msg => { try{ netOnMsg(conn, pid, msg); }catch(e){ console.error(e); } });
   conn.on('close', () => netOnClose(conn, pid));
   conn.on('error', () => netOnClose(conn, pid));
 }
 function netSendGame(m){ try{ B?.net?.conn?.send(m); }catch(e){} }
 
-/* ---------- QG radio : annuaire des connectés + matchmaking (tenu par le 1er joueur en ligne) ---------- */
-function hubJoin(){
-  if (!NET.ready || NET.isHub || NET.claiming || NET.hub) return;
-  const conn = NET.peer.connect(HUB_ID, { reliable:true, serialization:'json' });
-  NET.hub = conn;
-  const tm = setTimeout(() => { if (NET.hub === conn && !conn.open) hubBecome(); }, 7000);
-  conn.on('open', () => { clearTimeout(tm); NET.lastCard = ''; netAnnounce(true); renderNetUI(); });
-  conn.on('data', m => hubClientMsg(m));
-  conn.on('close', () => { clearTimeout(tm); if (NET.hub === conn){ NET.hub = null; NET.hubMembers = []; netMergeMembers(); setTimeout(hubJoin, 400 + Math.random()*2200); } });
-}
-function hubBecome(){
-  if (NET.isHub || NET.claiming || !NET.ready) return;
-  NET.claiming = true;
-  if (NET.hub){ const h = NET.hub; NET.hub = null; try{ h.close(); }catch(e){} }
-  let hp;
-  try { hp = new Peer(HUB_ID, PEER_OPTS); } catch(e){ NET.claiming = false; return; }
-  hp.on('open', () => { NET.claiming = false; NET.isHub = true; NET.hubPeer = hp; HUB.members.clear();
-    HUB.members.set(save.pid, { ...myCard(), send: m => hubClientMsg(m) }); hubBroadcast(); renderNetUI(); });
-  hp.on('connection', conn => hubAccept(conn));
-  hp.on('error', err => { if (err?.type === 'unavailable-id' || !NET.isHub){ NET.claiming = false; try{ hp.destroy(); }catch(e){} if (!NET.isHub) setTimeout(hubJoin, 300 + Math.random()*1500); } });
-  hp.on('disconnected', () => { try{ if (!hp.destroyed) hp.reconnect(); }catch(e){} });
-}
-function hubSend(m){
-  if (NET.isHub) return hubUpdate(save.pid, m, null);
-  if (NET.hub?.open) try{ NET.hub.send(m); }catch(e){}
-}
-function hubAccept(conn){
-  let pid = null;
-  conn.on('data', m => { if (m && typeof m === 'object' && m.t === 'st'){ pid = String(m.pid || '').slice(0, 8); if (pid) hubUpdate(pid, m, conn); } });
-  conn.on('close', () => { if (pid && HUB.members.get(pid)?.conn === conn){ HUB.members.delete(pid); hubBroadcast(); } });
-}
-function hubUpdate(pid, m, conn){
-  if (m.t !== 'st') return;
-  const old = HUB.members.get(pid);
-  if (old?.conn && conn && old.conn !== conn) try{ old.conn.close(); }catch(e){}
-  const send = conn ? (x => { try{ conn.send(x); }catch(e){} }) : (old?.send || (x => hubClientMsg(x)));
-  const st = ['idle','queue','battle','match'].includes(m.status) ? m.status : 'idle';
-  HUB.members.set(pid, { pid, peer:String(m.peer || '').slice(0, 60), name:String(m.name || 'Soldat').slice(0, 18), trophies:Math.max(0, +m.trophies || 0), status:st, conn: conn || old?.conn || null, send, qAt: st === 'queue' ? (old?.status === 'queue' ? old.qAt : Date.now()) : 0 });
-  hubPair(); hubBroadcast();
-}
-function hubPair(){
-  const q = [...HUB.members.values()].filter(m => m.status === 'queue').sort((a,b) => a.qAt - b.qAt);
-  while (q.length >= 2){
-    const a = q.shift();
-    q.sort((x,y) => Math.abs(x.trophies - a.trophies) - Math.abs(y.trophies - a.trophies));
-    const b = q.shift();
-    a.status = b.status = 'match';
-    a.send({ t:'match', opp:b.pid, host:true, name:b.name, trophies:b.trophies });
-    b.send({ t:'match', opp:a.pid, host:false, name:a.name, trophies:a.trophies });
-  }
-}
-function hubBroadcast(){
-  clearTimeout(HUB.tm);
-  HUB.tm = setTimeout(() => {
-    const list = [...HUB.members.values()].map(({pid,peer,name,trophies,status}) => ({pid,peer,name,trophies,status}));
-    for (const m of HUB.members.values()) m.send({ t:'list', m:list });
-  }, 120);
-}
-function hubClientMsg(m){
-  if (!m || typeof m !== 'object') return;
-  if (m.t === 'list' && Array.isArray(m.m)){
-    NET.hubMembers = m.m.filter(x => x && x.pid);
-    netMergeMembers();
-  } else if (m.t === 'match') netMatchFound(m);
-}
-// Liste affichée = annuaire en ligne + onglets ouverts sur ce PC (liaison locale prioritaire)
+// Liste affichée = joueurs vus sur le serveur cloud + onglets ouverts sur ce PC (liaison locale prioritaire)
 function netMergeMembers(){
   const map = new Map();
-  for (const m of NET.hubMembers || []) map.set(m.pid, m);
+  for (const [cid, p] of CLOUD.peers) map.set(p.card.pid, { ...p.card, peer:cid });
   for (const m of LOCAL.members.values()) map.set(m.pid, { ...(map.get(m.pid) || {}), ...m });
   map.delete(save.pid);
   NET.members = [...map.values()];
@@ -4125,38 +4184,39 @@ function netMergeMembers(){
   renderNetUI();
 }
 const netMember = pid => NET.members.find(m => m.pid === pid);
-const hubOk = () => NET.ready && (NET.isHub || NET.hub?.open);
+const hubOk = () => cloudOk();
 
 /* ---------- Défis, matchmaking, liaison de combat ---------- */
 const netBusy = () => (B && !B.over) || NET.searching || NET.pendingGuest || NET.outInvite || NET.expect || NET.joining || NET.room?.waiting || (typeof cine !== 'undefined' && cine);
 function netOfflineModal(){
   openModal(`<div class="text-center"><div class="text-5xl">📡</div><div class="font-ops text-2xl text-[var(--khaki)] mt-1">Hors ligne</div>
-    <p class="text-sm mt-2">${esc(NET.msg || 'Connexion au réseau de la section en cours…')}</p>
+    <p class="text-sm mt-2">${esc(NET.msg || 'Connexion au serveur cloud en cours…')}</p>
     <p class="text-xs text-[var(--muted)] mt-2">Le JcJ a besoin d'internet. Les combats contre l'IA restent disponibles.</p>
     <div class="flex gap-2 mt-4"><button onclick="closeModal()" class="btn-ghost flex-1 py-2.5 font-bold">Fermer</button>
-    <button onclick="closeModal(); netRetryLater(10); showScreen('friends')" class="btn-main flex-1 py-2.5">Réessayer</button></div></div>`);
+    <button onclick="closeModal(); cloudWake(); showScreen('friends')" class="btn-main flex-1 py-2.5">Réessayer</button></div></div>`);
 }
 function deckOk(){ if (save.deck.length !== DECK_SIZE){ toast('Ton deck doit contenir 8 cartes.'); return false; } return true; }
 
 async function netInvite(pid, mode='friendly', oppInfo){
   if (!deckOk()) return;
   if (!NET.ready && !netMember(pid)?.local) return netOfflineModal();
+  if (!netMember(pid)) return toast('Ce joueur n\'est pas connecté pour le moment.');
   if (mode === 'friendly' && netBusy()) return toast('Termine d\'abord ce que tu fais en cours.');
   const info = oppInfo || netMember(pid) || save.friends.find(f => f.pid === pid) || { pid, name:'Code ' + pid };
   NET.outInvite = { pid, mode };
   if (mode === 'friendly'){
     modalLocked = true;
     openModal(`<div class="text-center"><div class="text-5xl net-pulse">📻</div><div class="font-ops text-2xl text-[var(--khaki)] mt-1">Défi envoyé</div>
-      <p class="mt-2">En attente de <b>${esc(info.name)}</b>…</p><div id="invStage" class="text-xs font-bold text-amber-300 mt-1">${(netMember(pid)?.local) ? '💻 Liaison locale (même PC)…' : '🔗 Établissement du tunnel P2P…'}</div><div class="text-xs text-[var(--muted)] mt-1">Match amical : aucun trophée en jeu.</div>
+      <p class="mt-2">En attente de <b>${esc(info.name)}</b>…</p><div id="invStage" class="text-xs font-bold text-amber-300 mt-1">${(netMember(pid)?.local) ? '💻 Liaison locale (même PC)…' : '☁️ Liaison via le serveur cloud…'}</div><div class="text-xs text-[var(--muted)] mt-1">Match amical : aucun trophée en jeu.</div>
       <button id="invCancel" class="btn-ghost w-full py-2.5 font-bold mt-4">Annuler</button></div>`);
     $('#invCancel').addEventListener('click', () => { const o = NET.outInvite; NET.outInvite = null; modalLocked = false; closeModal(); try{ o?.conn?.send({ t:'cancel' }); setTimeout(() => o?.conn?.close(), 300); }catch(e){} });
   }
   let conn;
-  try { conn = await netConnect(netMember(pid)?.peer || (NET_PREFIX + pid), 9000, NET.peer); }
+  try { conn = await netConnect(netMember(pid)?.peer, 8000); }
   catch(e){
     if (!NET.outInvite || NET.outInvite.pid !== pid) return;
     NET.outInvite = null; modalLocked = false;
-    if (mode === 'ranked'){ netStatus('idle'); openModal(`<div class="text-center"><div class="font-ops text-2xl text-red-400">Liaison perdue</div><p class="text-sm mt-2">Impossible de joindre l'adversaire. Relance une recherche.</p><button onclick="closeModal()" class="btn-main w-full py-2.5 mt-4">OK</button></div>`); }
+    if (mode === 'ranked'){ netStatus('idle'); modalLocked = false; closeModal(); setTimeout(() => { if (!netBusy()) netQueue(); }, 400); }
     else openModal(`<div class="text-center"><div class="text-4xl">📴</div><div class="font-ops text-2xl text-red-400 mt-1">Injoignable</div><p class="text-sm mt-2"><b>${esc(info.name)}</b> n'est pas connecté pour le moment.</p><button onclick="closeModal()" class="btn-main w-full py-2.5 mt-4">OK</button></div>`);
     return;
   }
@@ -4204,7 +4264,7 @@ function netOnMsg(conn, pid, m){
     case 'inv':
       if (m.mode === 'ranked'){
         const rp = m.pid || pid;
-        if ((NET.expect === rp || NET.expect === pid || (NET.searching && conn.local)) && !(B && !B.over)){ if (NET.searching){ NET.searching = false; clearInterval(NET.qTimer); } NET.expect = null; netAccept(conn, rp, 'ranked'); }
+        if ((NET.expect === rp || NET.expect === pid || NET.searching) && !(B && !B.over)){ if (NET.searching){ NET.searching = false; clearInterval(NET.qTimer); } NET.expect = null; netAccept(conn, rp, 'ranked'); }
         else conn.send({ t:'dec', why:'busy' });
       } else if (netBusy()) conn.send({ t:'dec', why:'busy' });
       else netShowInvite(conn, pid, m);
@@ -4224,7 +4284,7 @@ function netOnMsg(conn, pid, m){
       if (NET.outInvite?.conn === conn){
         const o = NET.outInvite; clearTimeout(o.tm); NET.outInvite = null; modalLocked = false; closeModal();
         const nm = esc(netMember(pid)?.name || save.friends.find(f => f.pid === pid)?.name || 'Ton pote');
-        if (o.mode === 'ranked'){ netStatus('idle'); toast('Adversaire indisponible, relance une recherche.'); }
+        if (o.mode === 'ranked'){ netStatus('idle'); setTimeout(() => { if (!netBusy()) netQueue(); }, 400); }
         else toast(m.why === 'busy' ? `${nm} est occupé.` : `${nm} a refusé le défi.`);
         setTimeout(() => { try{ conn.close(); }catch(e){} }, 300);
       }
@@ -4264,9 +4324,9 @@ function netOnClose(conn, pid){
 
 function netQueue(){
   if (!deckOk()) return;
-  if (!hubOk() && !LOCAL.id) return netOfflineModal();
+  if (!cloudOk() && !LOCAL.members.size) return netOfflineModal();
   if (netBusy()) return;
-  NET.searching = true; netStatus('queue');
+  NET.searching = true; NET.qAt = Date.now(); netStatus('queue');
   const t0 = Date.now();
   modalLocked = true;
   openModal(`<div class="text-center"><div class="text-5xl net-spin">🔍</div><div class="font-ops text-2xl text-[var(--khaki)] mt-2">Recherche d'un adversaire…</div>
@@ -4275,7 +4335,7 @@ function netQueue(){
     <div class="text-[11px] text-[var(--muted)] mt-2">Astuce : demande à un pote de lancer « JcJ classé » en même temps.</div>
     <button id="qCancel" class="btn-ghost w-full py-2.5 font-bold mt-4">Annuler</button></div>`);
   clearInterval(NET.qTimer);
-  NET.qTimer = setInterval(() => { const s = Math.floor((Date.now() - t0)/1000), el = $('#qTime'); if (el) el.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; const o = $('#qOnline'); if (o) o.textContent = NET.members.length; if (!hubOk() && !LOCAL.id) netUnqueue('Liaison radio perdue.'); }, 500);
+  NET.qTimer = setInterval(() => { const s = Math.floor((Date.now() - t0)/1000), el = $('#qTime'); if (el) el.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; const o = $('#qOnline'); if (o) o.textContent = NET.members.length; if (!cloudOk() && !LOCAL.members.size && Date.now() - t0 > 20000) netUnqueue('Serveur cloud injoignable.'); }, 500);
   $('#qCancel').addEventListener('click', () => netUnqueue());
 }
 function netUnqueue(msg){
@@ -4284,13 +4344,13 @@ function netUnqueue(msg){
   if (msg) toast(msg);
 }
 function netMatchFound(m){
-  if (!NET.searching) { hubSend({ t:'st', ...myCard() }); return; }
+  if (!NET.searching) return;
   NET.searching = false; clearInterval(NET.qTimer);
   NET.myStatus = 'match'; NET.lastCard = JSON.stringify(myCard());
   modalLocked = true;
   openModal(`<div class="text-center"><div class="text-[11px] font-extrabold tracking-widest text-green-400">ADVERSAIRE TROUVÉ !</div>
     <div class="font-ops text-3xl text-[var(--khaki)] mt-1">${esc(m.name)}</div><div class="text-amber-300 font-extrabold">🏆 ${+m.trophies || 0} · ${arenaOf(+m.trophies || 0).icon} Arène ${arenaOf(+m.trophies || 0).num}</div>
-    <div class="text-5xl mt-3 net-pulse">⚔️</div><div class="text-xs text-[var(--muted)] mt-2">Liaison radio en cours…</div></div>`);
+    <div class="text-5xl mt-3 net-pulse">⚔️</div><div class="text-xs text-[var(--muted)] mt-2">Liaison via le serveur cloud…</div></div>`);
   if (m.host) netInvite(m.opp, 'ranked', { pid:m.opp, name:m.name, trophies:m.trophies });
   else {
     NET.expect = m.opp;
@@ -4408,6 +4468,7 @@ function netWatchdog(){
   N.paused = lost && N.host;             // l'hôte gèle la partie tant que l'adversaire est absent
   netLostOverlay(lost ? Math.max(0, Math.ceil((NET_GRACE - silent)/1000)) : -1, N);
   if (silent > (N.conn?.local ? 600000 : NET_GRACE)){ B.oppLeft = N.oppAway ? 'veille trop longue' : 'déconnexion'; B.crownsP = 3; updateCrowns(); endBattle('win'); try{ N.conn.close(); }catch(e){} return; }
+  if (!N.host && !N.closed && !N.conn?.local && silent > 5000) N.closed = true;   // plus rien de l'hôte : on relance la liaison
   if (N.closed && !N.host && !N.rejoining) netRejoin();
 }
 // Bandeau « liaison perdue / en veille » au-dessus du terrain
@@ -4427,8 +4488,8 @@ async function netRejoin(){
   N.rejoining = true;
   while (B && B.net === N && !B.over && N.closed){
     try {
-      const peer = String(N.remoteId).startsWith('local:') ? null : await ensurePeer(6000);
-      const c = await netConnect(N.remoteId, 6000, peer || undefined);
+      if (!String(N.remoteId).startsWith('local:') && !NET.ready){ cloudWake(); throw 'offline'; }
+      const c = await netConnect(N.remoteId, 6000);
       if (!(B && B.net === N && !B.over)){ try{ c.close(); }catch(e){} break; }
       N.conn = c; N.closed = false; N.lastRx = performance.now(); NET.lastConn = c;
       c.send({ t:'rejoin', mid:N.mid, ...myCard() });
@@ -4438,38 +4499,13 @@ async function netRejoin(){
   N.rejoining = false;
 }
 // Renvoie un pair PeerJS ouvert : le principal, sinon un pair temporaire (identifiant attribué par le serveur)
-function ensurePeer(timeout=10000){
-  if (NET.ready && NET.peer && !NET.peer.disconnected) return Promise.resolve(NET.peer);
-  if (NET.temp && !NET.temp.destroyed && NET.temp.open && !NET.temp.disconnected) return Promise.resolve(NET.temp);
-  return loadPeerLib().then(() => new Promise((resolve, reject) => {
-    if (NET.peer && !NET.peer.destroyed && NET.peer.disconnected) try{ NET.peer.reconnect(); }catch(e){}
-    let tp = NET.temp;
-    if (!tp || tp.destroyed){
-      tp = NET.temp = new Peer(PEER_OPTS);
-      tp.on('connection', conn => netWire(conn));
-      tp.on('error', err => { if (err?.type === 'peer-unavailable'){ const m = String(err.message || ''); for (const [id, p] of NET.pend) if (m.includes(id)) p.reject('offline'); } });
-      tp.on('disconnected', () => { try{ if (!tp.destroyed) tp.reconnect(); }catch(e){} });
-    } else if (tp.disconnected) try{ tp.reconnect(); }catch(e){}
-    const t0 = Date.now();
-    const chk = setInterval(() => {
-      if (NET.ready && NET.peer && !NET.peer.disconnected){ clearInterval(chk); return resolve(NET.peer); }
-      if (tp.open && !tp.disconnected){ clearInterval(chk); return resolve(tp); }
-      if (Date.now() - t0 > timeout){ clearInterval(chk); reject('offline'); }
-    }, 120);
-  }));
-}
-// Mise en veille / retour du téléphone
 function netOnHidden(){
   NET.hiddenAt = Date.now();
   if (B?.net && !B.over && !B.net.conn?.local) netSendGame({ t:'away' });
 }
 function netOnVisible(awayMs){
   NET.hiddenAt = 0;
-  if (!NET.peer || NET.peer.destroyed) netStart();
-  else if (NET.peer.disconnected) try{ NET.peer.reconnect(); }catch(e){}
-  if (NET.hubPeer && !NET.hubPeer.destroyed && NET.hubPeer.disconnected) try{ NET.hubPeer.reconnect(); }catch(e){}
-  if (NET.room?.peer && !NET.room.peer.destroyed && NET.room.peer.disconnected) try{ NET.room.peer.reconnect(); }catch(e){}
-  if (NET.ready && !NET.isHub && !NET.hub) hubJoin();
+  cloudWake();
   if (B?.net && !B.over){
     if (awayMs > NET_GRACE && !B.net.conn?.local){ netSendGame({ t:'ff' }); B.endNote = '📱 Tu es resté en veille trop longtemps : forfait.'; B.crownsE = 3; updateCrowns(); endBattle('loss'); return; }
     B.net.lastRx = performance.now();
@@ -4483,43 +4519,30 @@ document.addEventListener('visibilitychange', () => {
 });
 window.addEventListener('online', () => netOnVisible(0));
 
-/* ---------- Salons directs par code (QNZ-XXX) : connexion forcée entre deux téléphones ---------- */
+/* ---------- Salons directs par code (QNZ-XXX) : rendez-vous sur le serveur cloud ---------- */
 const ROOM_ABC = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
 const roomCodeNew = () => 'QNZ-' + Array.from({ length:3 }, () => ROOM_ABC[Math.random()*ROOM_ABC.length|0]).join('');
 const roomNorm = v => { const c = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/^QNZ/, ''); return c.length >= 2 && c.length <= 4 ? 'QNZ-' + c : null; };
-const roomPeerId = code => ROOM_PREFIX + code.replace('-', '');
-async function roomCreate(reuse){
+function roomCreate(reuse){
   if (!deckOk()) return;
   if (B && !B.over) return;
   modalLocked = true;
-  const R = NET.room = (reuse && NET.room && NET.room.code === reuse.code) ? NET.room : { code:reuse?.code || roomCodeNew(), mode:reuse?.mode || 'friendly', peer:null };
+  const R = NET.room = (reuse && NET.room && NET.room.code === reuse.code) ? NET.room : { code:reuse?.code || roomCodeNew(), mode:reuse?.mode || 'friendly' };
+  // code déjà utilisé par un autre salon visible ? on en tire un autre
+  if (!reuse) while (NET.members.some(m => m.room === R.code)) R.code = roomCodeNew();
   R.waiting = true; R.conn = null;
-  if (R.peer && !R.peer.destroyed && R.peer.open){ if (R.peer.disconnected) try{ R.peer.reconnect(); }catch(e){} R.stage = 'open'; roomModal(); return; }
-  R.stage = 'sig'; roomModal();
-  try { await loadPeerLib(); } catch(e){ if (NET.room === R){ R.stage = 'local'; roomModal(); } return; }
-  const open = code => {
-    let rp; try { rp = new Peer(roomPeerId(code), PEER_OPTS); } catch(e){ R.stage = 'local'; roomModal(); return; }
-    R.peer = rp;
-    const slow = setTimeout(() => { if (NET.room === R && !rp.open){ R.stage = 'local'; roomModal(); } }, 6000);
-    rp.on('open', () => { clearTimeout(slow); if (NET.room === R){ R.stage = 'open'; roomModal(); } });
-    rp.on('connection', conn => netWire(conn));
-    rp.on('disconnected', () => { setTimeout(() => { try{ if (!rp.destroyed && rp.disconnected) rp.reconnect(); }catch(e){} }, 800); });
-    rp.on('error', err => {
-      if (NET.room !== R) return;
-      if (err?.type === 'unavailable-id'){ clearTimeout(slow); try{ rp.destroy(); }catch(e){} R.code = roomCodeNew(); roomModal(); open(R.code); }
-      else if (['network','server-error','socket-error','socket-closed'].includes(err?.type) && !rp.open){ R.stage = 'local'; roomModal(); }
-    });
-  };
-  open(R.code);
+  netAnnounce(true);           // le salon est publié sur le serveur cloud avec la présence du joueur
+  roomModal();
 }
 const ROOM_STAGE = {
-  sig:   ['text-amber-300', '<span class="net-spin">📡</span> Connexion au serveur de signalisation…'],
-  open:  ['text-green-300', '<span class="net-pulse inline-block">📻</span> Salon ouvert : donne ce code à ton pote'],
-  local: ['text-amber-300', '⚠️ Erreur : serveur de signalisation injoignable, vérifiez votre connexion. Salon ouvert en local (onglets de ce PC).'],
+  sig:   ['text-amber-300', '<span class="net-spin">☁️</span> Connexion au serveur cloud…'],
+  open:  ['text-green-300', '<span class="net-pulse inline-block">📻</span> Salon ouvert sur le serveur cloud : donne ce code à ton pote'],
+  local: ['text-amber-300', '⚠️ Erreur : serveur cloud injoignable, vérifiez votre connexion. Salon ouvert en local (onglets de ce PC).'],
 };
+function roomStage(){ return NET.ready ? 'open' : (NET.status === 'off' && LOCAL.id ? 'local' : 'sig'); }
 function roomModal(){
   const R = NET.room; if (!R || !R.waiting) return;
-  const st = ROOM_STAGE[R.stage] || ROOM_STAGE.sig;
+  const st = ROOM_STAGE[roomStage()];
   openModal(`<div class="text-center">
     <div class="text-[11px] font-extrabold tracking-widest text-[#d6e3ff]">SALON DIRECT</div>
     <div class="room-code mt-1">${R.code}</div>
@@ -4540,13 +4563,14 @@ function roomModal(){
     if (navigator.share) navigator.share({ text }).catch(() => {}); else try{ navigator.clipboard.writeText(text).then(done, done); }catch(e){ done(); }
   });
 }
-function roomClose(){ const R = NET.room; NET.room = null; modalLocked = false; closeModal(); if (R){ R.waiting = false; try{ R.peer?.destroy(); }catch(e){} } }
+function roomClose(){ const R = NET.room; NET.room = null; modalLocked = false; closeModal(); if (R) R.waiting = false; netAnnounce(true); }
 function roomStart(conn, m){
   const R = NET.room; R.waiting = false; R.conn = conn; modalLocked = false; closeModal();
   const opp = { pid:/^[A-Z0-9]{6}$/.test(m.pid) ? m.pid : 'SALON' + R.code.slice(-1), name:String(m.name || 'Adversaire').slice(0, 18), trophies:Math.max(0, +m.trophies || 0), deck:validDeck(m.deck) };
   const mid = newPid() + newPid();
   conn.send({ t:'go', mode:R.mode, mid, ...myCard(), deck:save.deck });
   startBattle({ mode:R.mode, net:{ host:true, conn, opp, mid, room:R.code } });
+  netAnnounce(true);
 }
 function roomJoinModal(prefill){
   if (!deckOk()) return;
@@ -4561,6 +4585,7 @@ function roomJoinModal(prefill){
   setTimeout(() => $('#roomInput')?.focus(), 50);
   $('#roomJoinForm').addEventListener('submit', e => { e.preventDefault(); const code = roomNorm($('#roomInput').value); if (!code) return toast('Code incomplet.'); roomJoin(code); });
 }
+const sleepMs = ms => new Promise(r => setTimeout(r, ms));
 async function roomJoin(code, deadlineMs=25000){
   if (!deckOk()) return;
   if (B && !B.over) return;
@@ -4570,50 +4595,51 @@ async function roomJoin(code, deadlineMs=25000){
   const stage = (txt, cls='') => {
     if (NET.joining !== token) return;
     if (!$('#joinStage')){
-      openModal(`<div class="text-center"><div class="text-5xl net-spin">📡</div><div class="font-ops text-2xl text-[var(--khaki)] mt-2">${code}</div>
+      openModal(`<div class="text-center"><div class="text-5xl net-spin">☁️</div><div class="font-ops text-2xl text-[var(--khaki)] mt-2">${code}</div>
         <div id="joinStage" class="text-sm font-bold mt-2"></div><div id="joinSteps" class="text-[11px] text-[var(--muted)] mt-1 leading-snug"></div>
         <button id="joinCancel" class="btn-ghost w-full py-2.5 font-bold mt-4">Annuler</button></div>`);
       $('#joinCancel').addEventListener('click', () => { NET.joining = null; if (NET.pendingGuest?.room){ try{ NET.pendingGuest.conn.close(); }catch(e){} NET.pendingGuest = null; } modalLocked = false; closeModal(); });
     }
     const el = $('#joinStage'); el.innerHTML = txt; el.className = 'text-sm font-bold mt-2 ' + cls;
   };
-  const note = t => { steps.push(t); const el = $('#joinSteps'); if (el) el.innerHTML = steps.slice(-3).join('<br>'); };
+  const note = t => { if (steps[steps.length-1] === t) return; steps.push(t); const el = $('#joinSteps'); if (el) el.innerHTML = steps.slice(-3).join('<br>'); };
   const fail = msg => { if (NET.joining !== token) return; NET.joining = null; modalLocked = false;
     openModal(`<div class="text-center"><div class="text-4xl">📴</div><div class="font-ops text-2xl text-red-400 mt-1">Connexion impossible</div><p class="text-sm mt-2">${msg}</p>
       <div class="flex gap-2 mt-4"><button onclick="closeModal()" class="btn-ghost flex-1 py-2.5 font-bold">Fermer</button><button id="joinRetry" class="btn-main flex-1 py-2.5">Réessayer</button></div></div>`);
     $('#joinRetry').addEventListener('click', () => roomJoin(code)); };
-  let notFound = 0, sigFail = 0, tunnelFail = 0;
+  let notFound = 0, linkFail = 0;
   while (NET.joining === token && Date.now() - t0 < deadlineMs){
     let conn = null;
-    // 1) le salon est-il ouvert dans un autre onglet de ce PC ? (liaison locale, sans réseau)
+    // 1) salon ouvert dans un autre onglet de ce PC ?
     stage('🔎 Recherche du salon sur cet appareil…');
-    const lid = await localQueryRoom(code, 450);
+    const lid = await localQueryRoom(code, 400);
     if (NET.joining !== token) return;
     if (lid){
       stage('💻 Salon trouvé sur ce PC : liaison locale…', 'text-cyan-300');
       try { conn = await localConnect(lid, 3000); note('✅ Liaison locale établie'); } catch(e){ note('⚠️ Liaison locale échouée'); }
     }
-    // 2) sinon : serveur de signalisation PeerJS puis tunnel P2P
+    // 2) sinon : serveur cloud
     if (!conn){
-      stage('📡 Connexion au serveur de signalisation…', 'text-amber-300');
-      let peer = null;
-      try { peer = await ensurePeer(7000); note('✅ Serveur de signalisation joint'); }
-      catch(e){
+      if (!NET.ready){
+        stage('☁️ Connexion au serveur cloud…', 'text-amber-300');
+        cloudWake();
+        const w0 = Date.now(); while (!NET.ready && Date.now() - w0 < 8000 && NET.joining === token) await sleepMs(150);
         if (NET.joining !== token) return;
-        sigFail++; note('❌ Serveur de signalisation injoignable');
-        if (sigFail >= 2) return fail('Erreur : serveur de signalisation injoignable. Vérifiez votre connexion internet (ou testez avec deux onglets de ce PC).');
-        await new Promise(r => setTimeout(r, 1200)); continue;
+        if (!NET.ready){ note('❌ Serveur cloud injoignable'); return fail('Erreur : serveur cloud injoignable. Vérifiez votre connexion internet (Wi-Fi ou 4G), puis réessayez.'); }
       }
-      stage('🔗 Établissement du tunnel P2P…', 'text-amber-300');
-      try { conn = await netConnect(roomPeerId(code), 9000, peer); note('✅ Tunnel P2P établi'); }
-      catch(e){
-        if (NET.joining !== token) return;
-        if (e === 'offline'){ notFound++; note('❌ Aucun salon ' + code + ' sur le serveur');
-          if (notFound >= 3) return fail(`Salon <b>${code}</b> introuvable. Vérifie le code, et que ton pote garde l'écran du salon affiché.`); }
-        else { tunnelFail++; note('❌ Tunnel P2P bloqué (pare-feu / réseau)');
-          if (tunnelFail >= 2) return fail('Erreur : le tunnel P2P ne passe pas (pare-feu ou réseau mobile restrictif). Essayez tous les deux en Wi-Fi, ou passez l\'un des deux en 4G.'); }
-        await new Promise(r => setTimeout(r, 1000)); continue;
-      }
+      note('✅ Connecté au serveur cloud');
+      stage(`📡 Recherche du salon ${code} sur le serveur…`, 'text-amber-300');
+      cloudPublishAll(LOBBY, { t:'who', from:CLOUD.id });
+      let host = null; const w1 = Date.now();
+      while (!host && Date.now() - w1 < 4000 && NET.joining === token){ host = NET.members.find(m => m.room === code && !m.local); if (!host) await sleepMs(150); }
+      if (NET.joining !== token) return;
+      if (!host){ notFound++; note(`❌ Aucun salon ${code} pour l'instant`);
+        if (notFound >= 3) return fail(`Salon <b>${code}</b> introuvable. Vérifie le code, et que ton pote garde l'écran du salon affiché.`);
+        continue; }
+      note(`✅ Salon trouvé : ${esc(host.name)}`);
+      stage('🔗 Liaison avec l\'hôte via le cloud…', 'text-amber-300');
+      try { conn = await netConnect(host.peer, 8000); note('✅ Liaison établie'); }
+      catch(e){ linkFail++; note('❌ L\'hôte ne répond pas'); if (linkFail >= 2) return fail('Erreur : l\'hôte ne répond pas. Son téléphone est peut-être en veille, réessayez dans un instant.'); await sleepMs(1000); continue; }
     }
     if (NET.joining !== token){ try{ conn.close(); }catch(e){} return; }
     stage('🤝 Négociation du combat…', 'text-green-300');
@@ -4628,10 +4654,11 @@ async function roomJoin(code, deadlineMs=25000){
     try{ conn.close(); }catch(e){}
     if (NET.joining !== token) return;
     stage(res === 'closed' ? '⏳ En attente que ton pote rouvre le salon…' : '⚠️ Liaison instable, nouvel essai…', 'text-amber-300');
-    await new Promise(r => setTimeout(r, 1500));
+    await sleepMs(1500);
   }
   fail(`Le salon <b>${code}</b> ne répond pas. Vérifiez que vous êtes tous les deux connectés à internet, puis réessayez.`);
 }
+
 
 /* ---------- Amis & bilans ---------- */
 function friendAdd(pid, name, trophies){
@@ -4702,7 +4729,7 @@ function renderNetUI(){
   const n = NET.members.length, ok = hubOk(), nl = LOCAL.members.size;
   const dot = $('#netDot'), stx = $('#netStatus');
   if (dot){ dot.className = 'online-dot ' + (ok || nl ? 'on' : NET.status === 'connecting' || NET.ready ? 'wait' : 'off'); }
-  if (stx){ const net = ok ? `Connecté au QG radio · ${n} en ligne` : NET.ready ? 'Connexion au QG radio…' : (NET.msg || 'Hors ligne'); stx.textContent = nl ? `💻 ${nl} onglet(s) sur ce PC · ${net}` : net; stx.title = net; }
+  if (stx){ const net = ok ? `☁️ Connecté au serveur cloud · ${n} en ligne` : (NET.msg || 'Hors ligne'); stx.textContent = nl ? `💻 ${nl} onglet(s) sur ce PC · ${net}` : net; stx.title = net; }
   $('#netRetry')?.classList.toggle('hidden', NET.status !== 'off');
   const ho = $('#homeOnline'); if (ho) ho.textContent = ok || n ? `${n} EN LIGNE` : NET.ready || NET.status === 'connecting' ? 'CONNEXION…' : 'HORS LIGNE';
   const onFriends = save.friends.filter(f => netMember(f.pid)).length, fb = $('#friendsBadge');
@@ -4722,16 +4749,16 @@ $('#copyCode').addEventListener('click', () => {
   const done = () => toast(`Code <b>${save.pid}</b> copié : envoie-le à tes potes !`);
   try { navigator.clipboard.writeText(save.pid).then(done, done); } catch(e){ done(); }
 });
-$('#netRetry').addEventListener('click', () => netRetryLater(10));
+$('#netRetry').addEventListener('click', () => { cloudWake(); if (!CLOUD.started) cloudStart(); });
+$('#netSettings').addEventListener('click', () => cloudSettingsModal());
 $('#btnRanked').addEventListener('click', () => netQueue());
 $('#btnRoomCreate').addEventListener('click', () => roomCreate());
 $('#btnRoomJoin').addEventListener('click', () => roomJoinModal());
-window.addEventListener('pagehide', e => { if (e.persisted) return; try{ NET.hubPeer?.destroy(); NET.room?.peer?.destroy(); NET.temp?.destroy(); NET.peer?.destroy(); }catch(err){} });
 
 /* =====================================================================
    DÉMARRAGE
    ===================================================================== */
-preloadPhotos().then(async () => { await localBoot(); buildFaces(); showScreen('home'); netStart(); });
+preloadPhotos().then(async () => { await localBoot(); buildFaces(); showScreen('home'); cloudStart(); });
 </script>
 </body>
 </html>
