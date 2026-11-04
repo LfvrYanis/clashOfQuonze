@@ -743,6 +743,10 @@ const RAR_BAR = { commun:'#cbd5e1', rare:'#60a5fa', epique:'#c084fc', legendaire
 /* =====================================================================
    SAUVEGARDE
    ===================================================================== */
+// Chaque onglet ouvert en même temps sur ce PC reçoit son propre profil (sinon deux onglets = le même joueur)
+var TAB_SLOT = (() => { try{ return Math.max(1, parseInt(sessionStorage.getItem('coq_tab_slot')) || 1); }catch(e){ return 1; } })();
+var SAVE_KEY = TAB_SLOT > 1 ? 'coq_save_' + TAB_SLOT : 'coq_save';
+function setTabSlot(n){ TAB_SLOT = n; SAVE_KEY = n > 1 ? 'coq_save_' + n : 'coq_save'; try{ sessionStorage.setItem('coq_tab_slot', n); }catch(e){} }
 const PID_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const newPid = () => Array.from({ length:6 }, () => PID_ABC[Math.random()*PID_ABC.length|0]).join('');
 // Données JcJ : code joueur, trophées, bilan classé, amis (+ face-à-face)
@@ -760,7 +764,7 @@ function socialOf(s){
 }
 function loadSave(){
   let s = null;
-  try{ s = JSON.parse(localStorage.getItem('coq_save')); }catch(e){}
+  try{ s = JSON.parse(localStorage.getItem(SAVE_KEY)); }catch(e){}
   if (s && typeof s === 'object'){ if (Array.isArray(s.owned)) s.owned = s.owned.map(migId); if (Array.isArray(s.deck)) s.deck = s.deck.map(migId); }
   const base = { v:SAVE_VERSION, name:'Soldat', wins:0, losses:0, deck:[...DEFAULT_DECK], owned:starterOwned(), chests:[], insignes:0, ...socialOf(s) };
   if (!s || typeof s !== 'object') return base;
@@ -777,7 +781,7 @@ function loadSave(){
   };
 }
 const isOwned = id => save.owned.includes(id);
-function persist(){ try{ localStorage.setItem('coq_save', JSON.stringify(save)); }catch(e){} }
+function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){} }
 let save = loadSave();
 
 /* =====================================================================
@@ -938,7 +942,7 @@ $('#btnReset').addEventListener('click', () => {
     <p class="text-sm mt-2 text-[var(--muted)]">Collection, coffres, insignes, deck et bilan seront remis à zéro.</p>
     <div class="flex gap-2 mt-4"><button onclick="closeModal()" class="btn-ghost flex-1 py-2.5 font-bold">Annuler</button>
     <button id="confirmReset" class="flex-1 py-2.5 font-bold rounded-xl bg-red-600 text-white">Réinitialiser</button></div></div>`);
-  $('#confirmReset').addEventListener('click', () => { const keep = { pid:save.pid, friends:save.friends }; try{ localStorage.removeItem('coq_save'); }catch(e){} save = loadSave(); Object.assign(save, keep); persist(); closeModal(); renderHome(); });
+  $('#confirmReset').addEventListener('click', () => { const keep = { pid:save.pid, friends:save.friends }; try{ localStorage.removeItem(SAVE_KEY); }catch(e){} save = loadSave(); Object.assign(save, keep); persist(); closeModal(); renderHome(); });
 });
 $('#playerName').addEventListener('input', e => { save.name = e.target.value.trim() || 'Soldat'; persist(); renderTopbar(); });
 $('#btnPlay').addEventListener('click', () => { if (save.deck.length === DECK_SIZE) startBattle(); });
@@ -3854,8 +3858,11 @@ const NET_PREFIX = 'coq5q-', HUB_ID = NET_PREFIX + 'hub-section-quonze', ROOM_PR
 // Serveurs ICE explicites : STUN publics de Google (traversée des box / 4G) + relais TURN publics de PeerJS
 // pour les réseaux qui bloquent les connexions directes (NAT symétrique des opérateurs mobiles).
 const ICE_SERVERS = [
-  { urls:'stun:stun.l.google.com:19302' }, { urls:'stun:stun1.l.google.com:19302' },
-  { urls:'stun:stun2.l.google.com:19302' }, { urls:'stun:stun3.l.google.com:19302' }, { urls:'stun:stun4.l.google.com:19302' },
+  { urls:'stun:stun.l.google.com:19302' },
+  { urls:'stun:stun1.l.google.com:19302' },
+  { urls:'stun:stun2.l.google.com:19302' },
+  { urls:'stun:stun.cloudflare.com:3478' },
+  // dernier recours si le pare-feu bloque tout le direct (4G) : relais TURN publics de PeerJS
   { urls:['turn:eu-0.turn.peerjs.com:3478', 'turn:us-0.turn.peerjs.com:3478'], username:'peerjs', credential:'peerjsp' },
 ];
 const PEER_OPTS = { debug:0, secure:true, pingInterval:4000, config:{ iceServers:ICE_SERVERS, sdpSemantics:'unified-plan' } };
@@ -3863,6 +3870,107 @@ const NET_GRACE = 30000;   // délai max d'absence (veille, coupure) avant forfa
 var NET = { peer:null, ready:false, status:'off', msg:'', hub:null, hubPeer:null, isHub:false, claiming:false,
   members:[], pend:new Map(), myStatus:'idle', lastCard:'', outInvite:null, inInvite:null, pendingGuest:null, expect:null, searching:false, qTimer:0 };
 var HUB = { members:new Map(), tm:0 };
+
+/* ---------- Mode local : deux onglets du même PC s'affrontent sans passer par le réseau ---------- */
+var LOCAL = { ch:null, post:null, id:'', slot:1, members:new Map(), conns:new Map(), pendRoom:null };
+function localInit(){
+  if (LOCAL.post) return true;
+  try {
+    if ('BroadcastChannel' in window){
+      LOCAL.ch = new BroadcastChannel('coq-local-v1');
+      LOCAL.ch.onmessage = e => localRecv(e.data);
+      LOCAL.post = m => { try{ LOCAL.ch.postMessage(m); }catch(e){} };
+    } else { // secours : bus via l'événement « storage » du localStorage
+      window.addEventListener('storage', e => { if (e.key === 'coq_local_bus' && e.newValue) try{ localRecv(JSON.parse(e.newValue)); }catch(err){} });
+      LOCAL.post = m => { try{ localStorage.setItem('coq_local_bus', JSON.stringify({ ...m, _n:Math.random() })); }catch(e){} };
+    }
+  } catch(e){ LOCAL.post = null; }
+  return !!LOCAL.post;
+}
+const lpost = m => LOCAL.post && LOCAL.post({ ...m, from:LOCAL.id });
+class LocalConn {
+  constructor(cid, remote){ this.cid = cid; this.peer = remote; this.open = false; this.local = true; this._h = {}; LOCAL.conns.set(cid, this); }
+  on(e, f){ (this._h[e] = this._h[e] || []).push(f); return this; }
+  emit(e, ...a){ (this._h[e] || []).slice().forEach(f => { try{ f(...a); }catch(err){ console.error(err); } }); }
+  send(d){ if (!this.open) throw new Error('liaison fermée'); lpost({ t:'ld', cid:this.cid, to:this.peer, d }); }
+  close(){ if (this._closed) return; this._closed = true; this.open = false; LOCAL.conns.delete(this.cid); lpost({ t:'lclose', cid:this.cid, to:this.peer }); setTimeout(() => this.emit('close'), 0); }
+  _remoteClosed(){ if (this._closed) return; this._closed = true; this.open = false; LOCAL.conns.delete(this.cid); this.emit('close'); }
+}
+function localConnect(target, timeout=3000){
+  return new Promise((resolve, reject) => {
+    if (!LOCAL.id) return reject('offline');
+    const cid = LOCAL.id + '>' + Math.random().toString(36).slice(2, 9);
+    const c = new LocalConn(cid, target); netWire(c);
+    const tm = setTimeout(() => { if (!c.open){ c._closed = true; LOCAL.conns.delete(cid); reject('offline'); } }, timeout);
+    c.on('open', () => { clearTimeout(tm); resolve(c); });
+    lpost({ t:'lconn', cid, to:target });
+  });
+}
+function localRecv(m){
+  if (!m || typeof m !== 'object') return;
+  if (LOCAL.bootListen) LOCAL.bootListen(m);
+  if (!LOCAL.id || m.from === LOCAL.id) return;
+  if (m.to && m.to !== LOCAL.id) return;
+  switch (m.t){
+    case 'who': lpost({ t:'here', slot:LOCAL.slot }); break;
+    case 'pres': if (m.card && m.card.pid && m.card.pid !== save.pid){ const had = LOCAL.members.has(m.card.pid); LOCAL.members.set(m.card.pid, { ...m.card, peer:m.from, local:true, seen:Date.now() }); if (!had || NET.members.find(x => x.pid === m.card.pid)?.status !== m.card.status) netMergeMembers(); } break;
+    case 'bye': for (const [pid, x] of LOCAL.members) if (x.peer === m.from) LOCAL.members.delete(pid); for (const c of [...LOCAL.conns.values()]) if (c.peer === m.from) c._remoteClosed(); netMergeMembers(); break;
+    case 'lconn': { const c = new LocalConn(m.cid, m.from); netWire(c); c.open = true; lpost({ t:'lopen', cid:m.cid, to:m.from }); setTimeout(() => c.emit('open'), 0); break; }
+    case 'lopen': { const c = LOCAL.conns.get(m.cid); if (c && !c.open){ c.open = true; c.emit('open'); } break; }
+    case 'ld': { const c = LOCAL.conns.get(m.cid); if (c && c.open) c.emit('data', m.d); break; }
+    case 'lclose': LOCAL.conns.get(m.cid)?._remoteClosed(); break;
+    case 'room?': if (NET.room && NET.room.waiting && NET.room.code === m.code) lpost({ t:'room!', code:m.code, id:LOCAL.id, to:m.from }); break;
+    case 'room!': if (LOCAL.pendRoom && LOCAL.pendRoom.code === m.code) LOCAL.pendRoom.resolve(m.from); break;
+  }
+}
+// Au démarrage : si un autre onglet utilise déjà ce profil, celui-ci passe sur un profil de test séparé
+async function localBoot(){
+  if (!localInit()) return;
+  const used = new Set();
+  LOCAL.bootListen = m => { if (m && m.t === 'here') used.add(m.slot); };
+  LOCAL.post({ t:'who', from:'boot' + Math.random() });
+  await new Promise(r => setTimeout(r, 350));
+  LOCAL.bootListen = null;
+  let slot = TAB_SLOT;
+  if (used.has(slot)){ slot = 1; while (used.has(slot)) slot++; }
+  if (slot !== TAB_SLOT){
+    setTabSlot(slot);
+    let had = false; try{ had = !!localStorage.getItem(SAVE_KEY); }catch(e){}
+    save = loadSave(); if (!had) save.name = 'Soldat ' + slot; persist();
+  }
+  LOCAL.slot = slot;
+  LOCAL.id = 'local:' + save.pid + '.' + Math.random().toString(36).slice(2, 7);
+  setInterval(localTick, 1000); localTick();
+  if (slot > 1) setTimeout(() => toast(`🧪 Onglet n°${slot} : profil séparé « ${esc(save.name)} » pour jouer contre l'autre onglet`), 700);
+}
+function localQueryRoom(code, ms=500){
+  return new Promise(res => {
+    if (!LOCAL.id) return res(null);
+    const t = setTimeout(() => { LOCAL.pendRoom = null; res(null); }, ms);
+    LOCAL.pendRoom = { code, resolve: id => { clearTimeout(t); LOCAL.pendRoom = null; res(id); } };
+    lpost({ t:'room?', code });
+  });
+}
+function localTick(){
+  lpost({ t:'pres', card:myCard() });
+  let ch = false;
+  for (const [pid, x] of LOCAL.members) if (Date.now() - x.seen > 4500){ LOCAL.members.delete(pid); ch = true; }
+  if (ch) netMergeMembers();
+  // matchmaking classé entre onglets de ce PC (le plus petit code joue l'hôte)
+  if (NET.searching){ const c = [...LOCAL.members.values()].find(x => x.status === 'queue'); if (c && save.pid < c.pid) netMatchFound({ opp:c.pid, host:true, name:c.name, trophies:c.trophies }); }
+}
+window.addEventListener('pagehide', e => { if (!e.persisted && LOCAL.id) lpost({ t:'bye' }); });
+// Combat local : l'onglet hôte continue la partie même en arrière-plan, l'invité continue d'envoyer ses signes de vie
+setInterval(() => {
+  if (!B?.net || B.over) return;
+  const N = B.net, now = performance.now();
+  if (!N.host){ if (now - (N.lastPing || 0) > 700){ N.lastPing = now; netSendGame({ t:'p' }); } return; }
+  if (document.hidden && N.conn?.local){
+    let el = Math.min(2, (now - B.last)/1000); B.last = now;
+    while (el > 0.001 && !B.over){ const d = Math.min(0.05, el); el -= d; if (!N.paused){ update(d); updateParticles(d); } }
+    if (B && !B.over){ netWatchdog(); netSendSnap(); }
+  }
+}, 200);
 let friendSeg = 'online';
 
 function loadPeerLib(){
@@ -3876,13 +3984,13 @@ function loadPeerLib(){
 }
 function netSetStatus(st, msg){ NET.status = st; NET.msg = msg || ''; renderNetUI(); }
 const myCard = () => ({ pid:save.pid, name:save.name, trophies:save.trophies, status:NET.myStatus, peer:NET.peer?.id || '' });
-function netAnnounce(force){ const c = JSON.stringify(myCard()); if (!force && c === NET.lastCard) return; NET.lastCard = c; hubSend({ t:'st', ...myCard() }); }
+function netAnnounce(force){ const c = JSON.stringify(myCard()); if (!force && c === NET.lastCard) return; NET.lastCard = c; hubSend({ t:'st', ...myCard() }); if (LOCAL.id) lpost({ t:'pres', card:myCard() }); }
 function netStatus(st){ NET.myStatus = st; netAnnounce(); }
 
 async function netStart(){
   if (NET.peer && !NET.peer.destroyed) return;
-  netSetStatus('connecting', 'Connexion au réseau de la section…');
-  try { await loadPeerLib(); } catch(e){ netSetStatus('off', 'Hors ligne : module réseau introuvable (connexion internet ?)'); return; }
+  netSetStatus('connecting', 'Connexion au serveur de signalisation…');
+  try { await loadPeerLib(); } catch(e){ netSetStatus('off', 'Erreur : module réseau introuvable, vérifiez votre connexion internet.'); return; }
   let peer;
   try { peer = new Peer(NET.altId || (NET_PREFIX + save.pid), PEER_OPTS); } catch(e){ netSetStatus('off', 'Réseau indisponible sur ce navigateur.'); return; }
   NET.peer = peer;
@@ -3911,13 +4019,14 @@ function netError(err){
     netSetStatus('connecting', 'Reconnexion…'); setTimeout(netStart, NET.idTries >= 3 ? 50 : 2500); return;
   }
   if (['network','server-error','socket-error','socket-closed'].includes(type)){
-    NET.ready = false; netSetStatus('connecting', 'Réseau instable : reconnexion…'); netRetryLater(document.hidden ? 1500 : 3000);
+    NET.ready = false; netSetStatus('connecting', 'Erreur : serveur de signalisation injoignable, nouvel essai…'); netRetryLater(document.hidden ? 1500 : 3000);
     return;
   }
   if (type === 'browser-incompatible'){ NET.ready = false; netSetStatus('off', 'Ce navigateur ne gère pas le JcJ (WebRTC). Essaie Chrome ou Safari à jour.'); }
 }
 // Connexion directe vers un identifiant PeerJS complet (joueur, salon…)
 function netConnect(target, timeout=12000, peer=NET.peer){
+  if (String(target).startsWith('local:')) return localConnect(target, Math.min(timeout, 4000));
   return new Promise((resolve, reject) => {
     if (!peer || peer.destroyed || peer.disconnected || (peer === NET.peer && !NET.ready)) return reject('offline');
     const conn = peer.connect(target, { reliable:true, serialization:'json' });
@@ -3931,7 +4040,7 @@ function netConnect(target, timeout=12000, peer=NET.peer){
 }
 function netWire(conn){
   if (conn._coq) return; conn._coq = true;
-  const pid = String(conn.peer || '').replace(NET_PREFIX, '');
+  const raw = String(conn.peer || ''), pid = raw.startsWith('local:') ? raw.slice(6).split('.')[0] : raw.replace(NET_PREFIX, '');
   conn.on('data', msg => { try{ netOnMsg(conn, pid, msg); }catch(e){ console.error(e); } });
   conn.on('close', () => netOnClose(conn, pid));
   conn.on('error', () => netOnClose(conn, pid));
@@ -3946,7 +4055,7 @@ function hubJoin(){
   const tm = setTimeout(() => { if (NET.hub === conn && !conn.open) hubBecome(); }, 7000);
   conn.on('open', () => { clearTimeout(tm); NET.lastCard = ''; netAnnounce(true); renderNetUI(); });
   conn.on('data', m => hubClientMsg(m));
-  conn.on('close', () => { clearTimeout(tm); if (NET.hub === conn){ NET.hub = null; NET.members = []; renderNetUI(); setTimeout(hubJoin, 400 + Math.random()*2200); } });
+  conn.on('close', () => { clearTimeout(tm); if (NET.hub === conn){ NET.hub = null; NET.hubMembers = []; netMergeMembers(); setTimeout(hubJoin, 400 + Math.random()*2200); } });
 }
 function hubBecome(){
   if (NET.isHub || NET.claiming || !NET.ready) return;
@@ -3999,12 +4108,21 @@ function hubBroadcast(){
 function hubClientMsg(m){
   if (!m || typeof m !== 'object') return;
   if (m.t === 'list' && Array.isArray(m.m)){
-    NET.members = m.m.filter(x => x && x.pid && x.pid !== save.pid);
-    let ch = false;
-    for (const x of NET.members){ const f = save.friends.find(f => f.pid === x.pid); if (f && (f.name !== x.name || f.trophies !== x.trophies)){ f.name = x.name; f.trophies = x.trophies; ch = true; } }
-    if (ch) persist();
-    renderNetUI();
+    NET.hubMembers = m.m.filter(x => x && x.pid);
+    netMergeMembers();
   } else if (m.t === 'match') netMatchFound(m);
+}
+// Liste affichée = annuaire en ligne + onglets ouverts sur ce PC (liaison locale prioritaire)
+function netMergeMembers(){
+  const map = new Map();
+  for (const m of NET.hubMembers || []) map.set(m.pid, m);
+  for (const m of LOCAL.members.values()) map.set(m.pid, { ...(map.get(m.pid) || {}), ...m });
+  map.delete(save.pid);
+  NET.members = [...map.values()];
+  let ch = false;
+  for (const x of NET.members){ const f = save.friends.find(f => f.pid === x.pid); if (f && (f.name !== x.name || f.trophies !== x.trophies)){ f.name = x.name; f.trophies = x.trophies; ch = true; } }
+  if (ch) persist();
+  renderNetUI();
 }
 const netMember = pid => NET.members.find(m => m.pid === pid);
 const hubOk = () => NET.ready && (NET.isHub || NET.hub?.open);
@@ -4022,19 +4140,19 @@ function deckOk(){ if (save.deck.length !== DECK_SIZE){ toast('Ton deck doit con
 
 async function netInvite(pid, mode='friendly', oppInfo){
   if (!deckOk()) return;
-  if (!NET.ready) return netOfflineModal();
+  if (!NET.ready && !netMember(pid)?.local) return netOfflineModal();
   if (mode === 'friendly' && netBusy()) return toast('Termine d\'abord ce que tu fais en cours.');
   const info = oppInfo || netMember(pid) || save.friends.find(f => f.pid === pid) || { pid, name:'Code ' + pid };
   NET.outInvite = { pid, mode };
   if (mode === 'friendly'){
     modalLocked = true;
     openModal(`<div class="text-center"><div class="text-5xl net-pulse">📻</div><div class="font-ops text-2xl text-[var(--khaki)] mt-1">Défi envoyé</div>
-      <p class="mt-2">En attente de <b>${esc(info.name)}</b>…</p><div class="text-xs text-[var(--muted)] mt-1">Match amical : aucun trophée en jeu.</div>
+      <p class="mt-2">En attente de <b>${esc(info.name)}</b>…</p><div id="invStage" class="text-xs font-bold text-amber-300 mt-1">${(netMember(pid)?.local) ? '💻 Liaison locale (même PC)…' : '🔗 Établissement du tunnel P2P…'}</div><div class="text-xs text-[var(--muted)] mt-1">Match amical : aucun trophée en jeu.</div>
       <button id="invCancel" class="btn-ghost w-full py-2.5 font-bold mt-4">Annuler</button></div>`);
     $('#invCancel').addEventListener('click', () => { const o = NET.outInvite; NET.outInvite = null; modalLocked = false; closeModal(); try{ o?.conn?.send({ t:'cancel' }); setTimeout(() => o?.conn?.close(), 300); }catch(e){} });
   }
   let conn;
-  try { conn = await netConnect(netMember(pid)?.peer || (NET_PREFIX + pid)); }
+  try { conn = await netConnect(netMember(pid)?.peer || (NET_PREFIX + pid), 9000, NET.peer); }
   catch(e){
     if (!NET.outInvite || NET.outInvite.pid !== pid) return;
     NET.outInvite = null; modalLocked = false;
@@ -4044,6 +4162,7 @@ async function netInvite(pid, mode='friendly', oppInfo){
   }
   if (!NET.outInvite || NET.outInvite.pid !== pid){ try{ conn.close(); }catch(e){} return; }
   NET.outInvite.conn = conn;
+  { const el = $('#invStage'); if (el){ el.textContent = '✅ Liaison établie, en attente de sa réponse…'; el.className = 'text-xs font-bold text-green-300 mt-1'; } }
   conn.send({ t:'inv', mode, ...myCard() });
   NET.outInvite.tm = setTimeout(() => { if (NET.outInvite?.conn === conn){ NET.outInvite = null; modalLocked = false; closeModal(); toast('Pas de réponse au défi.'); if (mode === 'ranked') netStatus('idle'); try{ conn.close(); }catch(e){} } }, 25000);
 }
@@ -4084,7 +4203,8 @@ function netOnMsg(conn, pid, m){
     case 'ff': if (B?.net?.conn === conn && !B.over){ B.oppLeft = 'abandon'; B.crownsP = 3; updateCrowns(); endBattle('win'); } break;
     case 'inv':
       if (m.mode === 'ranked'){
-        if (NET.expect === pid && !(B && !B.over)){ NET.expect = null; netAccept(conn, pid, 'ranked'); }
+        const rp = m.pid || pid;
+        if ((NET.expect === rp || NET.expect === pid || (NET.searching && conn.local)) && !(B && !B.over)){ if (NET.searching){ NET.searching = false; clearInterval(NET.qTimer); } NET.expect = null; netAccept(conn, rp, 'ranked'); }
         else conn.send({ t:'dec', why:'busy' });
       } else if (netBusy()) conn.send({ t:'dec', why:'busy' });
       else netShowInvite(conn, pid, m);
@@ -4144,7 +4264,7 @@ function netOnClose(conn, pid){
 
 function netQueue(){
   if (!deckOk()) return;
-  if (!hubOk()) return netOfflineModal();
+  if (!hubOk() && !LOCAL.id) return netOfflineModal();
   if (netBusy()) return;
   NET.searching = true; netStatus('queue');
   const t0 = Date.now();
@@ -4155,7 +4275,7 @@ function netQueue(){
     <div class="text-[11px] text-[var(--muted)] mt-2">Astuce : demande à un pote de lancer « JcJ classé » en même temps.</div>
     <button id="qCancel" class="btn-ghost w-full py-2.5 font-bold mt-4">Annuler</button></div>`);
   clearInterval(NET.qTimer);
-  NET.qTimer = setInterval(() => { const s = Math.floor((Date.now() - t0)/1000), el = $('#qTime'); if (el) el.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; const o = $('#qOnline'); if (o) o.textContent = NET.members.length; if (!hubOk()) netUnqueue('Liaison radio perdue.'); }, 500);
+  NET.qTimer = setInterval(() => { const s = Math.floor((Date.now() - t0)/1000), el = $('#qTime'); if (el) el.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; const o = $('#qOnline'); if (o) o.textContent = NET.members.length; if (!hubOk() && !LOCAL.id) netUnqueue('Liaison radio perdue.'); }, 500);
   $('#qCancel').addEventListener('click', () => netUnqueue());
 }
 function netUnqueue(msg){
@@ -4287,7 +4407,7 @@ function netWatchdog(){
   const lost = N.closed || N.oppAway || silent > 2500;
   N.paused = lost && N.host;             // l'hôte gèle la partie tant que l'adversaire est absent
   netLostOverlay(lost ? Math.max(0, Math.ceil((NET_GRACE - silent)/1000)) : -1, N);
-  if (silent > NET_GRACE){ B.oppLeft = N.oppAway ? 'veille trop longue' : 'déconnexion'; B.crownsP = 3; updateCrowns(); endBattle('win'); try{ N.conn.close(); }catch(e){} return; }
+  if (silent > (N.conn?.local ? 600000 : NET_GRACE)){ B.oppLeft = N.oppAway ? 'veille trop longue' : 'déconnexion'; B.crownsP = 3; updateCrowns(); endBattle('win'); try{ N.conn.close(); }catch(e){} return; }
   if (N.closed && !N.host && !N.rejoining) netRejoin();
 }
 // Bandeau « liaison perdue / en veille » au-dessus du terrain
@@ -4296,6 +4416,7 @@ function netLostOverlay(sec, N){
   if (sec < 0){ if (el) el.remove(); return; }
   if (!el){ el = document.createElement('div'); el.id = 'netLost'; $('#arenaWrap').appendChild(el); }
   const nm = esc(N.opp.name);
+  if (N.conn?.local){ const h = `<div class="nl-t">🗂️ L'onglet de ${nm} ne répond plus</div><div class="nl-s">Garde les deux fenêtres ouvertes côte à côte (pas d'onglet réduit)</div>`; if (el.innerHTML !== h) el.innerHTML = h; return; }
   const txt = N.oppAway ? `📱 ${nm} a mis son téléphone en veille` : N.closed ? `📶 Liaison coupée avec ${nm}` : `📶 Signal faible avec ${nm}…`;
   const html = `<div class="nl-t">${txt}</div><div class="nl-s">${N.host ? 'Partie en pause' : 'Reconnexion automatique'} · forfait dans <b>${sec}</b> s</div>`;
   if (el.innerHTML !== html) el.innerHTML = html;
@@ -4306,8 +4427,8 @@ async function netRejoin(){
   N.rejoining = true;
   while (B && B.net === N && !B.over && N.closed){
     try {
-      const peer = await ensurePeer(6000);
-      const c = await netConnect(N.remoteId, 6000, peer);
+      const peer = String(N.remoteId).startsWith('local:') ? null : await ensurePeer(6000);
+      const c = await netConnect(N.remoteId, 6000, peer || undefined);
       if (!(B && B.net === N && !B.over)){ try{ c.close(); }catch(e){} break; }
       N.conn = c; N.closed = false; N.lastRx = performance.now(); NET.lastConn = c;
       c.send({ t:'rejoin', mid:N.mid, ...myCard() });
@@ -4340,7 +4461,7 @@ function ensurePeer(timeout=10000){
 // Mise en veille / retour du téléphone
 function netOnHidden(){
   NET.hiddenAt = Date.now();
-  if (B?.net && !B.over) netSendGame({ t:'away' });
+  if (B?.net && !B.over && !B.net.conn?.local) netSendGame({ t:'away' });
 }
 function netOnVisible(awayMs){
   NET.hiddenAt = 0;
@@ -4350,7 +4471,7 @@ function netOnVisible(awayMs){
   if (NET.room?.peer && !NET.room.peer.destroyed && NET.room.peer.disconnected) try{ NET.room.peer.reconnect(); }catch(e){}
   if (NET.ready && !NET.isHub && !NET.hub) hubJoin();
   if (B?.net && !B.over){
-    if (awayMs > NET_GRACE){ netSendGame({ t:'ff' }); B.endNote = '📱 Tu es resté en veille trop longtemps : forfait.'; B.crownsE = 3; updateCrowns(); endBattle('loss'); return; }
+    if (awayMs > NET_GRACE && !B.net.conn?.local){ netSendGame({ t:'ff' }); B.endNote = '📱 Tu es resté en veille trop longtemps : forfait.'; B.crownsE = 3; updateCrowns(); endBattle('loss'); return; }
     B.net.lastRx = performance.now();
     if (B.net.conn?.open && !B.net.closed) netSendGame({ t:'back' });
     else { B.net.closed = true; if (!B.net.host) netRejoin(); }
@@ -4373,25 +4494,32 @@ async function roomCreate(reuse){
   modalLocked = true;
   const R = NET.room = (reuse && NET.room && NET.room.code === reuse.code) ? NET.room : { code:reuse?.code || roomCodeNew(), mode:reuse?.mode || 'friendly', peer:null };
   R.waiting = true; R.conn = null;
-  roomModal();
-  try { await loadPeerLib(); } catch(e){ return roomFail('Module réseau introuvable : vérifie ta connexion internet.'); }
-  if (R.peer && !R.peer.destroyed){ if (R.peer.disconnected) try{ R.peer.reconnect(); }catch(e){} if (R.peer.open) roomModal(); return; }
+  if (R.peer && !R.peer.destroyed && R.peer.open){ if (R.peer.disconnected) try{ R.peer.reconnect(); }catch(e){} R.stage = 'open'; roomModal(); return; }
+  R.stage = 'sig'; roomModal();
+  try { await loadPeerLib(); } catch(e){ if (NET.room === R){ R.stage = 'local'; roomModal(); } return; }
   const open = code => {
-    const rp = new Peer(roomPeerId(code), PEER_OPTS); R.peer = rp;
-    rp.on('open', () => { if (NET.room === R) roomModal(); });
+    let rp; try { rp = new Peer(roomPeerId(code), PEER_OPTS); } catch(e){ R.stage = 'local'; roomModal(); return; }
+    R.peer = rp;
+    const slow = setTimeout(() => { if (NET.room === R && !rp.open){ R.stage = 'local'; roomModal(); } }, 6000);
+    rp.on('open', () => { clearTimeout(slow); if (NET.room === R){ R.stage = 'open'; roomModal(); } });
     rp.on('connection', conn => netWire(conn));
     rp.on('disconnected', () => { setTimeout(() => { try{ if (!rp.destroyed && rp.disconnected) rp.reconnect(); }catch(e){} }, 800); });
     rp.on('error', err => {
       if (NET.room !== R) return;
-      if (err?.type === 'unavailable-id'){ try{ rp.destroy(); }catch(e){} if (reuse){ reuse = null; } R.code = roomCodeNew(); roomModal(); open(R.code); }
-      else if (['network','server-error','socket-error','socket-closed'].includes(err?.type) && !rp.open) roomFail('Serveur de salons injoignable. Vérifie ta connexion puis réessaie.');
+      if (err?.type === 'unavailable-id'){ clearTimeout(slow); try{ rp.destroy(); }catch(e){} R.code = roomCodeNew(); roomModal(); open(R.code); }
+      else if (['network','server-error','socket-error','socket-closed'].includes(err?.type) && !rp.open){ R.stage = 'local'; roomModal(); }
     });
   };
   open(R.code);
 }
+const ROOM_STAGE = {
+  sig:   ['text-amber-300', '<span class="net-spin">📡</span> Connexion au serveur de signalisation…'],
+  open:  ['text-green-300', '<span class="net-pulse inline-block">📻</span> Salon ouvert : donne ce code à ton pote'],
+  local: ['text-amber-300', '⚠️ Erreur : serveur de signalisation injoignable, vérifiez votre connexion. Salon ouvert en local (onglets de ce PC).'],
+};
 function roomModal(){
   const R = NET.room; if (!R || !R.waiting) return;
-  const ready = R.peer && R.peer.open && !R.peer.disconnected;
+  const st = ROOM_STAGE[R.stage] || ROOM_STAGE.sig;
   openModal(`<div class="text-center">
     <div class="text-[11px] font-extrabold tracking-widest text-[#d6e3ff]">SALON DIRECT</div>
     <div class="room-code mt-1">${R.code}</div>
@@ -4400,20 +4528,18 @@ function roomModal(){
       <button data-rmode="ranked" class="chip ${R.mode === 'ranked' ? 'active' : ''}">🏆 Classé</button>
     </div>
     <div class="text-[11px] font-bold text-[var(--muted)] mt-1">${R.mode === 'ranked' ? 'Les trophées sont en jeu.' : 'Aucun trophée en jeu, juste l\'honneur.'}</div>
-    <div class="mt-3 text-sm font-bold ${ready ? 'text-green-300' : 'text-amber-300'}">${ready ? '<span class="net-pulse inline-block">📻</span> Salon ouvert : donne ce code à ton pote' : '<span class="net-spin">📡</span> Ouverture du salon…'}</div>
-    <div class="text-[11px] text-[var(--muted)] mt-1">Il touche « Rejoindre un salon » et tape <b class="text-white">${R.code}</b>.</div>
+    <div class="mt-3 text-sm font-bold ${st[0]}">${st[1]}</div>
+    <div class="text-[11px] text-[var(--muted)] mt-1">Ton pote touche « Rejoindre » et tape <b class="text-white">${R.code}</b>.${LOCAL.id ? '<br>💻 Un autre onglet de ce PC peut aussi rejoindre (test local).' : ''}</div>
     <div class="flex gap-2 mt-4"><button id="roomClose" class="btn-ghost flex-1 py-2.5 font-bold">Fermer</button><button id="roomShare" class="btn-main flex-1 py-2.5">📤 Partager</button></div>
   </div>`);
   $('#roomModes').addEventListener('click', e => { const b = e.target.closest('[data-rmode]'); if (b){ R.mode = b.dataset.rmode; roomModal(); } });
   $('#roomClose').addEventListener('click', () => roomClose());
   $('#roomShare').addEventListener('click', () => {
-    const text = `⚔️ Viens m'affronter sur Clash of Quonze ! Onglet Amis → « Rejoindre un salon » → code ${R.code}`;
+    const text = `⚔️ Viens m'affronter sur Clash of Quonze ! Onglet Amis → « Rejoindre » → code ${R.code}`;
     const done = () => toast(`Code <b>${R.code}</b> copié !`);
     if (navigator.share) navigator.share({ text }).catch(() => {}); else try{ navigator.clipboard.writeText(text).then(done, done); }catch(e){ done(); }
   });
 }
-function roomFail(msg){ const R = NET.room; if (R){ R.waiting = false; try{ R.peer?.destroy(); }catch(e){} } NET.room = null; modalLocked = false;
-  openModal(`<div class="text-center"><div class="text-4xl">📴</div><div class="font-ops text-2xl text-red-400 mt-1">Salon indisponible</div><p class="text-sm mt-2">${msg}</p><button onclick="closeModal()" class="btn-main w-full py-2.5 mt-4">OK</button></div>`); }
 function roomClose(){ const R = NET.room; NET.room = null; modalLocked = false; closeModal(); if (R){ R.waiting = false; try{ R.peer?.destroy(); }catch(e){} } }
 function roomStart(conn, m){
   const R = NET.room; R.waiting = false; R.conn = conn; modalLocked = false; closeModal();
@@ -4429,37 +4555,68 @@ function roomJoinModal(prefill){
     <form id="roomJoinForm" class="mt-3">
       <div class="flex items-center justify-center gap-1"><span class="font-ops text-3xl text-[#ffd84a]">QNZ-</span>
       <input id="roomInput" maxlength="4" autocomplete="off" autocapitalize="characters" inputmode="text" value="${esc(prefill || '')}" placeholder="8K4" class="w-28 bg-black/30 rounded-xl px-2 py-1 font-ops text-3xl text-center uppercase tracking-[.2em] outline-none border-2 border-[var(--line)] focus:border-[#ffd34d] text-white placeholder:text-white/30"></div>
-      <div class="text-[11px] text-[var(--muted)] mt-2">Tape le code affiché sur le téléphone de ton pote.</div>
+      <div class="text-[11px] text-[var(--muted)] mt-2">Tape le code affiché sur l'écran de ton pote (ou de l'autre onglet).</div>
       <div class="flex gap-2 mt-4"><button type="button" onclick="closeModal()" class="btn-ghost flex-1 py-2.5 font-bold">Annuler</button><button class="btn-main flex-1 py-2.5 text-lg">Rejoindre</button></div>
     </form></div>`);
   setTimeout(() => $('#roomInput')?.focus(), 50);
   $('#roomJoinForm').addEventListener('submit', e => { e.preventDefault(); const code = roomNorm($('#roomInput').value); if (!code) return toast('Code incomplet.'); roomJoin(code); });
 }
-async function roomJoin(code, deadlineMs=20000){
+async function roomJoin(code, deadlineMs=25000){
   if (!deckOk()) return;
   if (B && !B.over) return;
   const t0 = Date.now(), token = {}; NET.joining = token;
   modalLocked = true;
-  const wait = txt => openModal(`<div class="text-center"><div class="text-5xl net-spin">📡</div><div class="font-ops text-2xl text-[var(--khaki)] mt-2">${code}</div><div class="text-sm font-bold mt-1">${txt}</div>
-    <button id="joinCancel" class="btn-ghost w-full py-2.5 font-bold mt-4">Annuler</button></div>`) || $('#joinCancel').addEventListener('click', () => { NET.joining = null; if (NET.pendingGuest?.room){ try{ NET.pendingGuest.conn.close(); }catch(e){} NET.pendingGuest = null; } modalLocked = false; closeModal(); });
+  const steps = [];
+  const stage = (txt, cls='') => {
+    if (NET.joining !== token) return;
+    if (!$('#joinStage')){
+      openModal(`<div class="text-center"><div class="text-5xl net-spin">📡</div><div class="font-ops text-2xl text-[var(--khaki)] mt-2">${code}</div>
+        <div id="joinStage" class="text-sm font-bold mt-2"></div><div id="joinSteps" class="text-[11px] text-[var(--muted)] mt-1 leading-snug"></div>
+        <button id="joinCancel" class="btn-ghost w-full py-2.5 font-bold mt-4">Annuler</button></div>`);
+      $('#joinCancel').addEventListener('click', () => { NET.joining = null; if (NET.pendingGuest?.room){ try{ NET.pendingGuest.conn.close(); }catch(e){} NET.pendingGuest = null; } modalLocked = false; closeModal(); });
+    }
+    const el = $('#joinStage'); el.innerHTML = txt; el.className = 'text-sm font-bold mt-2 ' + cls;
+  };
+  const note = t => { steps.push(t); const el = $('#joinSteps'); if (el) el.innerHTML = steps.slice(-3).join('<br>'); };
   const fail = msg => { if (NET.joining !== token) return; NET.joining = null; modalLocked = false;
     openModal(`<div class="text-center"><div class="text-4xl">📴</div><div class="font-ops text-2xl text-red-400 mt-1">Connexion impossible</div><p class="text-sm mt-2">${msg}</p>
       <div class="flex gap-2 mt-4"><button onclick="closeModal()" class="btn-ghost flex-1 py-2.5 font-bold">Fermer</button><button id="joinRetry" class="btn-main flex-1 py-2.5">Réessayer</button></div></div>`);
     $('#joinRetry').addEventListener('click', () => roomJoin(code)); };
-  wait('Connexion au salon…');
-  let notFound = 0;
+  let notFound = 0, sigFail = 0, tunnelFail = 0;
   while (NET.joining === token && Date.now() - t0 < deadlineMs){
-    let conn;
-    try {
-      const peer = await ensurePeer(8000);
-      conn = await netConnect(roomPeerId(code), 9000, peer);
-    } catch(e){
-      if (NET.joining !== token) return;
-      if (e === 'offline'){ notFound++; if (notFound >= 3) return fail(`Aucun salon <b>${code}</b> ouvert. Vérifie le code, ou demande à ton pote de garder le salon affiché.`); }
-      wait(notFound ? 'Salon introuvable, nouvel essai…' : 'Réseau lent, nouvel essai…');
-      await new Promise(r => setTimeout(r, 1500)); continue;
+    let conn = null;
+    // 1) le salon est-il ouvert dans un autre onglet de ce PC ? (liaison locale, sans réseau)
+    stage('🔎 Recherche du salon sur cet appareil…');
+    const lid = await localQueryRoom(code, 450);
+    if (NET.joining !== token) return;
+    if (lid){
+      stage('💻 Salon trouvé sur ce PC : liaison locale…', 'text-cyan-300');
+      try { conn = await localConnect(lid, 3000); note('✅ Liaison locale établie'); } catch(e){ note('⚠️ Liaison locale échouée'); }
+    }
+    // 2) sinon : serveur de signalisation PeerJS puis tunnel P2P
+    if (!conn){
+      stage('📡 Connexion au serveur de signalisation…', 'text-amber-300');
+      let peer = null;
+      try { peer = await ensurePeer(7000); note('✅ Serveur de signalisation joint'); }
+      catch(e){
+        if (NET.joining !== token) return;
+        sigFail++; note('❌ Serveur de signalisation injoignable');
+        if (sigFail >= 2) return fail('Erreur : serveur de signalisation injoignable. Vérifiez votre connexion internet (ou testez avec deux onglets de ce PC).');
+        await new Promise(r => setTimeout(r, 1200)); continue;
+      }
+      stage('🔗 Établissement du tunnel P2P…', 'text-amber-300');
+      try { conn = await netConnect(roomPeerId(code), 9000, peer); note('✅ Tunnel P2P établi'); }
+      catch(e){
+        if (NET.joining !== token) return;
+        if (e === 'offline'){ notFound++; note('❌ Aucun salon ' + code + ' sur le serveur');
+          if (notFound >= 3) return fail(`Salon <b>${code}</b> introuvable. Vérifie le code, et que ton pote garde l'écran du salon affiché.`); }
+        else { tunnelFail++; note('❌ Tunnel P2P bloqué (pare-feu / réseau)');
+          if (tunnelFail >= 2) return fail('Erreur : le tunnel P2P ne passe pas (pare-feu ou réseau mobile restrictif). Essayez tous les deux en Wi-Fi, ou passez l\'un des deux en 4G.'); }
+        await new Promise(r => setTimeout(r, 1000)); continue;
+      }
     }
     if (NET.joining !== token){ try{ conn.close(); }catch(e){} return; }
+    stage('🤝 Négociation du combat…', 'text-green-300');
     const res = await new Promise(resolve => {
       NET.pendingGuest = { conn, pid:'', mode:'friendly', room:code, onDec: why => resolve(why || 'closed') };
       conn.send({ t:'join', ...myCard(), deck:save.deck });
@@ -4470,11 +4627,12 @@ async function roomJoin(code, deadlineMs=20000){
     if (NET.pendingGuest?.conn === conn) NET.pendingGuest = null;
     try{ conn.close(); }catch(e){}
     if (NET.joining !== token) return;
-    wait(res === 'closed' ? 'En attente que ton pote rouvre le salon…' : 'Liaison instable, nouvel essai…');
+    stage(res === 'closed' ? '⏳ En attente que ton pote rouvre le salon…' : '⚠️ Liaison instable, nouvel essai…', 'text-amber-300');
     await new Promise(r => setTimeout(r, 1500));
   }
   fail(`Le salon <b>${code}</b> ne répond pas. Vérifiez que vous êtes tous les deux connectés à internet, puis réessayez.`);
 }
+
 /* ---------- Amis & bilans ---------- */
 function friendAdd(pid, name, trophies){
   pid = String(pid || '').toUpperCase().trim();
@@ -4504,7 +4662,7 @@ function playerRow(p, opts={}){
     <div class="favatar">${a.icon}<span class="online-dot ${online || opts.me ? 'on' : 'off'}"></span></div>
     <div class="flex-1 min-w-0">
       <div class="font-bold leading-tight truncate">${esc(p.name)}${opts.me ? ' <span class="text-[10px] text-[var(--khaki)]">(toi)</span>' : ''}</div>
-      <div class="text-[11px] leading-tight font-bold truncate"><span class="text-amber-300">🏆 ${p.trophies || 0}</span> · <span class="text-[#d6e3ff]">Arène ${a.num}</span>${st ? ` · <span class="${st[1]}">${st[0]}</span>` : opts.me ? '' : ' · <span class="text-[var(--muted)]">Hors ligne</span>'}</div>
+      <div class="text-[11px] leading-tight font-bold truncate"><span class="text-amber-300">🏆 ${p.trophies || 0}</span> · <span class="text-[#d6e3ff]">Arène ${a.num}</span>${p.local ? ' · <span class="text-cyan-300">💻 ce PC</span>' : ''}${st ? ` · <span class="${st[1]}">${st[0]}</span>` : opts.me ? '' : ' · <span class="text-[var(--muted)]">Hors ligne</span>'}</div>
       ${opts.h2h ? `<div class="text-[10px] font-bold text-[var(--muted)] leading-tight">Face à face : <span class="text-green-300">${p.w} V</span> – <span class="text-red-300">${p.l} D</span>${p.d ? ` – ${p.d} N` : ''}</div>` : ''}
     </div>
     ${opts.me ? '' : `<div class="flex gap-1 shrink-0">
@@ -4541,12 +4699,12 @@ function renderFriends(){
   $('#friendList').innerHTML = html;
 }
 function renderNetUI(){
-  const n = NET.members.length, ok = hubOk();
+  const n = NET.members.length, ok = hubOk(), nl = LOCAL.members.size;
   const dot = $('#netDot'), stx = $('#netStatus');
-  if (dot){ dot.className = 'online-dot ' + (ok ? 'on' : NET.status === 'connecting' || NET.ready ? 'wait' : 'off'); }
-  if (stx) stx.textContent = ok ? `Connecté au QG radio · ${n} autre(s) en ligne` : NET.ready ? 'Connexion au QG radio…' : (NET.msg || 'Hors ligne');
+  if (dot){ dot.className = 'online-dot ' + (ok || nl ? 'on' : NET.status === 'connecting' || NET.ready ? 'wait' : 'off'); }
+  if (stx){ const net = ok ? `Connecté au QG radio · ${n} en ligne` : NET.ready ? 'Connexion au QG radio…' : (NET.msg || 'Hors ligne'); stx.textContent = nl ? `💻 ${nl} onglet(s) sur ce PC · ${net}` : net; stx.title = net; }
   $('#netRetry')?.classList.toggle('hidden', NET.status !== 'off');
-  const ho = $('#homeOnline'); if (ho) ho.textContent = ok ? `${n} EN LIGNE` : NET.ready || NET.status === 'connecting' ? 'CONNEXION…' : 'HORS LIGNE';
+  const ho = $('#homeOnline'); if (ho) ho.textContent = ok || n ? `${n} EN LIGNE` : NET.ready || NET.status === 'connecting' ? 'CONNEXION…' : 'HORS LIGNE';
   const onFriends = save.friends.filter(f => netMember(f.pid)).length, fb = $('#friendsBadge');
   if (fb){ fb.textContent = onFriends; fb.classList.toggle('hidden', !onFriends); }
   renderFriends();
@@ -4573,7 +4731,7 @@ window.addEventListener('pagehide', e => { if (e.persisted) return; try{ NET.hub
 /* =====================================================================
    DÉMARRAGE
    ===================================================================== */
-preloadPhotos().then(() => { buildFaces(); showScreen('home'); netStart(); });
+preloadPhotos().then(async () => { await localBoot(); buildFaces(); showScreen('home'); netStart(); });
 </script>
 </body>
 </html>
