@@ -383,6 +383,7 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
 
 
 
+
   /* =================== PROGRESSION : niveaux, voie des trophées, boutique =================== */
   .clvl.max{background:linear-gradient(120deg,#fde047,#f97316,#ec4899,#22d3ee)!important;}
   .ccell{display:flex;flex-direction:column;gap:3px;}
@@ -602,6 +603,39 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
   .auth-lb{color:#f3d9a8!important;}
   .room-code{background:linear-gradient(180deg,#2a1608,#170b03);border:3px solid var(--ink);border-radius:16px;box-shadow:inset 0 2px 6px rgba(0,0,0,.6),0 2px 0 rgba(255,220,160,.2);padding:4px 0;}
   @media (max-height:700px){ .btn-battle{padding:8px 0 7px!important;} .btn-battle > div:first-child{font-size:26px!important;} .crest-flags{display:none;} }
+
+  /* =================== CORRECTIFS : raretés & fond moderne =================== */
+  .r-rare{border-color:transparent!important;background:linear-gradient(160deg,#5aaaff,#1a4ea8) padding-box,linear-gradient(160deg,#eef8ff,#8fd0ff 30%,#2a6fd6 58%,#c9e8ff 80%,#5aa9ff) border-box!important;}
+  .r-epique{border-color:transparent!important;background:linear-gradient(160deg,#d043ea,#4b1185) padding-box,linear-gradient(160deg,#ffd9ff,#d77bff 30%,#6d1aa8 58%,#f0b8ff 80%,#b74ee8) border-box!important;}
+  .r-legendaire{border-color:transparent!important;
+    background:linear-gradient(160deg,#ffd76a 0%,#e09a18 45%,#8a4f00 100%) padding-box,
+      linear-gradient(120deg,#fff6c4 0%,#ffd23f 18%,#a86a00 34%,#fff3b0 50%,#e0a526 66%,#8a5200 82%,#fff6c4 100%) border-box!important;
+    background-size:100% 100%,300% 300%!important;animation:legendGold 3.2s linear infinite!important;
+    box-shadow:0 0 0 2px #120a04,0 4px 0 rgba(0,0,0,.5),0 0 10px rgba(255,200,60,.55)!important;}
+  @keyframes legendGold{0%{background-position:0 0,0% 50%}100%{background-position:0 0,300% 50%}}
+  .r-legendaire::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;
+    background:linear-gradient(115deg,transparent 38%,rgba(255,255,240,.55) 50%,transparent 62%);background-size:260% 100%;background-position:150% 0;
+    animation:legendShine 3.4s ease-in-out infinite;mix-blend-mode:screen;}
+  @keyframes legendShine{0%,55%{background-position:150% 0}100%{background-position:-60% 0}}
+  .clvl.lv-rare{background:linear-gradient(180deg,#8fd0ff,#1f5fc2)!important;}
+  .clvl.lv-epique{background:linear-gradient(180deg,#ea9bff,#7a1fb8)!important;}
+  .clvl.lv-legendaire{background:linear-gradient(180deg,#fff0a0,#d68f00)!important;}
+  .coll-rare{color:#8fd0ff!important}.coll-legendaire{color:#ffd84a!important}
+  .rar-legendaire{background:linear-gradient(90deg,#fff3b0,#ffd23f,#e09a18)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;}
+  .cine-qty{display:inline-block;font-family:'Lilita One',sans-serif;font-size:46px;line-height:1;color:#ffd84a;margin-bottom:2px;
+    text-shadow:0 3px 0 #4a2200,-2px -2px 0 #4a2200,2px -2px 0 #4a2200,-2px 2px 0 #4a2200,2px 2px 0 #4a2200;animation:qtyPop .45s cubic-bezier(.2,1.6,.4,1);}
+  @keyframes qtyPop{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+  /* fond des menus : carrelage bleu nuit moderne (fini le bois) */
+  body,#screen-battle{background-color:#0f2350!important;background-image:
+      radial-gradient(ellipse 120% 55% at 50% -8%,rgba(110,185,255,.38),transparent 62%),
+      radial-gradient(ellipse 100% 45% at 50% 108%,rgba(3,10,32,.75),transparent 65%),
+      repeating-linear-gradient(45deg,rgba(255,255,255,.055) 0 2px,transparent 2px 34px),
+      repeating-linear-gradient(-45deg,rgba(255,255,255,.055) 0 2px,transparent 2px 34px),
+      repeating-linear-gradient(45deg,rgba(0,0,0,.10) 0 17px,transparent 17px 34px),
+      linear-gradient(180deg,#1d4ea6 0%,#163e8a 35%,#102e6a 70%,#0b2152 100%)!important;
+    background-attachment:fixed!important;}
+  .panel{box-shadow:inset 0 2px 0 rgba(255,255,255,.28),inset 0 -3px 0 rgba(0,0,0,.2),0 0 0 2px rgba(5,14,40,.55),0 5px 0 rgba(5,14,40,.9),0 12px 22px rgba(0,0,0,.45)!important;}
+  .tab-title{text-shadow:0 3px 0 #06122e,-2px 0 0 #06122e,2px 0 0 #06122e,0 -2px 0 #06122e!important;}
 </style>
 </head>
 <body>
@@ -1005,8 +1039,9 @@ const CHEST_TYPES = {
 };
 const DUPE_INSIGNES = { commun:5, rare:15, epique:40, legendaire:100 };
 // cartes par tirage selon le coffre (les doublons servent à améliorer) et or gagné par coffre
-const CHEST_STACK = { caisse:{ commun:2, rare:1, epique:1, legendaire:1 }, renforce:{ commun:3, rare:2, epique:1, legendaire:1 }, elite:{ commun:5, rare:3, epique:2, legendaire:1 } };
-const CHEST_GOLD = { caisse:[20,40], renforce:[60,110], elite:[180,300] };
+// quantité de cartes par tirage [min, max] selon le coffre et la rareté, et or gagné par coffre
+const CHEST_STACK = { caisse:{ commun:[4,8], rare:[2,3], epique:[1,1], legendaire:[1,1] }, renforce:{ commun:[8,14], rare:[3,5], epique:[1,2], legendaire:[1,1] }, elite:{ commun:[15,25], rare:[6,10], epique:[2,4], legendaire:[1,2] } };
+const CHEST_GOLD = { caisse:[30,60], renforce:[90,160], elite:[250,400] };
 const UNLOCK_COST = { commun:40, rare:120, epique:300, legendaire:600 };
 const RAR_BAR = { commun:'#cbd5e1', rare:'#60a5fa', epique:'#c084fc', legendaire:'#facc15' };
 
@@ -1036,7 +1071,7 @@ function loadSave(){
   let s = null;
   try{ s = JSON.parse(localStorage.getItem(SAVE_KEY)); }catch(e){}
   if (s && typeof s === 'object'){ if (Array.isArray(s.owned)) s.owned = s.owned.map(migId); if (Array.isArray(s.deck)) s.deck = s.deck.map(migId); }
-  const base = { v:SAVE_VERSION, name:'Soldat', wins:0, losses:0, deck:[...DEFAULT_DECK], owned:starterOwned(), chests:[], insignes:0, gems:20, levels:{}, copies:{}, road:[], ...socialOf(s) };
+  const base = { v:SAVE_VERSION, name:'Soldat', wins:0, losses:0, deck:[...DEFAULT_DECK], owned:starterOwned(), chests:[], insignes:0, gems:20, levels:{}, copies:{}, road:[], lvSys:2, ...socialOf(s) };
   if (!s || typeof s !== 'object') return base;
   // ancienne sauvegarde (collection de départ plus large) → collection remise au départ, bilan et coffres conservés
   if (s.v !== SAVE_VERSION) return { ...base, name: s.name || 'Soldat', wins: +s.wins || 0, losses: +s.losses || 0,
@@ -1049,9 +1084,11 @@ function loadSave(){
     chests: Array.isArray(s.chests) ? s.chests.filter(c => c && CHEST_TYPES[c.type]).slice(0, MAX_CHESTS) : [],
     insignes: +s.insignes || 0,
     gems: Number.isFinite(+s.gems) && s.gems !== undefined ? Math.max(0, +s.gems) : 20,
-    levels: s.levels && typeof s.levels === 'object' ? Object.fromEntries(Object.entries(s.levels).filter(([k, v]) => CARD_MAP[k] && v >= 1 && v <= 11)) : {},
+    levels: s.levels && typeof s.levels === 'object' ? Object.fromEntries(Object.entries(s.levels).filter(([k, v]) => CARD_MAP[k] && v >= 1 && v <= 11)
+      .map(([k, v]) => [k, s.lvSys === 2 ? Math.floor(v) : Math.min(11, Math.max(1, Math.floor(v) - ({ commun:1, rare:3, epique:6, legendaire:9 })[CARD_MAP[k].rarity] + 1))])) : {},
     copies: s.copies && typeof s.copies === 'object' ? Object.fromEntries(Object.entries(s.copies).filter(([k, v]) => CARD_MAP[k] && v >= 0).map(([k, v]) => [k, Math.floor(v)])) : {},
     road: Array.isArray(s.road) ? s.road.filter(n => Number.isFinite(n)) : [],
+    lvSys: 2,
   };
 }
 const isOwned = id => save.owned.includes(id);
@@ -1067,9 +1104,10 @@ const avgCost = ids => ids.length ? (ids.reduce((a,id)=>a+CARD_MAP[id].cost,0)/i
 /* ---------- Niveaux des cartes (1 → 11) ----------
    Niveau de départ selon la rareté (son bonus de PV/dégâts est déjà inclus dans les stats de base),
    puis +10 % de PV et de dégâts par niveau gagné. Amélioration = doublons (cartes des coffres) + or. */
-const LV_START = { commun:1, rare:3, epique:6, legendaire:9 }, LV_MAX = 11;
-const UP_COPIES = { commun:[2,4,6,10,15,20,30,40,50,60], rare:[2,4,6,10,15,20,25,30], epique:[2,4,6,8,10], legendaire:[1,2] };
-const UP_GOLD = { 2:10, 3:25, 4:50, 5:100, 6:200, 7:400, 8:700, 9:1000, 10:1500, 11:2500 };
+const LV_START = { commun:1, rare:1, epique:1, legendaire:1 }, LV_MAX = 11;   // toutes les cartes démarrent au niveau 1
+// doublons nécessaires pour passer au niveau 2, 3, … 11
+const UP_COPIES = { commun:[10,20,40,70,110,160,220,300,400,500], rare:[4,8,16,30,50,75,100,140,180,240], epique:[2,4,6,10,15,20,30,40,50,60], legendaire:[1,2,3,4,6,8,10,12,15,20] };
+const UP_GOLD = { 2:20, 3:50, 4:100, 5:200, 6:400, 7:700, 8:1000, 9:1500, 10:2000, 11:3000 };
 const levelOf = id => { const c = CARD_MAP[id], st = LV_START[c.rarity]; return clamp(Math.floor(+save.levels?.[id] || st), st, LV_MAX); };
 const copiesOf = id => Math.max(0, Math.floor(+save.copies?.[id] || 0));
 const levelMultFor = (id, lvl) => 1 + 0.1*(lvl - LV_START[CARD_MAP[id].rarity]);
@@ -1456,6 +1494,7 @@ function showCardDetail(id){
 const W = 18, H = 32;                 // terrain en cases
 const RIVER_TOP = 15, RIVER_BOT = 17;
 const BRIDGES = [3.5, 14.5];
+const BRIDGE_HW = 1.45;   // demi-largeur des ponts (élargis : deux troupes passent de front)
 const MATCH_TIME = 180;
 const ELIXIR_RATE = 1/2.8;            // élixir par seconde
 const TOWER_SPELL_MULT = 0.35;
@@ -1580,18 +1619,29 @@ function validTarget(a, t){
 }
 function inRange(a, t){ return dist(a,t) - t.radius - (a.isBuilding?0:a.radius) <= a.range; }
 
+// distance réelle à pied : en passant par un pont si la rivière sépare l'unité de sa cible
+function pathDist(e, t){
+  if (e.air) return dist(e, t);
+  const s = sideOf(e.y), ts = sideOf(t.y);
+  if (s === ts || s === 0 || ts === 0) return dist(e, t);
+  const ey = s > 0 ? RIVER_BOT + 0.4 : RIVER_TOP - 0.4, xy = s > 0 ? RIVER_TOP - 0.6 : RIVER_BOT + 0.6;
+  return Math.min(...BRIDGES.map(b => Math.hypot(b - e.x, ey - e.y) + Math.abs(xy - ey) + Math.hypot(t.x - b, t.y - xy)));
+}
+// file (gauche / droite) : une troupe posée à droite vise en priorité le poste de droite
+const laneOf = x => x < W/2 - 0.5 ? -1 : x > W/2 + 0.5 ? 1 : 0;
+const lanePenalty = (e, t) => (t.isTower && t.kind === 'poste' && laneOf(e.x) !== 0 && laneOf(t.x) !== laneOf(e.x)) ? 4 : 0;
 function acquireUnitTarget(e){
   let best=null, bd=Infinity;
   for (const t of B.ents){
     if (!validTarget(e,t)) continue;
+    if (e.onlyBuildings || e.onlyTowers){ const d = pathDist(e,t) - t.radius + lanePenalty(e,t); if (d<bd){bd=d;best=t;} continue; }
     const d = dist(e,t) - t.radius;
-    if (e.onlyBuildings || e.onlyTowers){ if (d<bd){bd=d;best=t;} continue; }
     if (d <= e.sight && d < bd){ bd=d; best=t; }
   }
-  if (!best){ // à défaut : bâtiment le plus proche
+  if (!best){ // à défaut : bâtiment le plus proche (à pied), en restant sur sa file
     for (const t of B.ents){
       if (!validTarget(e,t) || !t.isBuilding) continue;
-      const d = dist(e,t); if (d<bd){bd=d;best=t;}
+      const d = pathDist(e,t) + lanePenalty(e,t); if (d<bd){bd=d;best=t;}
     }
   }
   return best;
@@ -1628,7 +1678,7 @@ function hit(info, t, dmg){
   if (info.kb){
     const dx=t.x-info.x, dy=t.y-info.y, d=Math.hypot(dx,dy)||1, oy=t.y;
     t.x = clamp(t.x + dx/d*info.kb, 0.4, W-0.4); t.y = clamp(t.y + dy/d*info.kb, 0.4, H-0.4);
-    if (!t.air && sideOf(t.y)===0 && Math.min(...BRIDGES.map(b=>Math.abs(b-t.x))) > 0.9) t.y = oy; // pas dans l'eau
+    if (!t.air && sideOf(t.y)===0 && Math.min(...BRIDGES.map(b=>Math.abs(b-t.x))) > BRIDGE_HW - 0.3) t.y = oy; // pas dans l'eau
     t.stun = Math.max(t.stun, 0.3);
   }
 }
@@ -1797,14 +1847,15 @@ function moveToward(e, tx, ty, dt, spd){
   let gx = tx, gy = ty;
   if (!e.air){
     const s = sideOf(e.y), ts = sideOf(ty);
+    const lane = bx => bx + clamp(e.x - bx, -(BRIDGE_HW - 0.55), BRIDGE_HW - 0.55);   // on garde sa file sur le pont
     if (s === 0){
       const bx = BRIDGES.reduce((a,b) => Math.abs(b-e.x)<Math.abs(a-e.x)?b:a);
-      gx = bx; gy = ts<0 ? RIVER_TOP-0.6 : RIVER_BOT+0.6;
+      gx = lane(bx); gy = ts<0 ? RIVER_TOP-0.6 : RIVER_BOT+0.6;
     } else if (s !== ts){
       const bx = BRIDGES.reduce((a,b) => (Math.abs(b-e.x)+Math.abs(b-tx)) < (Math.abs(a-e.x)+Math.abs(a-tx)) ? b : a);
-      const entry = s>0 ? RIVER_BOT+0.4 : RIVER_TOP-0.4;
-      if (Math.abs(e.x-bx) < 0.3 && Math.abs(e.y-entry) < 0.8){ gx = bx; gy = s>0 ? RIVER_TOP-0.6 : RIVER_BOT+0.6; }
-      else { gx = bx; gy = entry; }
+      const entry = s>0 ? RIVER_BOT+0.4 : RIVER_TOP-0.4, ex = lane(bx);
+      if (Math.abs(e.x-ex) < 0.3 && Math.abs(e.y-entry) < 0.8){ gx = ex; gy = s>0 ? RIVER_TOP-0.6 : RIVER_BOT+0.6; }
+      else { gx = ex; gy = entry; }
     }
   }
   const dx = gx-e.x, dy = gy-e.y, len = Math.hypot(dx,dy);
@@ -1839,7 +1890,7 @@ function separate(){
     e.x = clamp(e.x, 0.4, W-0.4); e.y = clamp(e.y, 0.4, H-0.4);
     if (!e.air && sideOf(e.y)===0){ // sur un pont : reste sur le tablier
       const bx = BRIDGES.reduce((a,b) => Math.abs(b-e.x)<Math.abs(a-e.x)?b:a);
-      e.x = clamp(e.x, bx-0.85, bx+0.85);
+      e.x = clamp(e.x, bx-(BRIDGE_HW-0.3), bx+(BRIDGE_HW-0.3));
     }
   }
 }
@@ -3256,7 +3307,7 @@ function drawBackground(){
       g.beginPath(); g.roundRect(px-sz/2, py-sz/2, sz, sz*0.85, sz*0.28); g.fill(); g.stroke();
     }
   };
-  for (const bx of BRIDGES){ cobble(bx,5.2,bx,RIVER_TOP-0.7,1.3); cobble(bx,RIVER_BOT+0.7,bx,26.8,1.3); }
+  for (const bx of BRIDGES){ cobble(bx,5.2,bx,RIVER_TOP-0.7,1.6); cobble(bx,RIVER_BOT+0.7,bx,26.8,1.6); }
   cobble(9,3,3.5,6.5,0.9); cobble(9,3,14.5,6.5,0.9); cobble(9,29,3.5,25.5,0.9); cobble(9,29,14.5,25.5,0.9);
   // murets de pierre sur les bords
   const wall = (x, y0, y1) => { for (let y=y0; y<y1; y+=0.55){ const shade = R(); g.fillStyle = shade<.33?'#a9a196':shade<.66?'#b8b0a4':'#9d958a'; g.strokeStyle='#5d574e'; g.lineWidth=1.2; g.beginPath(); g.roundRect((x-0.22)*s, y*s, 0.44*s, 0.5*s, 0.12*s); g.fill(); g.stroke(); } };
@@ -3300,10 +3351,10 @@ function drawBackground(){
   for (let i=0;i<14;i++){ g.beginPath(); g.ellipse(R()*Wp, (RIVER_TOP+0.4+R()*1.2)*s, s*(0.3+R()*0.4), s*0.07, 0, 0, 7); g.fill(); }
   g.strokeStyle = 'rgba(255,255,255,.75)'; g.lineWidth = Math.max(1.5, s*0.08);
   for (const yy of [RIVER_TOP+0.05, RIVER_BOT-0.05]){ g.beginPath(); for (let x=0;x<=W;x+=0.25) g.lineTo(x*s, (yy + Math.sin(x*3)*0.05*(yy<16?1:-1))*s); g.stroke(); }
-  for (let x=0.2;x<W;x+=0.42){ if (BRIDGES.some(b => Math.abs(b-x) < 1.3)) continue; stone(x, RIVER_TOP-0.22); stone(x, RIVER_BOT+0.22); }
+  for (let x=0.2;x<W;x+=0.42){ if (BRIDGES.some(b => Math.abs(b-x) < BRIDGE_HW + 0.15)) continue; stone(x, RIVER_TOP-0.22); stone(x, RIVER_BOT+0.22); }
   // ponts en bois façon arène
   for (const bx of BRIDGES){
-    const x0=(bx-1.15)*s, y0=(RIVER_TOP-0.75)*s, bw=2.3*s, bh=(RIVER_BOT-RIVER_TOP+1.5)*s;
+    const x0=(bx-BRIDGE_HW)*s, y0=(RIVER_TOP-0.75)*s, bw=BRIDGE_HW*2*s, bh=(RIVER_BOT-RIVER_TOP+1.5)*s;
     g.fillStyle = 'rgba(0,40,70,.35)'; g.fillRect(x0+5, y0+6, bw, bh);
     for (const px of [x0+0.15*s, x0+bw-0.15*s]) for (const py of [RIVER_TOP+0.5, RIVER_BOT-0.5]){ g.strokeStyle='rgba(255,255,255,.8)'; g.lineWidth=2; g.beginPath(); g.ellipse(px, py*s+0.25*s, 0.3*s, 0.12*s, 0, 0, 7); g.stroke(); }
     for (let i=0, y=y0; y<y0+bh; i++, y+=0.34*s){ g.fillStyle = ['#c98a43','#b97a37','#d29550'][i%3]; g.fillRect(x0+0.18*s, y, bw-0.36*s, Math.min(0.34*s, y0+bh-y)); g.strokeStyle='rgba(90,52,22,.6)'; g.lineWidth=1; g.beginPath(); g.moveTo(x0+0.18*s,y); g.lineTo(x0+bw-0.18*s,y); g.stroke(); }
@@ -3364,7 +3415,7 @@ function render(){
 
   // reflets de la rivière
   c.strokeStyle = 'rgba(255,255,255,.55)'; c.lineWidth = 2;
-  for (let i=0;i<14;i++){ const x = ((i*1.37 + time*0.5) % (W+1)) - 0.5, y = RIVER_TOP + 0.35 + (i%4)*0.42; if (BRIDGES.some(b => Math.abs(b-x) < 1.2)) continue; c.beginPath(); c.moveTo(x*s, y*s); c.lineTo((x+0.5)*s, y*s); c.stroke(); }
+  for (let i=0;i<14;i++){ const x = ((i*1.37 + time*0.5) % (W+1)) - 0.5, y = RIVER_TOP + 0.35 + (i%4)*0.42; if (BRIDGES.some(b => Math.abs(b-x) < BRIDGE_HW)) continue; c.beginPath(); c.moveTo(x*s, y*s); c.lineTo((x+0.5)*s, y*s); c.stroke(); }
 
   // zone interdite
   if (B.selected !== null){
@@ -3802,7 +3853,9 @@ function rollChest(type){
     for (const k of RARITY_ORDER){ r -= T.odds[k]; if (r < 0){ rar = k; break; } }
     const pool = CARDS.filter(c => c.rarity===rar);
     const c = pool[Math.random()*pool.length|0];
-    const n = (CHEST_STACK[type] || CHEST_STACK.caisse)[rar];
+    const [q0, q1] = (CHEST_STACK[type] || CHEST_STACK.caisse)[rar], n = q0 + Math.floor(Math.random()*(q1 - q0 + 1));
+    const prev = results.find(x => x.id === c.id);                  // même carte tirée deux fois : un seul lot
+    if (prev){ prev.n += n; addCopies(c.id, n); continue; }
     if (!isOwned(c.id)){ save.owned.push(c.id); if (n > 1) addCopies(c.id, n - 1); results.push({ id:c.id, isNew:true, n }); }
     else { addCopies(c.id, n); results.push({ id:c.id, isNew:false, n }); }
   }
@@ -4178,8 +4231,8 @@ async function playChestCinematic(type, results){
       cineBurst(cx, cy, cfx, cardW*1.2, 700);
       cineSparks(cx, cy, cfx.sparks, [14, 24, 40, 70][ri], 1 + ri*0.15);
       if (ri >= 2) cineFlash(cfx, ri===3 ? .9 : .6, ri===3 ? 800 : 450);
-      info.innerHTML = `<div class="cine-name">${c.name}</div><div class="cine-rar ${RARITIES[c.rarity].txt}">${RARITIES[c.rarity].label}</div>
-        ${r.isNew ? '<div class="cine-new">NOUVELLE CARTE !</div>' : `<div class="cine-dupe">Doublon · +${r.n} carte${r.n > 1 ? 's' : ''} · ${upLabel(r.id)}</div>`}`;
+      info.innerHTML = `<div class="cine-qty">×${r.n}</div><div class="cine-name">${c.name}</div><div class="cine-rar ${RARITIES[c.rarity].txt}">${RARITIES[c.rarity].label}</div>
+        ${r.isNew ? `<div class="cine-new">NOUVELLE CARTE !</div><div class="cine-dupe">${upLabel(r.id)}</div>` : `<div class="cine-dupe">Doublons · ${upLabel(r.id)}</div>`}`;
       info.animate([{ opacity:0, transform:'translate(-50%,12px)' }, { opacity:1, transform:'translate(-50%,0)' }], { duration:350, easing:'ease-out', fill:'forwards' });
       await cineWait(320);
       await cineTap(i+1 < results.length ? 'Touche pour la carte suivante' : 'Touche pour voir le butin');
@@ -4215,7 +4268,7 @@ function showCineSummary(){
       <div class="font-ops text-3xl">Butin</div>
       <div class="text-sm text-[var(--muted)]">${nNew ? `<b class="text-green-300">${nNew} nouvelle${nNew>1?'s':''} carte${nNew>1?'s':''}</b>` : 'Aucune nouvelle carte'}${ins ? ` · <b class="text-amber-300">+${ins} <i class="ic-gold"></i></b>` : ''}</div>
       <div class="grid grid-cols-3 gap-2 mt-4">
-        ${results.map((r,i) => `<div class="relative cine-sum-card" style="animation-delay:${i*90}ms">${cardHTML(CARD_MAP[r.id],'md')}${r.isNew ? '<span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-green-400 text-black px-1.5 rounded z-10">NEW</span>' : `<span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-amber-300 text-black px-1.5 rounded z-10 whitespace-nowrap">+${r.n} 📇</span>`}</div>`).join('')}
+        ${results.map((r,i) => `<div class="relative cine-sum-card" style="animation-delay:${i*90}ms">${cardHTML(CARD_MAP[r.id],'md')}${r.isNew ? '<span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-green-400 text-black px-1.5 rounded z-10">NEW</span>' : `<span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-amber-300 text-black px-1.5 rounded z-10 whitespace-nowrap">×${r.n}</span>`}</div>`).join('')}
       </div>
       <div class="flex gap-2 mt-5">
         <button class="cine-close btn-ghost flex-1 py-2.5 font-bold">Fermer</button>
