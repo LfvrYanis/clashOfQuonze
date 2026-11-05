@@ -687,6 +687,25 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
   .news-t{font-family:'Lilita One',sans-serif;font-size:17px;line-height:1.1;color:#fff;text-shadow:0 2px 0 #06122e;}
   .news-d{font-size:12px;font-weight:800;line-height:1.3;color:#e3eeff;}
   .news-d b{color:#ffd84a;}
+
+  /* =================== NOUVEAUTÉS : encart Trystan + liste compacte =================== */
+  #modalBox.news-box{display:flex;flex-direction:column;max-height:calc(100dvh - 40px)!important;}
+  #modalBox.news-box > *{flex-shrink:0;}
+  .news-list{flex:1 1 auto!important;min-height:70px;max-height:none;padding:2px 2px 4px;}
+  @media (max-height:700px){ .nw-text{font-size:10.5px;line-height:1.3;} .nw-title{font-size:16px;} .news-sub{font-size:15px;margin:2px 0 6px;} #modalBox.news-box{padding-top:30px!important;} #newsGo{padding-top:9px;padding-bottom:9px;font-size:20px;} }
+  .news-item{padding:6px 8px!important;gap:8px!important;}
+  .news-ic{width:36px!important;height:36px!important;font-size:21px!important;border-radius:10px!important;}
+  .news-t{font-size:15px!important;}.news-d{font-size:11px!important;}
+  .news-wanted{margin:0 0 9px;border-radius:14px;overflow:hidden;border:3px solid #06122e;box-shadow:0 4px 0 #06122e,0 0 18px rgba(239,68,68,.35);animation:newsItem .4s ease-out both;}
+  .nw-tape{height:12px;background:repeating-linear-gradient(-45deg,#facc15 0 12px,#111827 12px 24px);}
+  .nw-body{position:relative;padding:8px 10px 9px;background:radial-gradient(ellipse at 50% 0%,rgba(59,130,246,.35),transparent 70%),linear-gradient(180deg,#1e293b,#0f172a);}
+  .nw-title{font-family:'Lilita One',sans-serif;font-size:18px;text-align:center;color:#fff;letter-spacing:.03em;text-shadow:0 2px 0 #000,0 0 10px rgba(239,68,68,.6);}
+  .nw-text{font-size:11.5px;font-weight:800;line-height:1.35;color:#dbe7ff;text-align:center;margin-top:3px;}
+  .nw-text b{color:#facc15;}
+  .nw-siren{position:absolute;top:6px;left:8px;right:8px;display:flex;justify-content:space-between;pointer-events:none;}
+  .nw-siren i{width:14px;height:14px;border-radius:50%;background:#ef4444;box-shadow:0 0 12px 4px rgba(239,68,68,.8);animation:siren .5s steps(1) infinite;}
+  .nw-siren i:last-child{background:#3b82f6;box-shadow:0 0 12px 4px rgba(59,130,246,.8);animation-delay:.25s;}
+  @keyframes siren{50%{opacity:.15}}
 </style>
 </head>
 <body>
@@ -974,8 +993,8 @@ const RAW_CARDS = [
   { id:'moncherie', name:'Monchérie', icon:'🍾', rarity:'commun', cost:3, ability:'Lance des chocolats de loin (dégâts de zone) ; chaque impact sème des petits chocolats',
     hp:600, dmg:125, splash:1.0, lob:true, choco:true, hitSpeed:1.5, speed:1.0, range:5, radius:0.52,
     height:'1m86', weight:'80 kg', desc:"Grand musclé MMA, fan de Mon Chéri et d'alcool." },
-  { id:'trystan', name:'Trystan', icon:'💨', rarity:'commun', cost:2, ability:'Nuage de vape : les ennemis dedans ratent 50 % de leurs attaques',
-    hp:380, dmg:50, hitSpeed:1.0, speed:1.0, range:2.5, smoke:{ radius:2.3 },
+  { id:'trystan', name:'Trystan', icon:'💨', rarity:'commun', cost:2, ability:'Nuage de vape : les ennemis dedans ratent 50 % de leurs attaques… mais 35 % de chances de finir en garde à vue au déploiement',
+    hp:380, dmg:50, hitSpeed:1.0, speed:1.0, range:2.5, smoke:{ radius:2.3 }, arrest:0.35,
     height:'1m75', weight:'75 kg', desc:"Roi de la vape. Son nuage perturbe le ciblage ennemi." },
   { id:'maxime', name:'Maxime', icon:'😤', rarity:'commun', cost:3, ability:'Charge : vitesse x2 puis premier coup x2',
     hp:580, dmg:125, hitSpeed:1.2, speed:1.2, range:0.8, charge:{ dist:2.5 },
@@ -995,8 +1014,8 @@ const RAW_CARDS = [
   { id:'lea', name:'Léa', icon:'🥋', rarity:'commun', cost:3, ability:'Gros dégâts au corps-à-corps',
     hp:500, dmg:185, hitSpeed:1.3, speed:1.0, range:0.7, radius:0.38,
     height:'1m58', weight:'55 kg', desc:"Petit bulldozer, ceinture noire de judo." },
-  { id:'victor', name:'Victor', icon:'🔧', rarity:'commun', cost:3, ability:'Répare les bâtiments et tours alliés proches (60 PV/s)',
-    hp:520, dmg:55, hitSpeed:1.2, speed:1.0, range:0.8, heal:{ amount:60, radius:3, every:1, buildings:true },
+  { id:'victor', name:'Victor', icon:'🔧', rarity:'commun', cost:3, ability:"Se pose uniquement sur un bâtiment allié et le répare de 1,5× ses PV. En vie, il accélère l'élixir de Nico de 1,5 s (ne répare pas sa caisse)",
+    hp:520, dmg:55, hitSpeed:1.2, speed:1.0, range:0.8, onBuilding:{ healMult:1.5 }, nicoBoost:1.5,
     height:'1m70', weight:'70 kg', desc:"Mécano au brassard rouge." },
   { id:'chris', name:'Chris', icon:'🖐️', rarity:'commun', cost:4, ability:'Dégâts lourds',
     hp:820, dmg:260, hitSpeed:1.8, speed:0.9, range:0.9, radius:0.5,
@@ -1117,7 +1136,7 @@ function skipChest(i){
 // quantité de cartes par tirage [min, max] selon le coffre et la rareté, et or gagné par coffre
 const CHEST_STACK = { caisse:{ commun:[4,8], rare:[2,3], epique:[1,1], legendaire:[1,1] }, renforce:{ commun:[8,14], rare:[3,5], epique:[1,2], legendaire:[1,1] }, elite:{ commun:[15,25], rare:[6,10], epique:[2,4], legendaire:[1,2] } };
 const CHEST_GOLD = { caisse:[30,60], renforce:[90,160], elite:[250,400] };
-const UNLOCK_COST = { commun:40, rare:120, epique:300, legendaire:600 };
+const UNLOCK_COST = { commun:300, rare:600, epique:800, legendaire:1500 };   // prix d'achat (déblocage) des cartes en pièces d'or
 const RAR_BAR = { commun:'#cbd5e1', rare:'#60a5fa', epique:'#c084fc', legendaire:'#facc15' };
 
 /* =====================================================================
@@ -1641,9 +1660,12 @@ function startBattle(opts={}){
 
 /* ---------- Déploiement ---------- */
 const DROP_CLEAR = 1.7;   // distance minimale de largage autour d'une tour ennemie
+// Victor : bâtiment allié (tour ou bâtiment posé, sauf la caisse de Nico) sur lequel on le dépose
+const buildingAt = (team, x, y) => B.ents.find(o => o.isBuilding && o.team === team && o.hp > 0 && !o.card?.generator && Math.hypot(o.x - x, o.y - y) <= o.radius + 0.9);
 function canPlace(team, card, x, y){
   if (x<0.5 || x>W-0.5 || y<0.5 || y>H-0.5) return false;
   if (card.type === 'spell') return true;
+  if (card.onBuilding) return !!buildingAt(team, x, y);
   const onTower = B.ents.some(t => t.isTower && dist(t,{x,y}) < t.radius + 0.3);
   if (card.anywhere){ // largage : toute la carte, mais à quelques mètres des tours ennemies
     const foeT = team==='p' ? 'e' : 'p';
@@ -1666,6 +1688,13 @@ function deploy(team, cardId, x, y){
     return;
   }
   if (c.anywhere) B.fx.push({ kind:'drop', x, y, t:0, dur:1.1 });
+  if (c.onBuilding){ // Victor répare le bâtiment sur lequel il est déposé
+    const bld = buildingAt(team, x, y);
+    if (bld){ const gain = Math.min(bld.maxHp - bld.hp, c.hp*c.onBuilding.healMult); bld.hp += gain;
+      B.fx.push({ kind:'heal', x:bld.x, y:bld.y, r:bld.radius + 1.2, t:0, dur:0.8, color:'#facc15' });
+      B.fx.push({ kind:'text', x:bld.x, y:bld.y - 1.9, text:`🔧 +${Math.round(gain)} PV`, color:'#fde68a', t:0, dur:1.4 });
+      burst(bld.x, bld.y - 0.3, '#fde68a', 14, 3, 0.1, 0.6); }
+  }
   const n = c.count || 1;
   for (let i=0;i<n;i++){
     const a = (i/n)*Math.PI*2 + 0.4, off = n>1 ? 0.7 : 0;
@@ -1681,14 +1710,14 @@ function deploy(team, cardId, x, y){
       deploy: c.anywhere ? 1.1 : 1, deployTotal: c.anywhere ? 1.1 : 1, landed:false, target:null, flash:0, age:0,
       bubbles:c.bubbles||0, shield:0, stun:0, slow:0, blind:0,
       moved:0, charged:false, chargeT:0, sprint:1, transformed:false,
-      lazy: c.lazy ? Math.random() < c.lazy : false, boostCd:2, boostT:0, dribbleCd:0,
+      lazy: c.lazy ? Math.random() < c.lazy : false, arrest: c.arrest ? Math.random() < c.arrest : false, boostCd:2, boostT:0, dribbleCd:0,
     });
   }
 }
 
 /* ---------- Ciblage & combat ---------- */
 function validTarget(a, t){
-  if (!t || t.team===a.team || t.hp<=0 || t.extracting || t.leaving || t.silent) return false;
+  if (!t || t.team===a.team || t.hp<=0 || t.extracting || t.leaving || t.silent || t.arrest) return false;
   if (a.onlyTowers && !t.isTower) return false;
   if (a.onlyBuildings && !t.isBuilding) return false;
   if (t.air && !a.hitsAir) return false;
@@ -1804,6 +1833,56 @@ function effSpeed(e){
 }
 
 /* ---------- Pouvoirs spéciaux ---------- */
+// Trystan : la voiture de police débarque en drift, l'embarque, et repart
+function startArrest(u){
+  const fromLeft = u.x >= W/2 ? false : true, dir = fromLeft ? 1 : -1;
+  B.fx.push({ kind:'police', unit:u, stage:0, x:fromLeft ? -3 : W + 3, y:clamp(u.y + 0.9, 1.2, H - 0.8), dir, rot:0, tx:u.x - dir*2.2, t:0, dur:30, st:0, skids:[], smokeT:0 });
+  B.fx.push({ kind:'text', x:u.x, y:u.y - 1.7, text:'🚨 POLICE !', color:'#93c5fd', t:0, dur:1.6 });
+}
+function updatePolice(f, dt){
+  const u = f.unit; f.st += dt; f.smokeT -= dt;
+  const smoke = (n) => { if (f.smokeT <= 0){ f.smokeT = 0.06; burst(f.x - f.dir*1.5, f.y + 0.1, '#d1d5db', n, 1.8, 0.16, 0.6); } };
+  if (f.stage === 0){                       // arrivée + gros drift
+    const d = f.tx - f.x, ad = Math.abs(d), v = Math.max(2.2, Math.min(11, ad*2.6));
+    if (ad < 2.6){ f.rot += (f.dir*0.55 - f.rot)*Math.min(1, dt*9); smoke(3); if (f.skids.length < 40) f.skids.push([+f.x.toFixed(2), +f.y.toFixed(2)]); }
+    f.x += Math.sign(d)*Math.min(ad, v*dt);
+    if (ad < 0.05){ f.stage = 1; f.st = 0; }
+  } else if (f.stage === 1){                // arrêt, gyrophare, Trystan monte
+    f.rot *= Math.max(0, 1 - dt*6);
+    if (f.st > 0.25 && !f.said){ f.said = true; B.fx.push({ kind:'speech', unit:u, text:"Mais j'ai rien fait !", t:0, dur:1.5 }); }
+    if (f.st > 0.9 && u && !u.silent){ u.x += (f.x - u.x)*Math.min(1, dt*5); u.y += (f.y - 0.2 - u.y)*Math.min(1, dt*5); }
+    if (f.st > 1.55 && u && !u.silent){ u.silent = true; u.hp = 0; B.fx.push({ kind:'text', x:f.x, y:f.y - 2.2, text:'🚔 GARDE À VUE !', color:'#bfdbfe', t:0, dur:1.8 }); }
+    if (f.st > 1.9){ f.stage = 2; f.st = 0; }
+  } else {                                  // départ en trombe
+    f.x += f.dir*Math.min(13, 2 + f.st*9)*dt; f.rot += (-f.dir*0.08 - f.rot)*Math.min(1, dt*5); smoke(2);
+    if (f.x < -4 || f.x > W + 4) f.t = f.dur;
+  }
+}
+function drawPoliceCar(c, px, py, s0, dir, rot, time, siren){
+  const s = s0*1.35, L = 2.5*s, Hh = 0.95*s;
+  c.save(); c.translate(px, py);
+  c.fillStyle = 'rgba(0,0,0,.28)'; c.beginPath(); c.ellipse(0, s*0.05, L*0.55, s*0.24, 0, 0, 7); c.fill();
+  c.rotate(rot); c.save(); c.scale(dir, 1);
+  c.lineJoin = 'round'; c.lineWidth = Math.max(1.5, s*0.06); c.strokeStyle = '#0f172a';
+  c.fillStyle = '#f8fafc'; c.beginPath(); c.moveTo(-L*0.22, -Hh*0.55); c.lineTo(-L*0.1, -Hh); c.lineTo(L*0.2, -Hh); c.lineTo(L*0.33, -Hh*0.55); c.closePath(); c.fill(); c.stroke();
+  c.fillStyle = '#7dd3fc'; c.beginPath(); c.moveTo(-L*0.17, -Hh*0.58); c.lineTo(-L*0.08, -Hh*0.92); c.lineTo(L*0.03, -Hh*0.92); c.lineTo(L*0.03, -Hh*0.58); c.closePath(); c.fill();
+  c.beginPath(); c.moveTo(L*0.07, -Hh*0.58); c.lineTo(L*0.07, -Hh*0.92); c.lineTo(L*0.18, -Hh*0.92); c.lineTo(L*0.28, -Hh*0.58); c.closePath(); c.fill();
+  c.fillStyle = '#f8fafc'; c.beginPath(); c.roundRect(-L/2, -Hh*0.6, L, Hh*0.5, s*0.14); c.fill(); c.stroke();
+  c.fillStyle = '#1d4ed8'; c.fillRect(-L/2 + 2, -Hh*0.38, L - 4, Hh*0.11);
+  c.fillStyle = '#fde047'; c.beginPath(); c.arc(L/2 - s*0.08, -Hh*0.48, s*0.07, 0, 7); c.fill();
+  c.fillStyle = '#ef4444'; c.fillRect(-L/2 + 1, -Hh*0.5, s*0.08, s*0.12);
+  for (const wx of [-L*0.3, L*0.3]){ c.fillStyle = '#111827'; c.beginPath(); c.arc(wx, -Hh*0.1, s*0.22, 0, 7); c.fill();
+    c.fillStyle = '#9ca3af'; c.beginPath(); c.arc(wx, -Hh*0.1, s*0.1, 0, 7); c.fill(); }
+  const on = Math.floor(time*8) % 2 === 0;
+  c.fillStyle = '#334155'; c.fillRect(-L*0.06, -Hh - s*0.1, L*0.2, s*0.1);
+  c.fillStyle = siren ? (on ? '#ef4444' : '#7f1d1d') : '#7f1d1d'; c.fillRect(-L*0.06, -Hh - s*0.14, L*0.1, s*0.08);
+  c.fillStyle = siren ? (on ? '#1e3a8a' : '#3b82f6') : '#1e3a8a'; c.fillRect(L*0.04, -Hh - s*0.14, L*0.1, s*0.08);
+  c.restore();
+  if (siren){ const g = c.createRadialGradient(0, -Hh - s*0.1, 0, 0, -Hh - s*0.1, s*1.2); g.addColorStop(0, on ? 'rgba(239,68,68,.45)' : 'rgba(59,130,246,.45)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.beginPath(); c.arc(0, -Hh - s*0.1, s*1.2, 0, 7); c.fill(); }
+  c.font = `900 ${Math.max(8, s*0.24)}px Nunito, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#1e3a8a';
+  c.fillText('POLICE', 0, -Hh*0.5 + s*0.02);
+  c.restore();
+}
 // Bicoise : un mur surgit devant lui, il s'écrase dessus, perd quelques PV et saigne
 function stumble(e, S){
   const dx = e._dx ?? 0, dy = e._dy ?? (e.team === 'p' ? -1 : 1);
@@ -2014,6 +2093,10 @@ function aiThink(dt){
   }
 }
 function aiPlay(o, x, y){
+  if (o.c.onBuilding){ // l'IA pose Victor sur son bâtiment le plus abîmé
+    const b = B.ents.filter(t => t.isBuilding && t.team === 'e' && t.hp > 0 && !t.card?.generator && t.hp < t.maxHp).sort((a, z) => a.hp/a.maxHp - z.hp/z.maxHp)[0];
+    if (!b) return; x = b.x; y = b.y + b.radius*0.5;
+  }
   if (!canPlace('e', o.c, x, y)) { y = clamp(y,1,13); x = clamp(x,1,W-1); if (!canPlace('e',o.c,x,y)) return; }
   B.ai.elixir -= o.c.cost;
   deploy('e', o.id, x, y);
@@ -2024,11 +2107,17 @@ function aiPlay(o, x, y){
 function gainElixir(team, n){
   if (team==='p') B.elixir = Math.min(10, B.elixir+n); else B.ai.elixir = Math.min(10, B.ai.elixir+n);
 }
+// Élixir : x2 dans la dernière minute ; en prolongation il accélère en continu (x2 → x6)
+const elixirMult = () => B.overtime ? Math.min(6, 2 + B.otT/30) : B.time <= 60 ? 2 : 1;
+function startOvertime(){
+  B.overtime = true; B.otT = 0;
+  showAlert('PROLONGATION !<div class="alert-sub">MORT SUBITE · 1re TOUR DÉTRUITE</div>', 'msg');
+}
 function update(dt){
   const prevT = B.time;
-  B.time -= dt;
-  timeAlerts(prevT, B.time);
-  const mult = B.time <= 60 ? 2 : 1;
+  if (B.overtime) B.otT += dt;            // prolongation : pas de limite de temps
+  else { B.time -= dt; timeAlerts(prevT, B.time); }
+  const mult = elixirMult();
   gainElixir('p', ELIXIR_RATE*mult*dt);
   gainElixir('e', ELIXIR_RATE*mult*dt);
   if (!B.net) aiThink(dt);
@@ -2043,7 +2132,7 @@ function update(dt){
     if (k.aura) for (const o of B.ents) if (o.team===src.team && o!==src && !o.isTower && dist(o,src)<=k.aura.radius){
       o.haste = Math.max(o.haste, k.aura.haste||1); o.dmgBuff = Math.max(o.dmgBuff, k.aura.dmg||1); o.spdBuff = Math.max(o.spdBuff, k.aura.speed||1);
     }
-    if (k.smoke) for (const o of B.ents) if (o.team!==src.team && dist(o,src) <= k.smoke.radius + o.radius) o.blind = Math.max(o.blind, 0.2);
+    if (k.smoke && !src.arrest) for (const o of B.ents) if (o.team!==src.team && dist(o,src) <= k.smoke.radius + o.radius) o.blind = Math.max(o.blind, 0.2);
   }
   for (const f of B.fx) if (f.kind==='puddle')
     for (const o of B.ents) if (o.team!==f.team && !o.isBuilding && !o.air && Math.hypot(o.x-f.x,o.y-f.y) <= f.r) o.slow = Math.max(o.slow, 0.2);
@@ -2056,6 +2145,7 @@ function update(dt){
     const c = e.card || {};
     e.age = (e.age||0) + dt;
     if (e.extracting){ e.walking = false; continue; }
+    if (e.arrest){ if (!e.arrestFx){ e.arrestFx = true; startArrest(e); } e.walking = false; continue; }   // Trystan attend la police
     if (e.lazy){ // Paul a la flemme : demi-tour et il quitte le terrain
       e.lazyT = (e.lazyT || 0) + dt;
       if (!e.leaving){ e.leaving = true; e.target = null; e.walking = false; B.fx.push({ kind:'speech', unit:e, text:"J'm'en branle, j'me barre...", t:0, dur:2.5 }); }
@@ -2111,11 +2201,13 @@ function update(dt){
     }
     // Générateur d'élixir (Nico)
     if (c.generator){
-      e.genCd -= dt;
+      // Victor en vie dans le camp : la caisse produit 1,5 s plus vite
+      const vb = B.ents.find(o => o.team === e.team && o.card?.nicoBoost && o.hp > 0 && !o.silent && (o.deploy || 0) <= 0);
+      e.genCd -= dt * (vb ? c.generator.every/(c.generator.every - vb.card.nicoBoost) : 1);
       if (e.genCd <= 0){
         e.genCd = c.generator.every;
         gainElixir(e.team, c.generator.amount);
-        B.fx.push({ kind:'text', x:e.x, y:e.y-1, text:'+'+c.generator.amount+' 💧', color:'#f0abfc', t:0, dur:1 });
+        B.fx.push({ kind:'text', x:e.x, y:e.y-1, text:'+'+c.generator.amount+' 💧' + (vb ? ' ⚡' : ''), color:'#f0abfc', t:0, dur:1 });
       }
     }
 
@@ -2169,6 +2261,7 @@ function update(dt){
   for (const f of B.fx){
     f.t += dt;
     if (f.kind==='evac') updateEvac(f, dt);
+    if (f.kind==='police') updatePolice(f, dt);
     if (f.kind==='strike' && !f.hit && f.t >= f.delay){
       f.hit = true;
       splashAt({ team:f.team, x:f.x, y:f.y, hitsAir:true }, f.x, f.y, f.r, f.dmg, TOWER_SPELL_MULT);
@@ -2194,12 +2287,12 @@ function update(dt){
         showBanner(e.team==='e' ? '👑 Poste ennemi détruit !' : '💥 Poste perdu !');
       }
       updateCrowns();
-      if (e.kind==='qg') return endBattle();
+      if (e.kind==='qg' || B.overtime) return endBattle();   // en prolongation : la première tour détruite décide
     }
   }
   B.ents = B.ents.filter(e => !e.dead);
 
-  if (B.time <= 0){ B.time = 0; endBattle(); }
+  if (!B.overtime && B.time <= 0){ B.time = 0; if (B.crownsP === B.crownsE) startOvertime(); else endBattle(); }
 }
 
 function loop(now){
@@ -2323,10 +2416,12 @@ let lastTimerTxt = '';
 function updateHUD(){
   $('#elixirFill').style.width = (B.elixir*10)+'%';
   $('#elixirNum').textContent = Math.floor(B.elixir);
-  const s = Math.ceil(B.time), txt = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+  const ot = B.overtime, s = ot ? Math.floor(B.otT || 0) : Math.ceil(B.time), txt = (ot ? '+' : '') + `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
   if (txt !== lastTimerTxt){ $('#timer').textContent = txt; lastTimerTxt = txt; }
-  $('#timer').style.color = B.time<=30 ? '#f87171' : '';
-  $('#doubleTag').classList.toggle('hidden', B.time > 60);
+  $('#timer').style.color = ot ? '#ffd84a' : B.time<=30 ? '#f87171' : '';
+  const tag = ot ? `MORT SUBITE · ÉLIXIR x${elixirMult().toFixed(1)}` : 'ÉLIXIR x2';
+  if ($('#doubleTag').textContent !== tag) $('#doubleTag').textContent = tag;
+  $('#doubleTag').classList.toggle('hidden', !ot && B.time > 60);
   document.querySelectorAll('#hand .card').forEach(el => {
     const c = CARD_MAP[el.dataset.id];
     const ratio = Math.max(0, 1 - B.elixir / c.cost);
@@ -3348,7 +3443,7 @@ function burst(x, y, color, n, speed=3, size=0.12, life=0.5, grav=0){
 function updateParticles(dt){
   if (B.shake > 0) B.shake -= dt;
   for (const e of B.ents){
-    if (e.card?.smoke && e.deploy<=0 && Math.random() < dt*7)
+    if (e.card?.smoke && e.deploy<=0 && !e.arrest && Math.random() < dt*7)
       B.parts.push({ x:e.x+(Math.random()-0.5)*0.5, y:e.y-0.5, vx:(Math.random()-0.5)*0.7, vy:-0.9, life:1.3, max:1.3, color:'#eef0f5', size:0.22, grow:0.7, puff:true, grav:0 });
     if (e.transformed && Math.random() < dt*5)
       B.parts.push({ x:e.x+(Math.random()-0.5)*1.4, y:e.y+0.4, vx:0, vy:-1.6, life:0.7, max:0.7, color:'#4ade80', size:0.07, grav:0 });
@@ -3522,6 +3617,11 @@ function render(){
   }
 
   // couche sol : flaques, fumée
+  for (const f of B.fx) if (f.kind==='police' && f.skids?.length){   // traces de pneus du drift
+    c.save(); c.strokeStyle = 'rgba(30,20,10,.38)'; c.lineWidth = Math.max(2, s*0.1); c.lineCap = 'round';
+    for (const off of [-0.25, 0.22]){ c.beginPath(); f.skids.forEach(([x, y], i) => i ? c.lineTo(x*s, (y + off)*s) : c.moveTo(x*s, (y + off)*s)); c.stroke(); }
+    c.restore();
+  }
   for (const f of B.fx) if (f.kind==='blood'){        // trace de sang de Bicoise
     const a = f.t > f.dur - 1.5 ? Math.max(0, (f.dur - f.t)/1.5) : Math.min(1, f.t*5), R0 = rng(f.seed || 1);
     c.save(); c.globalAlpha = a*0.9; c.fillStyle = '#7f0b0b';
@@ -3555,7 +3655,7 @@ function render(){
     for (let i=0;i<6;i++){ const ph = (time*1.2 + i*0.37) % 1, bx = f.x + Math.cos(i*2.1)*f.r*0.5, by = f.y + Math.sin(i*2.1)*f.r*0.35; c.beginPath(); c.arc(bx*s, by*s, s*0.1*ph, 0, 7); c.fill(); }
     c.globalAlpha = 1;
   }
-  for (const e of B.ents) if (e.card?.smoke && e.deploy<=0) drawSmoke(e, false);
+  for (const e of B.ents) if (e.card?.smoke && e.deploy<=0 && !e.arrest) drawSmoke(e, false);
 
   // entités
   const ground = B.ents.filter(e=>!e.air).sort((a,b)=>a.y-b.y);
@@ -3582,7 +3682,7 @@ function render(){
   }
   for (const e of B.ents) if (e.air) drawUnit(e);
   // voile de fumée par-dessus les unités
-  for (const e of B.ents) if (e.card?.smoke && e.deploy<=0) drawSmoke(e, true);
+  for (const e of B.ents) if (e.card?.smoke && e.deploy<=0 && !e.arrest) drawSmoke(e, true);
 
   // effets
   for (const f of B.fx){
@@ -3632,6 +3732,7 @@ function render(){
       c.fillStyle = '#fff'; c.fillRect(-5, th/2 - 3, 12, 4);
       c.fillStyle = '#16131f'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(f.text, 0, 1);
       c.restore(); c.globalAlpha = 1;
+    } else if (f.kind==='police'){ drawPoliceCar(c, f.x*s, f.y*s, s, f.dir, f.rot || 0, time, f.stage === 1 || f.stage === 0);
     } else if (f.kind==='evac'){ drawEvac(f);
 
     } else if (f.kind==='impact'){
@@ -4959,16 +5060,16 @@ function netSendSnap(){
   for (const id of N.cacheE.keys()) if (!B.ents.some(e => e.id === id)) N.cacheE.delete(id);
   for (const f of B.fx){
     if (!f._n) f._n = ++N.fxSeq;
-    const d = snapDiff(f, { uid:f.unit?.id, prid:f.prey?.id, net:f.net?.map(n => [n.card.id, n.team, n.isBuilding ? 1 : 0]), bits:f.bits }, N.cacheF, f._n);
+    const d = snapDiff(f, { uid:f.unit?.id, prid:f.prey?.id, net:f.net?.map(n => [n.card.id, n.team, n.isBuilding ? 1 : 0]), bits:f.bits, skids:f.skids ? f.skids.slice() : undefined }, N.cacheF, f._n);
     if (d) F.push([f._n, d]);
   }
   for (const id of N.cacheF.keys()) if (!B.fx.some(f => f._n === id)) N.cacheF.delete(id);
   const P = B.proj.map(p => [p.x, p.y, p.sx ?? p.x, p.sy ?? p.y, p.tx ?? p.x, p.ty ?? p.y, (p.lob?1:0)|(p.choco?2:0)|(p.big?4:0)|(p.pierce?8:0), p.icon || 0, p.vx || 0, p.vy || 0, p.speed || 10].map(v => typeof v === 'number' ? snapNum(v) : v));
-  netSendGame({ t:'s', tm:snapNum(B.time), cp:B.crownsP, ce:B.crownsE, el:snapNum(B.ai.elixir), sh:snapNum(B.shake), ack:N.ack,
+  netSendGame({ t:'s', tm:snapNum(B.time), ot: B.overtime ? snapNum(B.otT) : -1, cp:B.crownsP, ce:B.crownsE, el:snapNum(B.ai.elixir), sh:snapNum(B.shake), ack:N.ack,
     E, EI:B.ents.map(e => e.id), F, FI:B.fx.map(f => f._n), P, X:N.bursts });
   N.bursts = [];
 }
-const MIRX = new Set(['x','x1','x2','hx','sx','tx','ex']), MIRY = new Set(['y','y1','y2','sy','ty']), MNEG = new Set(['dir','vx','vy','atkDx','atkDy','tripDir']);
+const MIRX = new Set(['x','x1','x2','hx','sx','tx','ex']), MIRY = new Set(['y','y1','y2','sy','ty']), MNEG = new Set(['dir','vx','vy','atkDx','atkDy','tripDir','rot']);
 const swapTeam = t => t === 'p' ? 'e' : t === 'e' ? 'p' : t;
 function mirrorVal(k, v, isText){
   if (k === 'team') return swapTeam(v);
@@ -5003,6 +5104,7 @@ function netApplySnap(m){
       if (k === 'prid'){ f.prey = map.get(v) || f.prey; continue; }
       if (k === 'net'){ f.net = v.map(([cid, team, b]) => ({ card:CARD_MAP[cid], team:swapTeam(team), isBuilding:!!b })).filter(x => x.card); continue; }
       if (k === 'bits'){ f.bits = v.map(b => ({ ...b, vx:-b.vx, vy:-b.vy })); continue; }
+      if (k === 'skids'){ f.skids = v.map(([x, y]) => [W - x, H - y]); continue; }
       f[k] = mirrorVal(k, v, isText);
     }
     if (f.uid === undefined && d.uid === undefined && f.kind === 'speech' && !f.unit) f.unit = { x:W/2, y:H/2 };
@@ -5012,13 +5114,14 @@ function netApplySnap(m){
   B.proj = (m.P || []).map(a => ({ x:W-a[0], y:H-a[1], sx:W-a[2], sy:H-a[3], tx:W-a[4], ty:H-a[5], lob:!!(a[6]&1), choco:!!(a[6]&2), big:!!(a[6]&4), pierce:!!(a[6]&8), icon:a[7] || '', vx:-a[8], vy:-a[9], speed:a[10] }));
   for (const b of m.X || []) burst(W - b[0], H - b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
   B.time = m.tm;
+  if (m.ot >= 0){ if (!B.overtime) startOvertime(); B.otT = m.ot; }
   if (B.crownsP !== m.ce || B.crownsE !== m.cp){ B.crownsP = m.ce; B.crownsE = m.cp; updateCrowns(); }
   B.net.pend = B.net.pend.filter(p => p.seq > (m.ack || 0));
   B.elixir = Math.max(0, m.el - B.net.pend.reduce((a, p) => a + p.cost, 0));
   B.shake = Math.max(B.shake, m.sh || 0);
 }
 function guestStep(dt){
-  B.time = Math.max(0, B.time - dt);
+  if (B.overtime) B.otT += dt; else B.time = Math.max(0, B.time - dt);
   if (B.time < B.alertT){ timeAlerts(B.alertT, B.time); B.alertT = B.time; }
   const k = Math.min(1, dt*16);
   for (const e of B.ents){
@@ -5562,14 +5665,20 @@ function cloudRestart(){ if (!CLOUD.started) return; for (const D of CLOUD.drive
    Pour une prochaine mise à jour : changer NEWS.id et le contenu, elle se réaffiche une fois.
    ===================================================================== */
 const NEWS = {
-  id: 'maj-2026-11-voie-coffres',
+  id: 'maj-2026-11-trystan-prolongations',
   title: 'NOUVEAUTÉS',
-  subtitle: 'Voie des trophées & coffres',
+  subtitle: 'Garde à vue, prolongations & coffres',
+  special: {
+    title: 'TRYSTAN EN GARDE À VUE',
+    text: "Avis à la population : Trystan est désormais <b>sous surveillance active</b>. À chaque déploiement, il a <b>35 % de chances</b> de se faire interpeller : la voiture de police débarque <b>en plein drift</b>, l'embarque… et direction la <b>garde à vue</b>. Même son nuage de vape n'a pas suffi à brouiller les pistes.",
+  },
   items: [
-    ['🏆', 'Voie des trophées', 'Monte en trophées et récupère <b>or</b>, <b>gemmes</b> et <b>coffres</b> à chaque palier. Touche 🎁 à côté de ta jauge !'],
-    ['⏱️', 'Coffres à déverrouiller', 'Commun <b>15 min</b> · Rare <b>45 min</b> · Épique <b>2 h</b>. Un coffre à la fois, ou ouverture immédiate avec des gemmes.'],
-    ['📇', 'Lots de doublons', 'Les coffres donnent des cartes en lots (<b>×3</b>, <b>×10</b>…). Doublons + or = cartes améliorées jusqu\'au <b>niveau 11</b>.'],
-    ['💎', 'Boutique à gemmes', 'Achète des coffres prêts à ouvrir, sans attente.'],
+    ['🏆', 'Voie des trophées', 'Or, gemmes et coffres à chaque palier : touche 🎁 à côté de ta jauge de trophées.'],
+    ['⏳', 'Prolongations', 'Égalité à la fin du chrono ? <b>Mort subite sans limite de temps</b> : l\'élixir accélère de plus en plus, la <b>première tour détruite</b> gagne.'],
+    ['⏱️', 'Coffres', 'Commun <b>15 min</b> · Rare <b>45 min</b> · Épique <b>2 h</b>. Un match amical gagné rapporte aussi un coffre.'],
+    ['🪙', 'Prix des cartes', 'Commun <b>300</b> · Rare <b>600</b> · Épique <b>800</b> · Légendaire <b>1500</b> pièces d\'or.'],
+    ['🔧', 'Victor, nouveau rôle', 'Se pose <b>uniquement sur un bâtiment</b> et le répare de <b>1,5× ses PV</b>. En vie, il accélère l\'élixir de Nico de <b>1,5 s</b> (il ne répare plus sa caisse).'],
+    ['⚖️', 'Équilibrage', '<b>Pneumothorax</b> et <b>Benjamin</b> affaiblis. <b>Bicoise</b> trébuche : un mur surgit, il tombe, perd des PV et laisse une trace de sang.'],
   ],
 };
 const newsKey = () => 'coq_news_' + (AUTH?.user?.id || save.pid);
@@ -5580,7 +5689,9 @@ function showNews(force){
   modalLocked = true;
   openModal(`<div class="news-ribbon"><span>${NEWS.title}</span></div>
     <div class="news-sub">✨ ${NEWS.subtitle} ✨</div>
-    <div class="news-list">${NEWS.items.map(([ic, t, d], i) => `<div class="news-item" style="animation-delay:${120 + i*110}ms"><div class="news-ic">${ic}</div><div class="min-w-0"><div class="news-t">${t}</div><div class="news-d">${d}</div></div></div>`).join('')}</div>
+    ${NEWS.special ? `<div class="news-wanted"><div class="nw-tape"></div><div class="nw-body"><div class="nw-siren"><i></i><i></i></div>
+      <div class="nw-title">🚨 ${NEWS.special.title} 🚔</div><div class="nw-text">${NEWS.special.text}</div></div><div class="nw-tape"></div></div>` : ''}
+    <div class="news-list scroll-y">${NEWS.items.map(([ic, t, d], i) => `<div class="news-item" style="animation-delay:${120 + i*110}ms"><div class="news-ic">${ic}</div><div class="min-w-0"><div class="news-t">${t}</div><div class="news-d">${d}</div></div></div>`).join('')}</div>
     <button id="newsGo" class="btn-main w-full py-3 text-2xl mt-4">C'est parti !</button>
     <button id="newsRoad" class="block mx-auto text-xs font-bold text-[#ffd84a] underline mt-2.5">Voir la Voie des trophées</button>`, 'news-box');
   const done = () => { try{ localStorage.setItem(newsKey(), NEWS.id); }catch(e){} save.newsSeen = NEWS.id; persist(); modalLocked = false; closeModal(); };
