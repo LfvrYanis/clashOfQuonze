@@ -706,6 +706,15 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
   .nw-siren i{width:14px;height:14px;border-radius:50%;background:#ef4444;box-shadow:0 0 12px 4px rgba(239,68,68,.8);animation:siren .5s steps(1) infinite;}
   .nw-siren i:last-child{background:#3b82f6;box-shadow:0 0 12px 4px rgba(59,130,246,.8);animation-delay:.25s;}
   @keyframes siren{50%{opacity:.15}}
+
+  /* bouton « Nouveautés » sur l'écran Combat */
+  .news-btn{position:absolute;right:0;bottom:2px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 6px 3px;border-radius:12px;border:3px solid #2a1405;
+    background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.14) 36%,rgba(255,255,255,0) 37%),linear-gradient(180deg,#7cc4ff,#2f7de1 55%,#1d4fa8);
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.55),0 4px 0 #2a1405,0 6px 10px rgba(0,0,0,.4);transition:transform .07s;-webkit-tap-highlight-color:transparent;}
+  .news-btn:active{transform:translateY(3px);box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 1px 0 #2a1405;}
+  .news-btn .nb-ic{font-size:20px;line-height:1;filter:drop-shadow(0 1px 0 rgba(0,0,0,.5));}
+  .news-btn .nb-lb{font-family:'Lilita One',sans-serif;font-size:8.5px;letter-spacing:.04em;color:#fff;text-shadow:0 1px 0 #0b2a5c,-1px 0 0 #0b2a5c,1px 0 0 #0b2a5c;}
+  @media (max-height:700px){ .news-btn{bottom:0;padding:3px 5px 2px;} .news-btn .nb-ic{font-size:17px;} }
 </style>
 </head>
 <body>
@@ -798,6 +807,7 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
             <circle cx="338" cy="17.5" r="5" fill="url(#cfGold)" stroke="#2a1405" stroke-width="2"/></g>
         </svg>
         <h1 class="home-logo"><img id="homeLogo" alt="Clash of Quonze" draggable="false"></h1>
+        <button id="btnNews" class="news-btn" title="Revoir les nouveautés"><span class="nb-ic">📰</span><span class="nb-lb">NOUVEAUTÉS</span></button>
       </div>
       <div class="arena-card flex-1 min-h-0 mt-3">
         <div class="arena-banner"><span id="arenaNum" class="font-ops">ARÈNE 1</span><span class="text-[var(--muted)]">·</span><span id="arenaName">Camp d'entraînement</span></div>
@@ -5698,6 +5708,7 @@ function showNews(force){
   $('#newsGo').addEventListener('click', done);
   $('#newsRoad').addEventListener('click', () => { done(); showRoad(); });
 }
+$('#btnNews').addEventListener('click', () => showNews(true));   // revoir la pop-up à tout moment
 
 /* =====================================================================
    DÉMARRAGE
