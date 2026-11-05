@@ -380,6 +380,178 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
   #netLost .nl-t{font-family:'Lilita One',sans-serif;font-size:18px;line-height:1.15;}
   #netLost .nl-s{font-size:12px;font-weight:800;color:#d6e3ff;margin-top:3px;}
   @media (max-height:700px){ #screen-home h1{font-size:28px!important;} #screen-home h1 + div{display:none;} .btn-battle{padding:7px 0 6px;} .btn-battle .text-\[28px\]{font-size:24px;} .btn-pvp{padding:5px 0 4px;} .trophy-bar{margin-top:3px;} }
+
+
+  /* =================== BARRE DU HAUT SUPERCELL =================== */
+  #topbar{position:relative;padding:8px 0 9px!important;padding-top:calc(8px + env(safe-area-inset-top))!important;border-bottom:4px solid var(--ink)!important;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 2px,transparent 2px 8px),repeating-linear-gradient(0deg,rgba(0,0,0,.10) 0 1px,transparent 1px 6px),
+      linear-gradient(180deg,#9a6334 0%,#7a4c27 35%,#5a3519 75%,#3a200d 100%)!important;
+    box-shadow:inset 0 2px 0 rgba(255,220,160,.35),inset 0 -3px 0 rgba(0,0,0,.35),0 4px 0 rgba(42,20,5,.5),0 8px 16px rgba(0,0,0,.45)!important;}
+  #topbar::before,#topbar::after{content:'';position:absolute;bottom:7px;width:9px;height:9px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#ffffff,#c9ced6 45%,#6b7280 80%);box-shadow:0 1px 0 var(--ink),0 0 0 1px rgba(0,0,0,.35);}
+  #topbar::before{left:6px}#topbar::after{right:6px}
+  .tb-inner{position:relative;}
+  .tb-inner::before,.tb-inner::after{content:'';position:absolute;top:-1px;width:7px;height:7px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#ffffff,#c9ced6 45%,#6b7280 80%);box-shadow:0 1px 0 var(--ink);}
+  .tb-inner::before{left:-3px}.tb-inner::after{right:-3px}
+  .tb-lvl{position:relative;width:44px;height:50px;flex-shrink:0;filter:drop-shadow(0 3px 0 rgba(42,20,5,.8));}
+  .tb-lvl svg{width:100%;height:100%;display:block;}
+  .tb-lvl span{position:absolute;left:0;right:0;top:12px;text-align:center;font-family:'Lilita One',sans-serif;font-size:20px;color:#fff;
+    text-shadow:0 2px 0 #0b2a5c,-1.5px 0 0 #0b2a5c,1.5px 0 0 #0b2a5c,0 -1.5px 0 #0b2a5c;}
+  .tb-name{font-family:'Lilita One',sans-serif;font-size:19px;line-height:1.1;color:#fff;letter-spacing:.02em;text-shadow:0 2px 0 var(--ink),-1px 0 0 var(--ink),1px 0 0 var(--ink),0 -1px 0 var(--ink)!important;}
+  .tb-clan{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:900;color:#ffe08a;text-shadow:0 1px 0 var(--ink);line-height:1.2;}
+  .tb-clan .clan-ic{font-size:11px;filter:drop-shadow(0 1px 0 var(--ink));}
+  .tb-res{position:relative;display:flex;align-items:center;gap:0;height:28px;min-width:78px;padding:0 10px 0 4px;margin-left:12px;border-radius:9px;flex-shrink:0;
+    background:linear-gradient(180deg,#1b0f05,#2e1a0b);border:2px solid var(--ink);box-shadow:inset 0 2px 4px rgba(0,0,0,.7),0 1px 0 rgba(255,220,160,.25);}
+  .tb-res > i{position:absolute;left:-14px;top:50%;transform:translateY(-50%);font-size:28px;filter:drop-shadow(0 2px 0 rgba(42,20,5,.9));}
+  .tb-res b{flex:1;text-align:right;font-family:'Lilita One',sans-serif;font-weight:400;font-size:16px;color:#fff;text-shadow:0 2px 0 var(--ink),-1px 0 0 var(--ink),1px 0 0 var(--ink);padding-left:16px;}
+  .tb-res.gem{padding-right:26px;}
+  .tb-plus{position:absolute;right:-2px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;
+    font-family:'Lilita One',sans-serif;font-size:18px;color:#fff;text-shadow:0 1px 0 #0b4a1c;border:2px solid var(--ink);
+    background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.12) 40%,rgba(255,255,255,0) 41%),linear-gradient(180deg,#7ef08e,#22a447);box-shadow:0 2px 0 var(--ink);}
+  /* icônes de ressources */
+  .ic-gold{display:inline-block;width:1em;height:1em;border-radius:50%;vertical-align:-.15em;flex-shrink:0;
+    background:radial-gradient(circle at 50% 50%,transparent 46%,rgba(122,74,0,.55) 47%,transparent 55%),radial-gradient(circle at 35% 28%,#fffbe0 0%,#ffe066 25%,#f5b800 55%,#b97400 85%,#7a4a00 100%);
+    box-shadow:inset 0 0 0 .07em #6b3d00,inset 0 -.08em 0 rgba(0,0,0,.25);}
+  .ic-gem{display:inline-block;width:.95em;height:1em;vertical-align:-.15em;flex-shrink:0;clip-path:polygon(50% 0,100% 32%,50% 100%,0 32%);
+    background:linear-gradient(160deg,#eafff0 0%,#7cf59a 22%,#22c55e 50%,#0e7a35 78%,#064d20 100%);}
+  .gem-buy{display:flex;align-items:center;gap:4px;min-width:66px;justify-content:center;padding:4px 10px;font-size:16px;border-radius:12px!important;}
+  .gem-buy .ic-gem{font-size:15px;}
+  /* niveau des cartes */
+  .card .clvl{position:absolute;top:2px;right:2px;z-index:2;padding:0 5px;border-radius:999px;font-family:'Lilita One',sans-serif;font-size:9.5px;line-height:15px;color:#fff;
+    text-shadow:0 1px 0 rgba(0,0,0,.8);border:1.5px solid rgba(20,10,4,.85);box-shadow:0 1px 0 rgba(0,0,0,.5);pointer-events:none;}
+  .clvl.lv-commun{background:linear-gradient(180deg,#e5eaf0,#8592a3);}
+  .clvl.lv-rare{background:linear-gradient(180deg,#ffd76a,#d58a06);}
+  .clvl.lv-epique{background:linear-gradient(180deg,#ea9bff,#8b2bc4);}
+  .clvl.lv-legendaire{background:linear-gradient(120deg,#fde047,#f97316,#ec4899,#22d3ee);}
+  .card.sm .clvl,#hand .clvl,.card.lg .clvl{display:none;}
+  .card.locked .clvl{opacity:.45;}
+  /* deck de combat : même cadre que la collection */
+  #deckSlots .card,#homeDeck .card{box-shadow:0 0 0 2px #120a04,0 4px 0 rgba(0,0,0,.55);}
+  @media (max-width:370px){ .tb-res{min-width:64px;margin-left:10px;} .tb-name{font-size:17px;} .tb-res b{font-size:15px;} }
+  /* =================== REFONTE DA « SUPERCELL » =================== */
+  :root{ --wood1:#7a4c27; --wood2:#5a3519; --wood3:#3a200d; --gold-hi:#fff3b0; --gold:#f5c443; --gold-lo:#a8640e; --ink:#2a1405; }
+  /* --- Scroll fluide : les cartes ne bloquent plus le défilement au doigt --- */
+  .card{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+  #hand .card{touch-action:none;}
+  .scroll-y{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:thin;}
+  #collWrap{contain:content;}
+  #collWrap .card{content-visibility:auto;contain-intrinsic-size:80px 107px;}
+  .r-legendaire{will-change:auto;}
+  /* --- Boutons 3D : bordure sombre épaisse, reflet sur le tiers supérieur, ombre portée marquée --- */
+  .btn-main,.btn-pvp,.btn-ghost,.btn-logout{position:relative;border:3px solid var(--ink)!important;border-radius:16px;
+    box-shadow:inset 0 -4px 0 rgba(0,0,0,.22),inset 0 2px 0 rgba(255,255,255,.65),0 5px 0 var(--ink),0 9px 14px rgba(0,0,0,.45)!important;
+    transition:transform .07s ease-out,box-shadow .07s ease-out,filter .1s;-webkit-tap-highlight-color:transparent;}
+  .btn-main:active,.btn-pvp:active,.btn-ghost:active,.btn-logout:active{transform:translateY(4px)!important;
+    box-shadow:inset 0 -2px 0 rgba(0,0,0,.22),inset 0 2px 0 rgba(255,255,255,.55),0 1px 0 var(--ink),0 3px 6px rgba(0,0,0,.4)!important;}
+  .btn-main{color:#fff!important;text-shadow:0 2px 0 #7a3b00,-1px -1px 0 #7a3b00,1px -1px 0 #7a3b00,-1px 1px 0 #7a3b00,1px 1px 0 #7a3b00!important;
+    background:linear-gradient(180deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,.18) 34%,rgba(255,255,255,0) 35%),linear-gradient(180deg,#ffe066 0%,#ffc21a 45%,#f39a00 100%)!important;}
+  .btn-pvp{color:#fff;background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.15) 34%,rgba(255,255,255,0) 35%),linear-gradient(180deg,#ffa149 0%,#f47b1c 50%,#c9520b 100%)!important;
+    text-shadow:0 2px 0 #6b2a00,-1px -1px 0 #6b2a00,1px -1px 0 #6b2a00,-1px 1px 0 #6b2a00,1px 1px 0 #6b2a00!important;}
+  .btn-pvp.btn-friends{background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.15) 34%,rgba(255,255,255,0) 35%),linear-gradient(180deg,#7ef08e 0%,#35c25a 50%,#178a37 100%)!important;
+    text-shadow:0 2px 0 #0b4a1c,-1px -1px 0 #0b4a1c,1px -1px 0 #0b4a1c,-1px 1px 0 #0b4a1c,1px 1px 0 #0b4a1c!important;}
+  .btn-ghost{color:#fff;background:linear-gradient(180deg,rgba(255,255,255,.45) 0%,rgba(255,255,255,.12) 34%,rgba(255,255,255,0) 35%),linear-gradient(180deg,#7cc4ff 0%,#3d8ff0 50%,#1f5fc2 100%)!important;
+    text-shadow:0 2px 0 #0b2a5c,-1px 0 0 #0b2a5c,1px 0 0 #0b2a5c!important;}
+  .btn-logout{background:linear-gradient(180deg,rgba(255,255,255,.42) 0%,rgba(255,255,255,.12) 34%,rgba(255,255,255,0) 35%),linear-gradient(180deg,#ff6b61 0%,#e53228 50%,#a8150f 100%)!important;font-family:'Lilita One',sans-serif;font-size:19px;letter-spacing:.03em;font-weight:400;}
+  .btn-main:disabled,.btn-pvp:disabled{filter:grayscale(1) brightness(.75);}
+  .btn-battle{padding:13px 0 11px!important;border-radius:20px!important;border-width:4px!important;animation:battlePulse 2.2s ease-in-out infinite;}
+  .btn-battle > div:first-child{font-size:32px!important;letter-spacing:.04em;}
+  .btn-battle > div:last-child{opacity:.95!important;text-shadow:0 1px 0 #7a3b00!important;}
+  @keyframes battlePulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.1) drop-shadow(0 0 12px rgba(255,200,40,.55))}}
+  /* --- Blason d'accueil : logo en relief, rayons et bannières --- */
+  .home-crest{position:relative;display:flex;justify-content:center;align-items:flex-start;padding-top:2px;}
+  .crest-rays{position:absolute;left:50%;top:50%;width:min(92vw,360px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+    background:repeating-conic-gradient(from 0deg,rgba(255,228,140,.22) 0 9deg,rgba(255,228,140,0) 9deg 22.5deg);
+    -webkit-mask:radial-gradient(circle,#000 22%,transparent 68%);mask:radial-gradient(circle,#000 22%,transparent 68%);animation:crestSpin 40s linear infinite;pointer-events:none;}
+  @keyframes crestSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+  .crest-flags{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;}
+  .crest-flag{transform-origin:50% 0;animation:flagSway 3.2s ease-in-out infinite;}
+  .crest-flag.r{animation-delay:-1.6s;}
+  @keyframes flagSway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+  .home-logo{position:relative;z-index:1;}
+  .home-logo img{filter:drop-shadow(0 3px 0 rgba(42,20,5,.9)) drop-shadow(0 10px 12px rgba(0,0,0,.55))!important;}
+  /* --- Bloc d'arène : bois/cuir texturé, cerclage doré, jauge de trophées --- */
+  .arena-card{border:4px solid transparent!important;border-radius:20px!important;
+    background:radial-gradient(ellipse at 50% 30%,rgba(255,245,210,.55),transparent 60%) padding-box,linear-gradient(180deg,#5fb8ff 0%,#3d8ee8 50%,#2a64b8 100%) padding-box,
+      linear-gradient(180deg,var(--gold-hi),var(--gold) 40%,var(--gold-lo) 60%,#ffd56a) border-box!important;
+    box-shadow:0 0 0 3px var(--ink),0 6px 0 var(--ink),0 12px 18px rgba(0,0,0,.45)!important;}
+  .arena-banner{position:relative;padding:8px 10px 7px!important;color:#ffe9a8!important;border-bottom:3px solid var(--ink)!important;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 2px,transparent 2px 7px),repeating-linear-gradient(0deg,rgba(0,0,0,.09) 0 1px,transparent 1px 5px),
+      linear-gradient(180deg,#9a6334 0%,var(--wood1) 40%,var(--wood2) 75%,var(--wood3) 100%)!important;
+    box-shadow:inset 0 2px 0 rgba(255,220,160,.35),inset 0 -2px 0 rgba(0,0,0,.35);text-shadow:0 2px 0 var(--ink);}
+  .arena-banner span{color:#ffe9a8!important;}
+  .arena-banner #arenaNum{color:#fff!important;font-size:17px;text-shadow:0 2px 0 var(--ink),-1px 0 0 var(--ink),1px 0 0 var(--ink)!important;}
+  .arena-banner::before,.arena-banner::after{content:'';position:absolute;top:50%;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#fff6c8,#e0a526 55%,#7a4a08);box-shadow:0 1px 0 var(--ink);}
+  .arena-banner::before{left:9px}.arena-banner::after{right:9px}
+  .trophy-bar{margin:7px 10px 0!important;gap:7px!important;}
+  .trophy-bar > span:first-child{display:flex;align-items:center;gap:3px;padding:1px 9px 1px 6px;border-radius:999px;background:linear-gradient(180deg,#4a2c17,#2e190a);border:2px solid var(--ink);color:#ffd84a;font-family:'Lilita One',sans-serif;font-size:15px;box-shadow:inset 0 1px 0 rgba(255,220,160,.3);}
+  .trophy-bar .track{height:16px!important;border-radius:10px!important;border:2px solid var(--ink)!important;background:linear-gradient(180deg,#2e190a,#4a2c17)!important;box-shadow:inset 0 2px 3px rgba(0,0,0,.6);position:relative;}
+  .trophy-bar .fill{border-radius:8px!important;min-width:10px;transition:width .9s cubic-bezier(.2,.8,.2,1)!important;
+    background:linear-gradient(180deg,rgba(255,255,255,.6) 0%,rgba(255,255,255,.15) 40%,rgba(255,255,255,0) 41%),linear-gradient(90deg,#ffb600,#ffe066)!important;box-shadow:0 0 8px rgba(255,200,40,.6);}
+  .trophy-bar #trophyNext{font-family:'Lilita One',sans-serif;font-size:12px!important;opacity:1!important;color:#fff;text-shadow:0 1px 0 var(--ink),-1px 0 0 var(--ink),1px 0 0 var(--ink);}
+  /* --- Cartes : contours par rareté (argent, or, violet, arc-en-ciel) + goutte d'élixir --- */
+  .card{border-width:3px!important;border-radius:11px!important;}
+  .r-commun{border-color:transparent!important;background:linear-gradient(160deg,#b8c4d3,#5c6b80) padding-box,linear-gradient(160deg,#ffffff,#c7d0db 35%,#7d8a99 60%,#eef2f6) border-box!important;}
+  .r-rare{border-color:transparent!important;background:linear-gradient(160deg,#ffb04a,#9a4b06) padding-box,linear-gradient(160deg,#fff6c4,#ffcc33 35%,#b8780a 60%,#ffe27a) border-box!important;}
+  .r-epique{border-color:transparent!important;background:linear-gradient(160deg,#d043ea,#4b1185) padding-box,linear-gradient(160deg,#ffd9ff,#c25cf0 35%,#5e159b 60%,#f0b8ff) border-box!important;}
+  .card .cost{border-radius:50% 50% 50% 8%!important;background:radial-gradient(circle at 35% 28%,#ffe2ff 0%,#f364ff 30%,#c11ad6 62%,#6d0a82 100%)!important;
+    box-shadow:0 0 0 2px #2b0033,0 2px 0 #2b0033,inset 0 2px 2px rgba(255,255,255,.55)!important;}
+  .card .cost span{font-family:'Lilita One',sans-serif;font-weight:400!important;text-shadow:0 1px 0 #3b0045,-1px 0 0 #3b0045,1px 0 0 #3b0045!important;}
+  /* --- Grimoire de collection --- */
+  .coll-sec{display:flex;align-items:center;gap:8px;margin:12px 2px 7px;font-family:'Lilita One',sans-serif;font-size:16px;letter-spacing:.03em;}
+  .coll-sec:first-child{margin-top:2px;}
+  .coll-sec::after{content:'';flex:1;height:3px;border-radius:2px;background:currentColor;opacity:.45;}
+  .coll-sec b{font-family:'Nunito',sans-serif;font-weight:900;font-size:12px;color:#fff;background:rgba(11,26,54,.55);border-radius:999px;padding:1px 8px;order:2;}
+  .coll-sec::after{order:1;}
+  .coll-commun{color:#e2e8f0}.coll-rare{color:#ffcc33}.coll-epique{color:#e19bff}.coll-legendaire{color:#7ff0ff}
+  /* --- Profil épuré --- */
+  #screen-section .stats-panel{flex:0 0 auto;}
+  #screen-section #btnLogout{margin-top:auto!important;}
+  #screen-section .stats-panel + #btnLogout{margin-top:auto!important;}
+  #screen-section .stats-panel{margin-bottom:16px;}
+  #screen-section{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+  @media (max-height:740px){
+    #screen-section .tab-title{margin-bottom:6px;}
+    #screen-section .emblem{width:48px;height:48px;font-size:26px;}
+    #screen-section .pvp-tile{padding:6px 2px!important;}
+    #screen-section .pvp-tile .stat-v{font-size:20px;}
+    #screen-section .stats-panel .grid{gap:6px!important;}
+    #screen-section .stats-panel{margin-bottom:10px;}
+    #screen-section .btn-logout{padding:6px 0;font-size:17px;}
+    #screen-section .stat-k{font-size:9px!important;white-space:nowrap;letter-spacing:0;}
+    #screen-section #secNext{display:none;}
+    #screen-section .panel.p-3{padding:9px 10px;}
+    #screen-section #secAi{margin-top:6px;}
+    #screen-section #btnReset{margin-top:4px;}
+    #screen-section .tab-title{font-size:21px;}
+    #screen-section.tab{padding-bottom:8px;}
+  }
+  #screen-section .stats-panel .grid{gap:10px!important;}
+  #screen-section .pvp-tile{padding:12px 4px!important;}
+  #screen-section .pvp-tile .stat-v{font-size:26px;}
+  /* --- Cloud 100 % transparent : aucune ligne technique côté joueur --- */
+  div:has(> #netDot){display:none!important;}
+  /* --- Fenêtres modales : bois/cuir sombre, cadre doré biseauté, gros boutons --- */
+  #modalBox:not(.cd-box){border:5px solid transparent!important;border-radius:22px!important;color:#fff3dc;
+    background:repeating-linear-gradient(93deg,rgba(255,255,255,.028) 0 2px,transparent 2px 9px) padding-box,repeating-linear-gradient(87deg,rgba(0,0,0,.10) 0 1px,transparent 1px 14px) padding-box,
+      radial-gradient(ellipse at 50% -10%,#7d5030 0%,#53311a 50%,#2f1a0b 100%) padding-box,
+      linear-gradient(180deg,var(--gold-hi) 0%,var(--gold) 30%,var(--gold-lo) 52%,#ffd56a 75%,#b9741a 100%) border-box!important;
+    box-shadow:inset 0 0 0 2px rgba(42,20,5,.85),inset 0 3px 0 rgba(255,225,160,.25),0 0 0 3px var(--ink),0 9px 0 var(--ink),0 20px 40px rgba(0,0,0,.65)!important;}
+  #modalBox:not(.cd-box) .btn-main,#modalBox:not(.cd-box) .btn-ghost{min-height:50px;font-size:18px;}
+  #modalBox:not(.cd-box) button.bg-red-600{min-height:50px;font-family:'Lilita One',sans-serif;font-size:18px;font-weight:400;border:3px solid var(--ink);border-radius:16px;
+    background:linear-gradient(180deg,rgba(255,255,255,.42) 0%,rgba(255,255,255,.12) 34%,rgba(255,255,255,0) 35%),linear-gradient(180deg,#ff6b61,#e53228 50%,#a8150f)!important;
+    box-shadow:inset 0 -4px 0 rgba(0,0,0,.22),0 5px 0 var(--ink),0 9px 14px rgba(0,0,0,.45);text-shadow:0 2px 0 #5b0d0d;}
+  #modalBox:not(.cd-box) button.bg-red-600:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink);}
+  #modalBox:not(.cd-box) .text-\[\#d6e3ff\],#modalBox:not(.cd-box) .text-\[var\(--muted\)\]{color:#e8cfa8!important;}
+  #modalBox:not(.cd-box) .font-ops{text-shadow:0 2px 0 var(--ink),-1px 0 0 var(--ink),1px 0 0 var(--ink);}
+  .auth-in{background:rgba(26,12,3,.6)!important;border-color:var(--ink)!important;}
+  .auth-in:focus{border-color:#ffd34d!important;}
+  .auth-tabs{background:rgba(26,12,3,.55)!important;border-color:var(--ink)!important;}
+  .auth-tabs button{color:#e8cfa8!important;}.auth-tabs button.on{color:#fff!important;text-shadow:0 1px 0 #7a3b00;}
+  .auth-lb{color:#f3d9a8!important;}
+  .room-code{background:linear-gradient(180deg,#2a1608,#170b03);border:3px solid var(--ink);border-radius:16px;box-shadow:inset 0 2px 6px rgba(0,0,0,.6),0 2px 0 rgba(255,220,160,.2);padding:4px 0;}
+  @media (max-height:700px){ .btn-battle{padding:8px 0 7px!important;} .btn-battle > div:first-child{font-size:26px!important;} .crest-flags{display:none;} }
 </style>
 </head>
 <body>
@@ -388,17 +560,22 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
 <div id="app">
   <!-- Barre du haut : profil + ressources -->
   <header id="topbar">
-    <div class="max-w-md mx-auto flex items-center gap-2 px-3">
-      <button data-nav="section" class="flex items-center gap-2 min-w-0 flex-1 text-left">
-        <div class="emblem w-11 h-11 text-2xl">🎖️</div>
+    <div class="tb-inner max-w-md mx-auto flex items-center gap-2 px-3">
+      <button data-nav="section" class="tb-id flex items-center gap-2 min-w-0 flex-1 text-left">
+        <div class="tb-lvl"><svg viewBox="0 0 44 50" aria-hidden="true"><defs>
+            <linearGradient id="lvG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".45" stop-color="#f5c443"/><stop offset="1" stop-color="#a8640e"/></linearGradient>
+            <linearGradient id="lvB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc4ff"/><stop offset=".5" stop-color="#2f7de1"/><stop offset="1" stop-color="#173f8a"/></linearGradient></defs>
+          <path d="M22 2 L40 8 V25 C40 37 31 44 22 48 C13 44 4 37 4 25 V8 Z" fill="url(#lvG)" stroke="#2a1405" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M22 7 L35 11.5 V25 C35 34 28.5 39.5 22 42.6 C15.5 39.5 9 34 9 25 V11.5 Z" fill="url(#lvB)" stroke="#173f8a" stroke-width="1"/>
+          <path d="M10 12 L22 7.6 L34 12 V19 C26 16 18 16 10 19 Z" fill="rgba(255,255,255,.28)"/></svg>
+          <span id="tbLvl">1</span></div>
         <div class="min-w-0">
-          <div id="tbName" class="font-bold text-lg leading-tight truncate">Soldat</div>
-          <div class="text-[11px] font-bold leading-tight text-[var(--khaki)] truncate"><span id="tbGrade">Recrue</span> · <span id="tbRecord" class="text-[var(--muted)]">0 V · 0 D</span></div>
+          <div id="tbName" class="tb-name truncate">Soldat</div>
+          <div class="tb-clan truncate"><span class="clan-ic">🛡️</span><span id="tbClan">Section Quonze</span></div>
         </div>
       </button>
-      <div class="res-pill" title="Trophées JcJ">🏆 <b id="tbTrophies">0</b></div>
-      <div class="res-pill" title="Insignes">🎖️ <b id="insignes">0</b></div>
-      <div class="res-pill" title="Cartes débloquées">🃏 <b id="collHome">0</b></div>
+      <div class="tb-res" title="Or"><i class="ic-gold"></i><b id="insignes">0</b></div>
+      <button data-nav="shop" class="tb-res gem" title="Gemmes"><i class="ic-gem"></i><b id="tbGems">0</b><span class="tb-plus">+</span></button>
     </div>
   </header>
 
@@ -419,8 +596,8 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
         <div id="chestTypes" class="space-y-2"></div>
       </div>
       <div class="panel p-3 mt-3 shrink-0 flex items-center gap-3">
-        <div class="emblem w-12 h-12 text-2xl shrink-0">🎖️</div>
-        <div class="text-xs text-[var(--muted)] flex-1">Chaque doublon rapporte des <b class="text-[var(--text)]">insignes</b>. Utilise-les pour débloquer la carte de ton choix.</div>
+        <div class="emblem w-12 h-12 text-2xl shrink-0"><i class="ic-gold" style="font-size:30px"></i></div>
+        <div class="text-xs text-[var(--muted)] flex-1">Chaque doublon rapporte de l'<b class="text-[var(--text)]">or</b>. Utilise-le pour débloquer la carte de ton choix. Les <b class="text-[var(--text)]">gemmes</b> se gagnent en remportant des combats.</div>
         <button data-nav="deck" class="btn-ghost px-3 py-2 text-sm font-bold shrink-0">Cartes ›</button>
       </div>
     </section>
@@ -442,15 +619,31 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
         <div class="font-ops text-[var(--khaki)]">Collection</div>
         <div id="collCount" class="text-xs font-bold text-[var(--muted)]"></div>
       </div>
-      <div id="rarityFilters" class="flex gap-1.5 mb-2 shrink-0 overflow-x-auto no-scrollbar"></div>
-      <div class="flex-1 min-h-0 overflow-y-auto -mx-1 px-1 pt-1 pb-2"><div id="collection" class="grid grid-cols-4 gap-2"></div></div>
+      <div id="collWrap" class="scroll-y flex-1 min-h-0 -mx-1 px-1 pt-1 pb-3"><div id="collection"></div></div>
     </section>
 
     <!-- ===== Onglet COMBAT (écran principal) ===== -->
     <section id="screen-home" class="tab hidden">
-      <div class="text-center shrink-0">
+      <div class="home-crest shrink-0">
+        <div class="crest-rays"></div>
+        <svg class="crest-flags" viewBox="0 0 360 200" preserveAspectRatio="xMidYMin meet" aria-hidden="true">
+          <defs>
+            <linearGradient id="cfGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".45" stop-color="#f5c443"/><stop offset="1" stop-color="#a8640e"/></linearGradient>
+            <linearGradient id="cfBlue" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1d4fa8"/><stop offset=".5" stop-color="#3d8ff0"/><stop offset="1" stop-color="#1d4fa8"/></linearGradient>
+            <linearGradient id="cfRed" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9c1c1c"/><stop offset=".5" stop-color="#e53b3b"/><stop offset="1" stop-color="#9c1c1c"/></linearGradient>
+          </defs>
+          <g class="crest-flag l"><rect x="22" y="14" width="56" height="7" rx="3.5" fill="url(#cfGold)" stroke="#2a1405" stroke-width="2"/>
+            <path d="M28 21 h44 v118 l-22 -18 l-22 18 z" fill="url(#cfBlue)" stroke="#2a1405" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M34 21 v100 M66 21 v100" stroke="#ffd34d" stroke-width="3" opacity=".9"/>
+            <path d="M50 52 l5 10 11 1.6 -8 7.8 1.9 11 -9.9-5.2 -9.9 5.2 1.9-11 -8-7.8 11-1.6z" fill="#ffd84a" stroke="#2a1405" stroke-width="2"/>
+            <circle cx="22" cy="17.5" r="5" fill="url(#cfGold)" stroke="#2a1405" stroke-width="2"/></g>
+          <g class="crest-flag r"><rect x="282" y="14" width="56" height="7" rx="3.5" fill="url(#cfGold)" stroke="#2a1405" stroke-width="2"/>
+            <path d="M288 21 h44 v118 l-22 -18 l-22 18 z" fill="url(#cfRed)" stroke="#2a1405" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M294 21 v100 M326 21 v100" stroke="#ffd34d" stroke-width="3" opacity=".9"/>
+            <path d="M296 70 l6 -14 8 10 8 -10 6 14 z M296 70 h28 v5 h-28z" fill="#ffd84a" stroke="#2a1405" stroke-width="2" stroke-linejoin="round"/>
+            <circle cx="338" cy="17.5" r="5" fill="url(#cfGold)" stroke="#2a1405" stroke-width="2"/></g>
+        </svg>
         <h1 class="home-logo"><img id="homeLogo" alt="Clash of Quonze" draggable="false"></h1>
-        <div class="text-[10px] tracking-[.3em] text-[var(--muted)] font-bold mt-1">COMBAT TACTIQUE ENTRE FRÈRES D'ARMES</div>
       </div>
       <div class="arena-card flex-1 min-h-0 mt-3">
         <div class="arena-banner"><span id="arenaNum" class="font-ops">ARÈNE 1</span><span class="text-[var(--muted)]">·</span><span id="arenaName">Camp d'entraînement</span></div>
@@ -463,7 +656,7 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
       </button>
       <div class="grid grid-cols-2 gap-2 mt-2 shrink-0">
         <button id="btnRanked" class="btn-pvp"><div class="text-[18px] leading-none">🏆 JcJ CLASSÉ</div><div class="text-[10px] font-sans font-extrabold opacity-90 tracking-wider mt-0.5">TROPHÉES EN JEU</div></button>
-        <button data-nav="friends" class="btn-pvp btn-friends"><div class="text-[18px] leading-none">👥 AMIS</div><div id="homeOnline" class="text-[10px] font-sans font-extrabold opacity-90 tracking-wider mt-0.5">CONNEXION…</div></button>
+        <button data-nav="friends" class="btn-pvp btn-friends"><div class="text-[18px] leading-none">👥 AMIS</div><div id="homeOnline" class="text-[10px] font-sans font-extrabold opacity-90 tracking-wider mt-0.5">DÉFIE TES POTES</div></button>
       </div>
       <div id="deckWarn" class="text-center text-sm text-amber-400 mt-1 hidden">Ton deck doit contenir 8 cartes.</div>
       <div class="deck-strip mt-3 shrink-0">
@@ -519,7 +712,7 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
           <div id="profEmail" class="text-[11px] font-bold text-[#d6e3ff] truncate mt-0.5"></div>
         </div>
       </div>
-      <div class="panel p-3 mt-3 shrink-0">
+      <div class="panel p-3 mt-3 stats-panel">
         <div class="flex items-center justify-between gap-2"><div class="font-ops text-[var(--khaki)] shrink-0">📊 Statistiques</div><div id="secArena" class="text-xs font-bold text-[#d6e3ff] truncate"></div></div>
         <div class="grid grid-cols-3 gap-1.5 mt-2">
           <div class="stat-tile pvp-tile"><div class="stat-v text-amber-300" id="secTrophies">0</div><div class="stat-k text-[10px]">🏆 Trophées</div></div>
@@ -531,11 +724,7 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
         </div>
         <div id="secAi" class="text-[11px] font-bold text-[#d6e3ff] mt-2 text-center"></div>
       </div>
-      <div class="panel p-3 mt-3 flex-1 min-h-0 overflow-y-auto">
-        <div class="font-ops text-[var(--khaki)] mb-2">Raretés & collection</div>
-        <div id="rarityList" class="space-y-2.5"></div>
-      </div>
-      <button id="btnLogout" class="btn-logout shrink-0 mt-3">🚪 Se déconnecter</button>
+      <button id="btnLogout" class="btn-logout shrink-0 mt-4">🚪 Se déconnecter</button>
       <button id="btnReset" class="shrink-0 w-full text-xs text-[var(--muted)] underline mt-2">Réinitialiser la progression</button>
     </section>
   </div>
@@ -794,7 +983,7 @@ function loadSave(){
   let s = null;
   try{ s = JSON.parse(localStorage.getItem(SAVE_KEY)); }catch(e){}
   if (s && typeof s === 'object'){ if (Array.isArray(s.owned)) s.owned = s.owned.map(migId); if (Array.isArray(s.deck)) s.deck = s.deck.map(migId); }
-  const base = { v:SAVE_VERSION, name:'Soldat', wins:0, losses:0, deck:[...DEFAULT_DECK], owned:starterOwned(), chests:[], insignes:0, ...socialOf(s) };
+  const base = { v:SAVE_VERSION, name:'Soldat', wins:0, losses:0, deck:[...DEFAULT_DECK], owned:starterOwned(), chests:[], insignes:0, gems:20, ...socialOf(s) };
   if (!s || typeof s !== 'object') return base;
   // ancienne sauvegarde (collection de départ plus large) → collection remise au départ, bilan et coffres conservés
   if (s.v !== SAVE_VERSION) return { ...base, name: s.name || 'Soldat', wins: +s.wins || 0, losses: +s.losses || 0,
@@ -806,6 +995,7 @@ function loadSave(){
     owned, deck: deck.length===DECK_SIZE ? deck : [...DEFAULT_DECK],
     chests: Array.isArray(s.chests) ? s.chests.filter(c => c && CHEST_TYPES[c.type]).slice(0, MAX_CHESTS) : [],
     insignes: +s.insignes || 0,
+    gems: Number.isFinite(+s.gems) && s.gems !== undefined ? Math.max(0, +s.gems) : 20,
   };
 }
 const isOwned = id => save.owned.includes(id);
@@ -818,11 +1008,14 @@ let save = loadSave();
 const $ = s => document.querySelector(s);
 $('#homeLogo').src = LOGO_FULL;
 const avgCost = ids => ids.length ? (ids.reduce((a,id)=>a+CARD_MAP[id].cost,0)/ids.length).toFixed(1) : '0';
+// Niveau affiché : niveau de départ de la rareté (le bonus de PV/dégâts correspondant est déjà appliqué)
+const CARD_LEVEL = { commun:1, rare:3, epique:6, legendaire:9 };
 function cardHTML(c, size='md', extra=''){
   const r = RARITIES[c.rarity];
   return `<div class="card ${size} ${r.cls} ${extra}" data-id="${c.id}">
     <div class="cost"><span>${c.cost}</span></div>
     <img class="avatar" src="${avatarURL(c)}" alt="" draggable="false"><div class="badge">${c.icon}</div>
+    <div class="clvl lv-${c.rarity}">Niv. ${CARD_LEVEL[c.rarity]}</div>
     <div class="cname">${c.name}</div>
   </div>`;
 }
@@ -904,12 +1097,13 @@ function arenaSVG(){
 
 function renderTopbar(){
   $('#tbName').textContent = save.name;
-  $('#tbGrade').textContent = GRADES[gradeIndex(save.wins)][1];
-  $('#tbRecord').textContent = `${save.wins} V · ${save.losses} D`;
+  const gi = gradeIndex(save.wins);
+  $('#tbLvl').textContent = gi + 1;
+  $('#tbClan').textContent = 'Section Quonze';
+  $('.tb-lvl').title = `Grade : ${GRADES[gi][1]}`;
   $('#insignes').textContent = save.insignes;
-  $('#tbTrophies').textContent = save.trophies;
+  $('#tbGems').textContent = save.gems;
   if (typeof NET !== 'undefined') netAnnounce();
-  $('#collHome').textContent = `${save.owned.length}/${CARDS.length}`;
   const n = save.chests.length;
   $('#shopBadge').textContent = n; $('#shopBadge').classList.toggle('hidden', n===0);
 }
@@ -927,6 +1121,7 @@ function renderCombat(){
   $('#btnPlay').disabled = !ok;
   $('#deckWarn').classList.toggle('hidden', ok);
 }
+const GEM_PRICE = Object.fromEntries(Object.keys(CHEST_TYPES).map((k, i) => [k, [15, 40, 100][i] || 100]));
 function renderShop(){
   renderChests();
   $('#chestCount').textContent = `${save.chests.length}/${MAX_CHESTS}`;
@@ -937,8 +1132,8 @@ function renderShop(){
         <div class="font-bold leading-tight">${T.name} <span class="text-[var(--muted)] text-xs">· ${T.cards} cartes</span></div>
         <div class="text-[11px] text-[var(--muted)] leading-tight mt-0.5"><span class="rar-rare">Rare ${T.odds.rare}%</span> · <span class="rar-epique">Épique ${T.odds.epique}%</span> · <span class="rar-legendaire">Légendaire ${T.odds.legendaire}%</span></div>
       </div>
-      <div class="chip shrink-0">${T.drop}%</div>
-    </div>`).join('') + `<div class="text-[11px] text-[var(--muted)]">Le pourcentage à droite est la chance d'obtenir ce coffre après une victoire.</div>`;
+      <div class="flex flex-col items-end gap-1 shrink-0"><button class="btn-main gem-buy" data-buy="${k}"><i class="ic-gem"></i>${GEM_PRICE[k]}</button><div class="text-[10px] font-bold text-[var(--muted)]">${T.drop}% / victoire</div></div>
+    </div>`).join('') + `<div class="text-[11px] text-[var(--muted)]">Achète un coffre avec tes gemmes, ou gagne-en un à chaque victoire (le % indique la chance de l'obtenir).</div>`;
 }
 function renderSection(){
   if (document.activeElement !== $('#playerName')) $('#playerName').value = save.name;
@@ -953,22 +1148,19 @@ function renderSection(){
   // combats contre l'IA = total des victoires/défaites hors JcJ classé
   const aiW = Math.max(0, save.wins - save.pvp.w), aiL = Math.max(0, save.losses - save.pvp.l), aiT = aiW + aiL;
   $('#secAi').textContent = `🤖 Entraînement contre l'IA : ${aiW} V · ${aiL} D${aiT ? ` (${Math.round(aiW/aiT*100)} %)` : ''}`;
-  $('#rarityList').innerHTML = RARITY_ORDER.map(r => {
-    const all = CARDS.filter(c => c.rarity===r), own = all.filter(c => isOwned(c.id)).length;
-    const bonus = Math.round((RARITY_MULT[r]-1)*100);
-    return `<div>
-      <div class="flex items-center justify-between text-sm">
-        <span class="font-bold ${RARITIES[r].txt}">${RARITIES[r].label}</span>
-        <span class="text-[var(--muted)] text-xs font-bold">${bonus ? `+${bonus}% PV & dégâts · ` : ''}<b class="text-[var(--text)]">${own}/${all.length}</b></span>
-      </div>
-      <div class="h-2 rounded bg-black/40 overflow-hidden mt-1"><div class="h-full rounded" style="width:${own/all.length*100}%;background:${RAR_BAR[r]}"></div></div>
-    </div>`;
-  }).join('') + `<div class="text-[11px] text-[var(--muted)] pt-1">Cartes de départ : 7 Communes + Bebère. Toutes les autres se gagnent dans les coffres.</div>`;
 }
 function renderHome(){ renderTopbar(); renderCombat(); renderShop(); renderSection(); if (typeof NET !== 'undefined') renderNetUI(); }
+$('#chestTypes').addEventListener('click', e => {
+  const b = e.target.closest('[data-buy]'); if (!b) return;
+  const k = b.dataset.buy, price = GEM_PRICE[k];
+  if (save.chests.length >= MAX_CHESTS) return toast('Emplacements de coffres pleins : ouvre d\'abord un coffre.');
+  if ((save.gems || 0) < price) return toast(`Il te manque ${price - (save.gems || 0)} <i class="ic-gem"></i> : gagne des combats !`);
+  save.gems -= price; save.chests.push({ type:k }); persist(); renderHome();
+  toast(`${CHEST_TYPES[k].name} acheté ! Ouvre-le dans tes coffres.`);
+});
 $('#btnReset').addEventListener('click', () => {
   openModal(`<div class="text-center"><div class="font-ops text-2xl text-red-400">Réinitialiser ?</div>
-    <p class="text-sm mt-2 text-[var(--muted)]">Collection, coffres, insignes, deck et bilan seront remis à zéro.</p>
+    <p class="text-sm mt-2 text-[var(--muted)]">Collection, coffres, or, gemmes, deck et bilan seront remis à zéro.</p>
     <div class="flex gap-2 mt-4"><button onclick="closeModal()" class="btn-ghost flex-1 py-2.5 font-bold">Annuler</button>
     <button id="confirmReset" class="flex-1 py-2.5 font-bold rounded-xl bg-red-600 text-white">Réinitialiser</button></div></div>`);
   $('#confirmReset').addEventListener('click', () => { const keep = { pid:save.pid, friends:save.friends }; try{ localStorage.removeItem(SAVE_KEY); }catch(e){} save = loadSave(); Object.assign(save, keep); persist(); closeModal(); renderHome(); });
@@ -995,22 +1187,16 @@ function renderDeckScreen(){
   $('#deckAvg').textContent = avgCost(save.deck);
   $('#swapHint').classList.toggle('hidden', !swapCandidate);
 
-  // Filtres
-  const filters = [['all','Toutes'], ...RARITY_ORDER.map(r => [r, RARITIES[r].label])];
-  $('#rarityFilters').innerHTML = filters.map(([k,l]) => `<button class="chip ${rarityFilter===k?'active':''}" data-filter="${k}">${l}</button>`).join('');
-
-  // Collection
-  const list = CARDS
-    .filter(c => rarityFilter==='all' || c.rarity===rarityFilter)
-    .sort((a,b) => RARITY_ORDER.indexOf(a.rarity)-RARITY_ORDER.indexOf(b.rarity) || a.cost-b.cost);
-  $('#collection').innerHTML = list.map(c => cardHTML(c,'md', !isOwned(c.id) ? 'locked' : save.deck.includes(c.id) ? 'in-deck opacity-60' : '')).join('');
-  $('#collCount').textContent = `(${save.owned.length}/${CARDS.length} débloquées · 🎖️ ${save.insignes})`;
+  // Collection façon grimoire : une section par rareté, cartes triées par coût en élixir
+  $('#collection').innerHTML = RARITY_ORDER.map(r => {
+    const list = CARDS.filter(c => c.rarity === r).sort((a,b) => (isOwned(b.id) - isOwned(a.id)) || a.cost - b.cost || a.name.localeCompare(b.name));
+    const own = list.filter(c => isOwned(c.id)).length;
+    return `<div class="coll-sec coll-${r}">${RARITIES[r].label}<b>${own}/${list.length}</b></div>
+      <div class="grid grid-cols-4 gap-2">${list.map(c => cardHTML(c,'md', !isOwned(c.id) ? 'locked' : save.deck.includes(c.id) ? 'in-deck opacity-60' : '')).join('')}</div>`;
+  }).join('');
+  $('#collCount').textContent = `${save.owned.length}/${CARDS.length} débloquées`;
 }
 
-$('#rarityFilters').addEventListener('click', e => {
-  const b = e.target.closest('[data-filter]'); if (!b) return;
-  rarityFilter = b.dataset.filter; renderDeckScreen();
-});
 $('#deckSlots').addEventListener('click', e => {
   const el = e.target.closest('.card'); if (!el) return;
   if (swapCandidate){
@@ -1065,7 +1251,7 @@ function showCardDetail(id){
   const cost = UNLOCK_COST[c.rarity] || 0;
   let action;
   if (!owned) action = `<div class="cd-lockmsg">🔒 Carte bloquée · trouve-la dans un coffre</div>
-      <button id="mUnlock" class="btn-main w-full cd-btn" ${save.insignes < cost ? 'disabled' : ''}>Débloquer · ${cost} 🎖️ <small>(tu as ${save.insignes})</small></button>`;
+      <button id="mUnlock" class="btn-main w-full cd-btn" ${save.insignes < cost ? 'disabled' : ''}>Débloquer · ${cost} <i class="ic-gold"></i> <small>(tu as ${save.insignes})</small></button>`;
   else if (inDeck) action = `<button id="mRemove" class="btn-ghost w-full cd-btn font-bold">Retirer du deck</button>`;
   else if (full) action = `<button id="mSwap" class="btn-main w-full cd-btn">Remplacer une carte</button>`;
   else action = `<button id="mAdd" class="btn-main w-full cd-btn">Ajouter au deck</button>`;
@@ -1783,6 +1969,10 @@ function endBattle(forced){
   else if (B.oppLeft) pvpHtml = `<div class="mt-3 text-sm font-bold text-amber-300">📴 Adversaire : ${B.oppLeft}</div>` + pvpHtml;
   // Récompense : un coffre par victoire (3 emplacements max)
   let reward = pvpHtml;
+  if (result==='win' && mode !== 'friendly'){   // gemmes : +1 contre l'IA, +3 en JcJ classé
+    const g = mode === 'ranked' ? 3 : 1; save.gems = (save.gems || 0) + g;
+    reward += `<div class="mt-3 inline-flex items-center gap-1.5 font-ops text-xl text-green-300 new-pop">+${g} <i class="ic-gem"></i> gemme${g > 1 ? 's' : ''}</div>`;
+  }
   if (result==='win' && mode !== 'friendly'){
     if (save.chests.length < MAX_CHESTS){
       const type = rollChestType();
@@ -3443,7 +3633,6 @@ function renderChests(){
   }
   $('#chestSlots').innerHTML = slots.join('');
   $('#insignes').textContent = save.insignes;
-  $('#collHome').textContent = `${save.owned.length}/${CARDS.length}`;
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-chest]'); if (b) showChestInfo(+b.dataset.chest);
@@ -3464,7 +3653,7 @@ function showChestInfo(i){
       <div class="text-[11px] uppercase tracking-widest font-bold text-[var(--muted)]">Chances par carte</div>
       ${RARITY_ORDER.map(r => `<div class="flex items-center gap-2 text-sm"><span class="w-24 font-bold ${RARITIES[r].txt}">${RARITIES[r].label}</span><div class="flex-1 h-2 rounded bg-black/40 overflow-hidden"><div class="h-full rounded" style="width:${T.odds[r]}%;background:${RAR_BAR[r]}"></div></div><span class="w-10 text-right font-bold">${T.odds[r]}%</span></div>`).join('')}
     </div>
-    <div class="text-xs text-[var(--muted)] mt-3">Cartes encore bloquées : <b class="text-[var(--text)]">${locked}</b>. Un doublon rapporte des insignes 🎖️ pour débloquer la carte de ton choix dans l'Arsenal.</div>
+    <div class="text-xs text-[var(--muted)] mt-3">Cartes encore bloquées : <b class="text-[var(--text)]">${locked}</b>. Un doublon rapporte de l'or <i class="ic-gold"></i> pour débloquer la carte de ton choix.</div>
     <button id="btnOpenChest" class="btn-main w-full py-3 text-xl mt-4">OUVRIR</button>`);
   $('#btnOpenChest').addEventListener('click', () => openChest(i));
 }
@@ -3801,7 +3990,7 @@ async function playChestCinematic(type, results){
       cineSparks(cx, cy, cfx.sparks, [14, 24, 40, 70][ri], 1 + ri*0.15);
       if (ri >= 2) cineFlash(cfx, ri===3 ? .9 : .6, ri===3 ? 800 : 450);
       info.innerHTML = `<div class="cine-name">${c.name}</div><div class="cine-rar ${RARITIES[c.rarity].txt}">${RARITIES[c.rarity].label}</div>
-        ${r.isNew ? '<div class="cine-new">NOUVELLE CARTE !</div>' : `<div class="cine-dupe">Doublon · +${r.insignes} 🎖️ insignes</div>`}`;
+        ${r.isNew ? '<div class="cine-new">NOUVELLE CARTE !</div>' : `<div class="cine-dupe">Doublon · +${r.insignes} <i class="ic-gold"></i> or</div>`}`;
       info.animate([{ opacity:0, transform:'translate(-50%,12px)' }, { opacity:1, transform:'translate(-50%,0)' }], { duration:350, easing:'ease-out', fill:'forwards' });
       await cineWait(320);
       await cineTap(i+1 < results.length ? 'Touche pour la carte suivante' : 'Touche pour voir le butin');
@@ -3835,9 +4024,9 @@ function showCineSummary(){
   const panel = cineEl('cine-summary panel', `
     <div class="text-center">
       <div class="font-ops text-3xl">Butin</div>
-      <div class="text-sm text-[var(--muted)]">${nNew ? `<b class="text-green-300">${nNew} nouvelle${nNew>1?'s':''} carte${nNew>1?'s':''}</b>` : 'Aucune nouvelle carte'}${ins ? ` · <b class="text-amber-300">+${ins} 🎖️</b>` : ''}</div>
+      <div class="text-sm text-[var(--muted)]">${nNew ? `<b class="text-green-300">${nNew} nouvelle${nNew>1?'s':''} carte${nNew>1?'s':''}</b>` : 'Aucune nouvelle carte'}${ins ? ` · <b class="text-amber-300">+${ins} <i class="ic-gold"></i></b>` : ''}</div>
       <div class="grid grid-cols-3 gap-2 mt-4">
-        ${results.map((r,i) => `<div class="relative cine-sum-card" style="animation-delay:${i*90}ms">${cardHTML(CARD_MAP[r.id],'md')}${r.isNew ? '<span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-green-400 text-black px-1.5 rounded z-10">NEW</span>' : `<span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-amber-300 text-black px-1.5 rounded z-10 whitespace-nowrap">+${r.insignes}🎖️</span>`}</div>`).join('')}
+        ${results.map((r,i) => `<div class="relative cine-sum-card" style="animation-delay:${i*90}ms">${cardHTML(CARD_MAP[r.id],'md')}${r.isNew ? '<span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-green-400 text-black px-1.5 rounded z-10">NEW</span>' : `<span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-amber-300 text-black px-1.5 rounded z-10 whitespace-nowrap">+${r.insignes} <i class="ic-gold"></i></span>`}</div>`).join('')}
       </div>
       <div class="flex gap-2 mt-5">
         <button class="cine-close btn-ghost flex-1 py-2.5 font-bold">Fermer</button>
@@ -4230,8 +4419,8 @@ const hubOk = () => cloudOk();
 /* ---------- Défis, matchmaking, liaison de combat ---------- */
 const netBusy = () => (B && !B.over) || NET.searching || NET.pendingGuest || NET.outInvite || NET.expect || NET.joining || NET.room?.waiting || (typeof cine !== 'undefined' && cine);
 function netOfflineModal(){
-  openModal(`<div class="text-center"><div class="text-5xl">📡</div><div class="font-ops text-2xl text-[var(--khaki)] mt-1">Hors ligne</div>
-    <p class="text-sm mt-2">${esc(NET.msg || 'Connexion au serveur cloud en cours…')}</p>
+  openModal(`<div class="text-center"><div class="text-5xl">📻</div><div class="font-ops text-2xl text-[var(--khaki)] mt-1">Liaison radio indisponible</div>
+    <p class="text-sm mt-2">Impossible de joindre les autres soldats pour le moment. Vérifie ta connexion internet.</p>
     <p class="text-xs text-[var(--muted)] mt-2">Le JcJ a besoin d'internet. Les combats contre l'IA restent disponibles.</p>
     <div class="flex gap-2 mt-4"><button onclick="closeModal()" class="btn-ghost flex-1 py-2.5 font-bold">Fermer</button>
     <button onclick="closeModal(); cloudWake(); showScreen('friends')" class="btn-main flex-1 py-2.5">Réessayer</button></div></div>`);
@@ -4248,7 +4437,7 @@ async function netInvite(pid, mode='friendly', oppInfo){
   if (mode === 'friendly'){
     modalLocked = true;
     openModal(`<div class="text-center"><div class="text-5xl net-pulse">📻</div><div class="font-ops text-2xl text-[var(--khaki)] mt-1">Défi envoyé</div>
-      <p class="mt-2">En attente de <b>${esc(info.name)}</b>…</p><div id="invStage" class="text-xs font-bold text-amber-300 mt-1">${(netMember(pid)?.local) ? '💻 Liaison locale (même PC)…' : '☁️ Liaison via le serveur cloud…'}</div><div class="text-xs text-[var(--muted)] mt-1">Match amical : aucun trophée en jeu.</div>
+      <p class="mt-2">En attente de <b>${esc(info.name)}</b>…</p><div id="invStage" class="text-xs font-bold text-amber-300 mt-1">${(netMember(pid)?.local) ? '📻 Liaison radio…' : '📻 Liaison radio…'}</div><div class="text-xs text-[var(--muted)] mt-1">Match amical : aucun trophée en jeu.</div>
       <button id="invCancel" class="btn-ghost w-full py-2.5 font-bold mt-4">Annuler</button></div>`);
     $('#invCancel').addEventListener('click', () => { const o = NET.outInvite; NET.outInvite = null; modalLocked = false; closeModal(); try{ o?.conn?.send({ t:'cancel' }); setTimeout(() => o?.conn?.close(), 300); }catch(e){} });
   }
@@ -4376,7 +4565,7 @@ function netQueue(){
     <div class="text-[11px] text-[var(--muted)] mt-2">Astuce : demande à un pote de lancer « JcJ classé » en même temps.</div>
     <button id="qCancel" class="btn-ghost w-full py-2.5 font-bold mt-4">Annuler</button></div>`);
   clearInterval(NET.qTimer);
-  NET.qTimer = setInterval(() => { const s = Math.floor((Date.now() - t0)/1000), el = $('#qTime'); if (el) el.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; const o = $('#qOnline'); if (o) o.textContent = NET.members.length; if (!cloudOk() && !LOCAL.members.size && Date.now() - t0 > 20000) netUnqueue('Serveur cloud injoignable.'); }, 500);
+  NET.qTimer = setInterval(() => { const s = Math.floor((Date.now() - t0)/1000), el = $('#qTime'); if (el) el.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; const o = $('#qOnline'); if (o) o.textContent = NET.members.length; if (!cloudOk() && !LOCAL.members.size && Date.now() - t0 > 20000) netUnqueue('Liaison radio perdue.'); }, 500);
   $('#qCancel').addEventListener('click', () => netUnqueue());
 }
 function netUnqueue(msg){
@@ -4391,7 +4580,7 @@ function netMatchFound(m){
   modalLocked = true;
   openModal(`<div class="text-center"><div class="text-[11px] font-extrabold tracking-widest text-green-400">ADVERSAIRE TROUVÉ !</div>
     <div class="font-ops text-3xl text-[var(--khaki)] mt-1">${esc(m.name)}</div><div class="text-amber-300 font-extrabold">🏆 ${+m.trophies || 0} · ${arenaOf(+m.trophies || 0).icon} Arène ${arenaOf(+m.trophies || 0).num}</div>
-    <div class="text-5xl mt-3 net-pulse">⚔️</div><div class="text-xs text-[var(--muted)] mt-2">Liaison via le serveur cloud…</div></div>`);
+    <div class="text-5xl mt-3 net-pulse">⚔️</div><div class="text-xs text-[var(--muted)] mt-2">Liaison radio en cours…</div></div>`);
   if (m.host) netInvite(m.opp, 'ranked', { pid:m.opp, name:m.name, trophies:m.trophies });
   else {
     NET.expect = m.opp;
@@ -4576,9 +4765,9 @@ function roomCreate(reuse){
   roomModal();
 }
 const ROOM_STAGE = {
-  sig:   ['text-amber-300', '<span class="net-spin">☁️</span> Connexion au serveur cloud…'],
-  open:  ['text-green-300', '<span class="net-pulse inline-block">📻</span> Salon ouvert sur le serveur cloud : donne ce code à ton pote'],
-  local: ['text-amber-300', '⚠️ Erreur : serveur cloud injoignable, vérifiez votre connexion. Salon ouvert en local (onglets de ce PC).'],
+  sig:   ['text-amber-300', '<span class="net-spin">📡</span> Ouverture du salon…'],
+  open:  ['text-green-300', '<span class="net-pulse inline-block">📻</span> Salon ouvert : donne ce code à ton pote'],
+  local: ['text-amber-300', '⚠️ Pas de réseau : vérifie ta connexion internet.'],
 };
 function roomStage(){ return NET.ready ? 'open' : (NET.status === 'off' && LOCAL.id ? 'local' : 'sig'); }
 function roomModal(){
@@ -4593,7 +4782,7 @@ function roomModal(){
     </div>
     <div class="text-[11px] font-bold text-[var(--muted)] mt-1">${R.mode === 'ranked' ? 'Les trophées sont en jeu.' : 'Aucun trophée en jeu, juste l\'honneur.'}</div>
     <div class="mt-3 text-sm font-bold ${st[0]}">${st[1]}</div>
-    <div class="text-[11px] text-[var(--muted)] mt-1">Ton pote touche « Rejoindre » et tape <b class="text-white">${R.code}</b>.${LOCAL.id ? '<br>💻 Un autre onglet de ce PC peut aussi rejoindre (test local).' : ''}</div>
+    <div class="text-[11px] text-[var(--muted)] mt-1">Ton pote touche « Rejoindre » et tape <b class="text-white">${R.code}</b>.</div>
     <div class="flex gap-2 mt-4"><button id="roomClose" class="btn-ghost flex-1 py-2.5 font-bold">Fermer</button><button id="roomShare" class="btn-main flex-1 py-2.5">📤 Partager</button></div>
   </div>`);
   $('#roomModes').addEventListener('click', e => { const b = e.target.closest('[data-rmode]'); if (b){ R.mode = b.dataset.rmode; roomModal(); } });
@@ -4620,7 +4809,7 @@ function roomJoinModal(prefill){
     <form id="roomJoinForm" class="mt-3">
       <div class="flex items-center justify-center gap-1"><span class="font-ops text-3xl text-[#ffd84a]">QNZ-</span>
       <input id="roomInput" maxlength="4" autocomplete="off" autocapitalize="characters" inputmode="text" value="${esc(prefill || '')}" placeholder="8K4" class="w-28 bg-black/30 rounded-xl px-2 py-1 font-ops text-3xl text-center uppercase tracking-[.2em] outline-none border-2 border-[var(--line)] focus:border-[#ffd34d] text-white placeholder:text-white/30"></div>
-      <div class="text-[11px] text-[var(--muted)] mt-2">Tape le code affiché sur l'écran de ton pote (ou de l'autre onglet).</div>
+      <div class="text-[11px] text-[var(--muted)] mt-2">Tape le code affiché sur l'écran de ton pote.</div>
       <div class="flex gap-2 mt-4"><button type="button" onclick="closeModal()" class="btn-ghost flex-1 py-2.5 font-bold">Annuler</button><button class="btn-main flex-1 py-2.5 text-lg">Rejoindre</button></div>
     </form></div>`);
   setTimeout(() => $('#roomInput')?.focus(), 50);
@@ -4636,7 +4825,7 @@ async function roomJoin(code, deadlineMs=25000){
   const stage = (txt, cls='') => {
     if (NET.joining !== token) return;
     if (!$('#joinStage')){
-      openModal(`<div class="text-center"><div class="text-5xl net-spin">☁️</div><div class="font-ops text-2xl text-[var(--khaki)] mt-2">${code}</div>
+      openModal(`<div class="text-center"><div class="text-5xl net-spin">📡</div><div class="font-ops text-2xl text-[var(--khaki)] mt-2">${code}</div>
         <div id="joinStage" class="text-sm font-bold mt-2"></div><div id="joinSteps" class="text-[11px] text-[var(--muted)] mt-1 leading-snug"></div>
         <button id="joinCancel" class="btn-ghost w-full py-2.5 font-bold mt-4">Annuler</button></div>`);
       $('#joinCancel').addEventListener('click', () => { NET.joining = null; if (NET.pendingGuest?.room){ try{ NET.pendingGuest.conn.close(); }catch(e){} NET.pendingGuest = null; } modalLocked = false; closeModal(); });
@@ -4652,24 +4841,23 @@ async function roomJoin(code, deadlineMs=25000){
   while (NET.joining === token && Date.now() - t0 < deadlineMs){
     let conn = null;
     // 1) salon ouvert dans un autre onglet de ce PC ?
-    stage('🔎 Recherche du salon sur cet appareil…');
+    stage(`🔎 Recherche du salon ${code}…`);
     const lid = await localQueryRoom(code, 400);
     if (NET.joining !== token) return;
     if (lid){
-      stage('💻 Salon trouvé sur ce PC : liaison locale…', 'text-cyan-300');
-      try { conn = await localConnect(lid, 3000); note('✅ Liaison locale établie'); } catch(e){ note('⚠️ Liaison locale échouée'); }
+      stage('🔗 Salon trouvé : liaison…', 'text-green-300');
+      try { conn = await localConnect(lid, 3000); note('✅ Liaison établie'); } catch(e){}
     }
     // 2) sinon : serveur cloud
     if (!conn){
       if (!NET.ready){
-        stage('☁️ Connexion au serveur cloud…', 'text-amber-300');
+        stage('📡 Connexion…', 'text-amber-300');
         cloudWake();
         const w0 = Date.now(); while (!NET.ready && Date.now() - w0 < 8000 && NET.joining === token) await sleepMs(150);
         if (NET.joining !== token) return;
-        if (!NET.ready){ note('❌ Serveur cloud injoignable'); return fail('Erreur : serveur cloud injoignable. Vérifiez votre connexion internet (Wi-Fi ou 4G), puis réessayez.'); }
+        if (!NET.ready){ note('❌ Pas de réseau'); return fail('Connexion impossible. Vérifie ta connexion internet (Wi-Fi ou 4G), puis réessaie.'); }
       }
-      note('✅ Connecté au serveur cloud');
-      stage(`📡 Recherche du salon ${code} sur le serveur…`, 'text-amber-300');
+      stage(`🔎 Recherche du salon ${code}…`, 'text-amber-300');
       cloudPublishAll(LOBBY, { t:'who', from:CLOUD.id });
       let host = null; const w1 = Date.now();
       while (!host && Date.now() - w1 < 4000 && NET.joining === token){ host = NET.members.find(m => m.room === code && !m.local); if (!host) await sleepMs(150); }
@@ -4678,7 +4866,7 @@ async function roomJoin(code, deadlineMs=25000){
         if (notFound >= 3) return fail(`Salon <b>${code}</b> introuvable. Vérifie le code, et que ton pote garde l'écran du salon affiché.`);
         continue; }
       note(`✅ Salon trouvé : ${esc(host.name)}`);
-      stage('🔗 Liaison avec l\'hôte via le cloud…', 'text-amber-300');
+      stage('🔗 Liaison avec ton pote…', 'text-amber-300');
       try { conn = await netConnect(host.peer, 8000); note('✅ Liaison établie'); }
       catch(e){ linkFail++; note('❌ L\'hôte ne répond pas'); if (linkFail >= 2) return fail('Erreur : l\'hôte ne répond pas. Son téléphone est peut-être en veille, réessayez dans un instant.'); await sleepMs(1000); continue; }
     }
@@ -4730,7 +4918,7 @@ function playerRow(p, opts={}){
     <div class="favatar">${a.icon}<span class="online-dot ${online || opts.me ? 'on' : 'off'}"></span></div>
     <div class="flex-1 min-w-0">
       <div class="font-bold leading-tight truncate">${esc(p.name)}${opts.me ? ' <span class="text-[10px] text-[var(--khaki)]">(toi)</span>' : ''}</div>
-      <div class="text-[11px] leading-tight font-bold truncate"><span class="text-amber-300">🏆 ${p.trophies || 0}</span> · <span class="text-[#d6e3ff]">Arène ${a.num}</span>${p.local ? ' · <span class="text-cyan-300">💻 ce PC</span>' : ''}${st ? ` · <span class="${st[1]}">${st[0]}</span>` : opts.me ? '' : ' · <span class="text-[var(--muted)]">Hors ligne</span>'}</div>
+      <div class="text-[11px] leading-tight font-bold truncate"><span class="text-amber-300">🏆 ${p.trophies || 0}</span> · <span class="text-[#d6e3ff]">Arène ${a.num}</span>${st ? ` · <span class="${st[1]}">${st[0]}</span>` : opts.me ? '' : ' · <span class="text-[var(--muted)]">Hors ligne</span>'}</div>
       ${opts.h2h ? `<div class="text-[10px] font-bold text-[var(--muted)] leading-tight">Face à face : <span class="text-green-300">${p.w} V</span> – <span class="text-red-300">${p.l} D</span>${p.d ? ` – ${p.d} N` : ''}</div>` : ''}
     </div>
     ${opts.me ? '' : `<div class="flex gap-1 shrink-0">
@@ -4751,7 +4939,7 @@ function renderFriends(){
   let html = '';
   if (friendSeg === 'online'){
     html = online.length ? [...online].sort((a,b) => b.trophies - a.trophies).map(p => playerRow(p, { online:p })).join('')
-      : `<div class="fempty">${hubOk() ? '📻 Personne d\'autre en ligne pour l\'instant.<br><span class="text-[11px]">Dès qu\'un membre de la section ouvre le jeu, il apparaît ici.</span>' : '📡 ' + esc(NET.msg || 'Connexion…')}</div>`;
+      : `<div class="fempty">${hubOk() ? '📻 Personne d\'autre en ligne pour l\'instant.<br><span class="text-[11px]">Dès qu\'un membre de la section ouvre le jeu, il apparaît ici.</span>' : '📻 Recherche des soldats en ligne…'}</div>`;
   } else if (friendSeg === 'friends'){
     html = save.friends.length ? [...save.friends].sort((a,b) => (!!netMember(b.pid) - !!netMember(a.pid)) || b.trophies - a.trophies).map(f => playerRow(f, { online:netMember(f.pid), h2h:true })).join('')
       : `<div class="fempty">⭐ Aucun ami pour l'instant.<br><span class="text-[11px]">Ajoute un pote avec son code, ou avec ➕ dans « En ligne ».</span></div>`;
@@ -4772,7 +4960,7 @@ function renderNetUI(){
   if (dot){ dot.className = 'online-dot ' + (ok || nl ? 'on' : NET.status === 'connecting' || NET.ready ? 'wait' : 'off'); }
   if (stx){ const net = ok ? `☁️ Connecté au serveur cloud · ${n} en ligne` : (NET.msg || 'Hors ligne'); stx.textContent = nl ? `💻 ${nl} onglet(s) sur ce PC · ${net}` : net; stx.title = net; }
   $('#netRetry')?.classList.toggle('hidden', NET.status !== 'off');
-  const ho = $('#homeOnline'); if (ho) ho.textContent = ok || n ? `${n} EN LIGNE` : NET.ready || NET.status === 'connecting' ? 'CONNEXION…' : 'HORS LIGNE';
+  const ho = $('#homeOnline'); if (ho) ho.textContent = n ? `${n} EN LIGNE` : 'DÉFIE TES POTES';
   const onFriends = save.friends.filter(f => netMember(f.pid)).length, fb = $('#friendsBadge');
   if (fb){ fb.textContent = onFriends; fb.classList.toggle('hidden', !onFriends); }
   renderFriends();
@@ -4853,7 +5041,7 @@ async function authPull(){
   if (JSON.stringify(save) !== AUTH.lastPushed) return authPush();   // modifs locales en attente : elles passent d'abord
   try {
     const { data } = await AUTH.sb.from('profiles').select('pseudo, save, updated_at').eq('id', AUTH.user.id).maybeSingle();
-    if (data && data.updated_at && data.updated_at !== AUTH.lastSync && data.updated_at > AUTH.lastSync){ authApply(data, AUTH.user); renderHome(); renderAccount(); toast('☁️ Progression synchronisée'); }
+    if (data && data.updated_at && data.updated_at !== AUTH.lastSync && data.updated_at > AUTH.lastSync){ authApply(data, AUTH.user); renderHome(); renderAccount(); }
   } catch(e){}
 }
 document.addEventListener('visibilitychange', () => { if (!AUTH.user) return; if (document.hidden){ clearTimeout(AUTH.syncT); authPush(); } else authPull(); });
@@ -4939,7 +5127,7 @@ function authModal(mode='login', opts={}){
           opts.pass = ''; go.textContent = 'Chargement de ta progression…';
           await authLoad(r.data.session.user);
           modalLocked = false; closeModal();
-          toast(create ? `🎖️ Bienvenue dans la section, <b>${esc(save.name)}</b> !` : `☁️ Content de te revoir, <b>${esc(save.name)}</b> !`);
+          toast(create ? `🎖️ Bienvenue dans la section, <b>${esc(save.name)}</b> !` : `👋 Content de te revoir, <b>${esc(save.name)}</b> !`);
           resolve(r.data.session.user);
         } catch(err){ draw(authMsg(err)); }
       });
@@ -4991,7 +5179,7 @@ async function authLogout(){
 }
 function renderAccount(){
   const em = $('#profEmail'), bt = $('#btnLogout');
-  if (em) em.textContent = AUTH.user ? `👤 ${AUTH.user.email || ''} · ☁️ sauvegarde en ligne` : '';
+  if (em) em.textContent = AUTH.user ? `👤 ${AUTH.user.email || ''}` : '';
   if (bt) bt.disabled = !AUTH.user;
 }
 $('#btnLogout').addEventListener('click', () => {
