@@ -427,7 +427,7 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
   .shop-offer{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 5px 7px;border-radius:14px;border:3px solid var(--ink);text-align:center;
     background:radial-gradient(circle at 50% 30%,rgba(255,240,180,.35),transparent 60%),linear-gradient(180deg,#3d8ff0,#1d4585);box-shadow:inset 0 2px 0 rgba(255,255,255,.3),0 4px 0 var(--ink);}
   .shop-offer.offer-elite{background:radial-gradient(circle at 50% 30%,rgba(255,220,255,.35),transparent 60%),linear-gradient(180deg,#a855f7,#4c1d95);}
-  .shop-chest{height:58px;display:flex;align-items:center;justify-content:center;}
+  .shop-chest{height:52px;display:flex;align-items:center;justify-content:center;}
   .shop-name{font-family:'Lilita One',sans-serif;font-size:13px;line-height:1.05;color:#fff;text-shadow:0 2px 0 var(--ink);min-height:28px;display:flex;align-items:center;}
   .shop-sub{font-size:10px;font-weight:900;color:#e0ecff;display:flex;align-items:center;gap:2px;}
   .shop-odds{font-size:9px;font-weight:900;line-height:1.2;}
@@ -636,6 +636,57 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
     background-attachment:fixed!important;}
   .panel{box-shadow:inset 0 2px 0 rgba(255,255,255,.28),inset 0 -3px 0 rgba(0,0,0,.2),0 0 0 2px rgba(5,14,40,.55),0 5px 0 rgba(5,14,40,.9),0 12px 22px rgba(0,0,0,.45)!important;}
   .tab-title{text-shadow:0 3px 0 #06122e,-2px 0 0 #06122e,2px 0 0 #06122e,0 -2px 0 #06122e!important;}
+
+  /* =================== COFFRES À DÉVERROUILLER =================== */
+  .chest-slot{position:relative;}
+  .chest-slot.locked{border:3px solid #0b1a36;background:radial-gradient(circle at 50% 40%,rgba(120,170,255,.25),rgba(11,26,54,.5) 70%);box-shadow:0 4px 0 #06122e;cursor:pointer;}
+  .chest-slot.unlocking{border:3px solid #7cc4ff;background:radial-gradient(circle at 50% 40%,rgba(124,196,255,.35),rgba(11,26,54,.45) 70%);box-shadow:0 4px 0 #06122e,0 0 12px rgba(124,196,255,.45);cursor:pointer;}
+  .chest-slot.ready{animation:readyGlow 1.6s ease-in-out infinite;}
+  @keyframes readyGlow{50%{box-shadow:0 4px 0 #6b3500,0 0 16px rgba(255,216,74,.85)}}
+  .ch-time{margin-top:2px;padding:0 7px;border-radius:999px;background:rgba(6,18,46,.8);font-family:'Lilita One',sans-serif;font-size:12px;color:#fff;text-shadow:0 1px 0 #000;}
+  .ch-go{margin-top:3px;font-size:10px;font-weight:900;color:#ffd84a;text-shadow:0 1px 0 #000;}
+  .ch-open{margin-top:2px;font-family:'Lilita One',sans-serif;font-size:13px;color:#7ef08e;text-shadow:0 1px 0 #0b4a1c,-1px 0 0 #0b4a1c,1px 0 0 #0b4a1c;}
+  .ch-cd{margin-top:2px;font-family:'Lilita One',sans-serif;font-size:15px;line-height:1;color:#fff;text-shadow:0 2px 0 #06122e,-1px 0 0 #06122e,1px 0 0 #06122e;}
+  .ch-prog{width:84%;height:6px;margin-top:3px;border-radius:4px;background:rgba(6,18,46,.85);overflow:hidden;border:1px solid #06122e;}
+  .ch-prog i{display:block;height:100%;background:linear-gradient(90deg,#7cc4ff,#ffffff);transition:width 1s linear;}
+  .home-chests{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .chest-slot.mini{aspect-ratio:auto;height:62px;padding:3px;border-radius:12px;}
+  .chest-slot.mini .ch-cd{font-size:13px;margin-top:0;}
+  .chest-slot.mini .ch-open,.chest-slot.mini .ch-time{font-size:11px;margin-top:0;}
+  .chest-slot.mini.empty .text-2xl{font-size:18px;}
+  @media (max-height:760px){ .home-chests{display:none;} }
+  @media (max-height:720px){ .shop-odds{display:none;} .shop-chest{height:40px;} .shop-chest svg{width:46px;height:46px;} .shop-name{min-height:0;font-size:12px;} .shop-offer{padding:5px 4px;gap:2px;} #chestSlots .chest-slot{aspect-ratio:auto;height:96px;} #chestSlots .chest-slot svg{width:52px;height:52px;} #screen-shop .tab-title{margin-bottom:6px;font-size:22px;} #screen-shop > .panel:last-child{display:none;} }
+  .ch-modal-cd{text-align:center;padding:8px;border-radius:14px;background:rgba(6,18,46,.55);border:2px solid var(--ink);}
+  .gem-skip{display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Lilita One',sans-serif;font-size:17px;}
+  .gem-skip .ic-gem{font-size:18px;}
+  /* =================== POP-UP NOUVEAUTÉS =================== */
+  #modalBox.news-box{max-width:370px!important;padding:34px 16px 16px!important;overflow:visible!important;color:#fff;
+    border:5px solid transparent!important;border-radius:22px!important;
+    background:radial-gradient(ellipse 120% 60% at 50% 0%,rgba(140,200,255,.45),transparent 60%) padding-box,
+      repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 2px,transparent 2px 26px) padding-box,repeating-linear-gradient(-45deg,rgba(255,255,255,.06) 0 2px,transparent 2px 26px) padding-box,
+      linear-gradient(180deg,#2a64c8 0%,#1a4597 50%,#0f2c66 100%) padding-box,
+      linear-gradient(180deg,#fff3b0 0%,#f5c443 30%,#a8640e 52%,#ffd56a 75%,#b9741a 100%) border-box!important;
+    box-shadow:inset 0 0 0 2px rgba(6,18,46,.8),inset 0 3px 0 rgba(255,255,255,.25),0 0 0 3px #2a1405,0 9px 0 #2a1405,0 0 40px rgba(255,210,80,.35),0 20px 40px rgba(0,0,0,.6)!important;
+    animation:newsIn .45s cubic-bezier(.2,1.4,.4,1);}
+  @keyframes newsIn{from{transform:scale(.6) translateY(30px);opacity:0}to{transform:none;opacity:1}}
+  .news-ribbon{position:absolute;left:50%;top:-26px;transform:translateX(-50%);width:86%;height:50px;display:flex;align-items:center;justify-content:center;z-index:2;
+    background:linear-gradient(180deg,rgba(255,255,255,.45) 0%,rgba(255,255,255,.12) 38%,rgba(255,255,255,0) 39%),linear-gradient(180deg,#ffe066,#f5a300 55%,#c27400);
+    border:3px solid #2a1405;border-radius:10px;box-shadow:0 5px 0 #2a1405,0 8px 14px rgba(0,0,0,.45);}
+  .news-ribbon::before,.news-ribbon::after{content:'';position:absolute;top:12px;width:30px;height:38px;background:linear-gradient(180deg,#d98b00,#8a4f00);border:3px solid #2a1405;z-index:-1;}
+  .news-ribbon::before{left:-24px;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,40% 50%);border-right:none;}
+  .news-ribbon::after{right:-24px;clip-path:polygon(0 0,100% 0,60% 50%,100% 100%,0 100%);border-left:none;}
+  .news-ribbon span{font-family:'Lilita One',sans-serif;font-size:27px;letter-spacing:.06em;color:#fff;text-shadow:0 3px 0 #6b3500,-2px 0 0 #6b3500,2px 0 0 #6b3500,0 -2px 0 #6b3500;}
+  .news-sub{text-align:center;font-family:'Lilita One',sans-serif;font-size:17px;color:#ffd84a;text-shadow:0 2px 0 #06122e;margin:4px 0 10px;}
+  .news-list{display:flex;flex-direction:column;gap:8px;}
+  .news-item{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:14px;border:3px solid #06122e;
+    background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.05)),linear-gradient(180deg,#3d8ff0,#1f5fc2);box-shadow:inset 0 2px 0 rgba(255,255,255,.3),0 3px 0 #06122e;
+    animation:newsItem .4s ease-out both;}
+  @keyframes newsItem{from{transform:translateX(-18px);opacity:0}to{transform:none;opacity:1}}
+  .news-ic{flex-shrink:0;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;
+    background:radial-gradient(circle at 35% 30%,#fff6c8,#ffd23f 50%,#c98a00);border:2px solid #2a1405;box-shadow:0 2px 0 #2a1405;}
+  .news-t{font-family:'Lilita One',sans-serif;font-size:17px;line-height:1.1;color:#fff;text-shadow:0 2px 0 #06122e;}
+  .news-d{font-size:12px;font-weight:800;line-height:1.3;color:#e3eeff;}
+  .news-d b{color:#ffd84a;}
 </style>
 </head>
 <body>
@@ -673,7 +724,7 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
           <div id="chestCount" class="chip">0/3</div>
         </div>
         <div id="chestSlots" class="grid grid-cols-3 gap-2"></div>
-        <div class="text-xs text-[var(--muted)] mt-2">1 victoire = 1 coffre · touche un coffre pour l'ouvrir.</div>
+        <div class="text-xs text-[var(--muted)] mt-2">Victoire = coffre · ⏱ Commun 15 min · Rare 45 min · Épique 2 h · un seul à la fois.</div>
       </div>
       <div class="panel p-3 mt-3 flex-1 min-h-0 scroll-y">
         <div class="flex items-center justify-between mb-2"><div class="font-ops text-[var(--khaki)]">💎 Boutique à gemmes</div><div class="gem-wallet"><i class="ic-gem"></i><b id="shopGems">0</b></div></div>
@@ -743,6 +794,7 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
         <button data-nav="friends" class="btn-pvp btn-friends"><div class="text-[18px] leading-none">👥 AMIS</div><div id="homeOnline" class="text-[10px] font-sans font-extrabold opacity-90 tracking-wider mt-0.5">DÉFIE TES POTES</div></button>
       </div>
       <div id="deckWarn" class="text-center text-sm text-amber-400 mt-1 hidden">Ton deck doit contenir 8 cartes.</div>
+      <div id="homeChests" class="home-chests mt-2 shrink-0"></div>
       <div class="deck-strip mt-3 shrink-0">
         <div class="flex items-center justify-between mb-1.5">
           <div class="text-[11px] font-bold tracking-widest text-[var(--muted)]">DECK ACTIF · ⌀ <b id="homeAvg" class="text-fuchsia-300">0</b> 💧</div>
@@ -1038,6 +1090,29 @@ const CHEST_TYPES = {
   elite:    { name:"Coffre d'élite",   cards:5, drop:5,  odds:{ commun:20, rare:45, epique:28, legendaire:7 }, colors:['#6d28d9','#2e1065','#fde047'] },
 };
 const DUPE_INSIGNES = { commun:5, rare:15, epique:40, legendaire:100 };
+// Temps de déverrouillage : coffre commun (Caisse militaire) 15 min, rare (Coffre renforcé) 45 min, épique (Coffre d'élite) 2 h
+const CHEST_TIME = { caisse:15*60, renforce:45*60, elite:2*3600 };
+const CHEST_TIER = { caisse:'Commun', renforce:'Rare', elite:'Épique' };
+const chestState = ch => ch.unlockAt == null ? 'locked' : Date.now() >= ch.unlockAt ? 'ready' : 'unlocking';
+const chestLeft = ch => ch.unlockAt == null ? CHEST_TIME[ch.type] : Math.max(0, Math.ceil((ch.unlockAt - Date.now())/1000));
+const unlockingIdx = () => save.chests.findIndex(c => chestState(c) === 'unlocking');
+const skipCost = ch => Math.max(1, Math.ceil(chestLeft(ch)/360));          // ≈ 1 gemme par tranche de 6 min restantes
+function fmtLeft(sec){
+  const h = Math.floor(sec/3600), m = Math.floor(sec%3600/60), ss = sec%60;
+  return h ? `${h} h ${String(m).padStart(2,'0')}` : m ? `${m}:${String(ss).padStart(2,'0')}` : `${ss} s`;
+}
+const fmtDur = sec => sec >= 3600 ? `${sec/3600} h` : `${sec/60} min`;
+function startUnlock(i){
+  const ch = save.chests[i]; if (!ch || chestState(ch) !== 'locked') return;
+  if (unlockingIdx() >= 0) return toast('Un coffre est déjà en cours de déverrouillage.');
+  ch.unlockAt = Date.now() + CHEST_TIME[ch.type]*1000; persist(); renderHome(); showChestInfo(i);
+}
+function skipChest(i){
+  const ch = save.chests[i]; if (!ch) return;
+  const cost = chestState(ch) === 'ready' ? 0 : skipCost(ch);
+  if ((save.gems || 0) < cost) return toast(`Il te manque ${cost - (save.gems || 0)} <i class="ic-gem"></i>`);
+  save.gems -= cost; ch.unlockAt = Date.now(); persist(); openChest(i);
+}
 // cartes par tirage selon le coffre (les doublons servent à améliorer) et or gagné par coffre
 // quantité de cartes par tirage [min, max] selon le coffre et la rareté, et or gagné par coffre
 const CHEST_STACK = { caisse:{ commun:[4,8], rare:[2,3], epique:[1,1], legendaire:[1,1] }, renforce:{ commun:[8,14], rare:[3,5], epique:[1,2], legendaire:[1,1] }, elite:{ commun:[15,25], rare:[6,10], epique:[2,4], legendaire:[1,2] } };
@@ -1089,6 +1164,7 @@ function loadSave(){
     copies: s.copies && typeof s.copies === 'object' ? Object.fromEntries(Object.entries(s.copies).filter(([k, v]) => CARD_MAP[k] && v >= 0).map(([k, v]) => [k, Math.floor(v)])) : {},
     road: Array.isArray(s.road) ? s.road.filter(n => Number.isFinite(n)) : [],
     lvSys: 2,
+    newsSeen: typeof s.newsSeen === 'string' ? s.newsSeen : '',
   };
 }
 const isOwned = id => save.owned.includes(id);
@@ -1222,7 +1298,8 @@ function renderTopbar(){
   $('#tbGems').textContent = save.gems;
   if (typeof NET !== 'undefined') netAnnounce();
   const n = save.chests.length;
-  $('#shopBadge').textContent = n; $('#shopBadge').classList.toggle('hidden', n===0);
+  const act = save.chests.filter(c => chestState(c) === 'ready').length + (unlockingIdx() < 0 && save.chests.some(c => chestState(c) === 'locked') ? 1 : 0);
+  $('#shopBadge').textContent = act; $('#shopBadge').classList.toggle('hidden', act===0);
 }
 function renderCombat(){
   if (!$('#arenaArt').firstChild) $('#arenaArt').innerHTML = arenaSVG();
@@ -1295,7 +1372,7 @@ function renderShop(){
       <div class="shop-odds"><span class="rar-rare">R ${T.odds.rare}%</span> <span class="rar-epique">É ${T.odds.epique}%</span> <span class="rar-legendaire">L ${T.odds.legendaire}%</span></div>
       <button class="btn-main gem-buy ${afford ? '' : 'poor'}" data-buy="${k}"><i class="ic-gem"></i>${GEM_PRICE[k]}</button>
     </div>`;
-  }).join('') + `<div class="col-span-3 text-[11px] text-[var(--muted)] leading-snug mt-1">Gemmes : +1 par victoire contre l'IA, +3 en JcJ classé, et sur la Voie des trophées 🎁. Chaque victoire peut aussi rapporter un coffre gratuit.</div>`;
+  }).join('') + `<div class="col-span-3 text-[11px] text-[var(--muted)] leading-snug mt-1">⚡ Les coffres achetés sont prêts tout de suite, sans attente. Gemmes : +1 par victoire contre l'IA, +3 en JcJ classé, et sur la Voie des trophées 🎁.</div>`;
 }
 function renderSection(){
   if (document.activeElement !== $('#playerName')) $('#playerName').value = save.name;
@@ -1319,8 +1396,8 @@ $('#chestTypes').addEventListener('click', e => {
   const k = b.dataset.buy, price = GEM_PRICE[k];
   if (save.chests.length >= MAX_CHESTS) return toast('Emplacements de coffres pleins : ouvre d\'abord un coffre.');
   if ((save.gems || 0) < price) return toast(`Il te manque ${price - (save.gems || 0)} <i class="ic-gem"></i> : gagne des combats !`);
-  save.gems -= price; save.chests.push({ type:k }); persist(); renderHome();
-  toast(`${CHEST_TYPES[k].name} acheté ! Ouvre-le dans tes coffres.`);
+  save.gems -= price; save.chests.push({ type:k, unlockAt:Date.now() }); persist(); renderHome();
+  toast(`${CHEST_TYPES[k].name} acheté : prêt à ouvrir !`);
 });
 $('#btnReset').addEventListener('click', () => {
   openModal(`<div class="text-center"><div class="font-ops text-2xl text-red-400">Réinitialiser ?</div>
@@ -2191,7 +2268,7 @@ function endBattle(forced){
       save.chests.push({ type });
       reward += `<div class="mt-4 flex items-center justify-center gap-3 bg-black/30 rounded-xl p-2 new-pop">
         <div class="chest-bob">${chestSVG(type,56)}</div>
-        <div class="text-left"><div class="text-[11px] text-green-400 font-extrabold tracking-widest">COFFRE OBTENU !</div><div class="font-ops text-lg">${CHEST_TYPES[type].name}</div><div class="text-xs text-[var(--muted)]">${save.chests.length}/${MAX_CHESTS} emplacements</div></div></div>`;
+        <div class="text-left"><div class="text-[11px] text-green-400 font-extrabold tracking-widest">COFFRE OBTENU !</div><div class="font-ops text-lg">${CHEST_TYPES[type].name}</div><div class="text-xs text-[var(--muted)]">⏱ ${fmtDur(CHEST_TIME[type])} à déverrouiller · ${save.chests.length}/${MAX_CHESTS}</div></div></div>`;
     } else {
       reward += `<div class="mt-4 text-sm font-bold text-amber-300 bg-black/30 rounded-xl p-3">📦 Emplacements de coffres pleins (3/3) : ouvre tes coffres pour en gagner d'autres !</div>`;
     }
@@ -3865,15 +3942,24 @@ function rollChest(type){
   return results.sort((a,b) => RARITY_ORDER.indexOf(CARD_MAP[a.id].rarity) - RARITY_ORDER.indexOf(CARD_MAP[b.id].rarity) || (a.isNew - b.isNew));
 }
 
+function chestSlotHTML(i, mini){
+  const ch = save.chests[i], size = mini ? 40 : 70;
+  if (!ch) return `<div class="chest-slot empty ${mini ? 'mini' : ''}"><div class="text-2xl opacity-40">🔒</div>${mini ? '' : '<div class="text-[11px] font-bold text-[var(--muted)] mt-1">Emplacement libre</div>'}</div>`;
+  const st = chestState(ch), T = CHEST_TYPES[ch.type];
+  if (st === 'ready') return `<button class="chest-slot ready ${mini ? 'mini' : ''}" data-chest="${i}"><div class="chest-bob">${chestSVG(ch.type, size)}</div>${mini ? '' : `<div class="text-[11px] font-bold leading-tight mt-1">${T.name}</div>`}<div class="ch-open">OUVRIR</div></button>`;
+  if (st === 'unlocking'){
+    const pct = 100 - chestLeft(ch)/CHEST_TIME[ch.type]*100;
+    return `<button class="chest-slot unlocking ${mini ? 'mini' : ''}" data-chest="${i}"><div>${chestSVG(ch.type, size)}</div>${mini ? '' : `<div class="text-[11px] font-bold leading-tight mt-0.5">${T.name}</div>`}
+      <div class="ch-cd" data-until="${ch.unlockAt}">${fmtLeft(chestLeft(ch))}</div><div class="ch-prog"><i data-pfrom="${ch.unlockAt - CHEST_TIME[ch.type]*1000}" data-until="${ch.unlockAt}" style="width:${pct}%"></i></div></button>`;
+  }
+  return `<button class="chest-slot locked ${mini ? 'mini' : ''}" data-chest="${i}"><div class="opacity-90">${chestSVG(ch.type, size)}</div>${mini ? '' : `<div class="text-[11px] font-bold leading-tight mt-0.5">${T.name}</div>`}
+    <div class="ch-time">⏱ ${fmtDur(CHEST_TIME[ch.type])}</div>${mini || unlockingIdx() >= 0 ? '' : '<div class="ch-go">Déverrouiller</div>'}</button>`;
+}
 function renderChests(){
   const slots = [];
-  for (let i=0;i<MAX_CHESTS;i++){
-    const ch = save.chests[i];
-    slots.push(ch
-      ? `<button class="chest-slot ready" data-chest="${i}"><div class="chest-bob">${chestSVG(ch.type,78)}</div><div class="text-[11px] font-bold leading-tight mt-1">${CHEST_TYPES[ch.type].name}</div><div class="text-[10px] font-extrabold text-green-400">OUVRIR</div></button>`
-      : `<div class="chest-slot empty"><div class="text-2xl opacity-40">🔒</div><div class="text-[11px] font-bold text-[var(--muted)] mt-1">Emplacement libre</div></div>`);
-  }
+  for (let i=0;i<MAX_CHESTS;i++) slots.push(chestSlotHTML(i, false));
   $('#chestSlots').innerHTML = slots.join('');
+  const hc = $('#homeChests'); if (hc) hc.innerHTML = Array.from({ length:MAX_CHESTS }, (_, i) => chestSlotHTML(i, true)).join('');
   $('#insignes').textContent = save.insignes;
 }
 document.addEventListener('click', e => {
@@ -3895,13 +3981,39 @@ function showChestInfo(i){
       <div class="text-[11px] uppercase tracking-widest font-bold text-[var(--muted)]">Chances par carte</div>
       ${RARITY_ORDER.map(r => `<div class="flex items-center gap-2 text-sm"><span class="w-24 font-bold ${RARITIES[r].txt}">${RARITIES[r].label}</span><div class="flex-1 h-2 rounded bg-black/40 overflow-hidden"><div class="h-full rounded" style="width:${T.odds[r]}%;background:${RAR_BAR[r]}"></div></div><span class="w-10 text-right font-bold">${T.odds[r]}%</span></div>`).join('')}
     </div>
-    <div class="text-xs text-[var(--muted)] mt-3">Cartes encore bloquées : <b class="text-[var(--text)]">${locked}</b>. Un doublon rapporte de l'or <i class="ic-gold"></i> pour débloquer la carte de ton choix.</div>
-    <button id="btnOpenChest" class="btn-main w-full py-3 text-xl mt-4">OUVRIR</button>`);
-  $('#btnOpenChest').addEventListener('click', () => openChest(i));
+    <div class="text-xs text-[var(--muted)] mt-3">Cartes encore bloquées : <b class="text-[var(--text)]">${locked}</b>. Les doublons + l'or <i class="ic-gold"></i> servent à améliorer tes cartes.</div>
+    ${chestActionsHTML(i)}`);
+  wireChestActions(i);
 }
 
+function chestActionsHTML(i){
+  const ch = save.chests[i], st = chestState(ch), busy = unlockingIdx();
+  if (st === 'ready') return `<button id="btnOpenChest" class="btn-main w-full py-3 text-xl mt-4">OUVRIR</button>`;
+  if (st === 'unlocking') return `<div class="ch-modal-cd mt-4"><div class="text-[11px] font-extrabold tracking-widest text-[#e8cfa8]">DÉVERROUILLAGE EN COURS</div>
+      <div id="chestCd" class="font-ops text-4xl text-white" data-until="${ch.unlockAt}">${fmtLeft(chestLeft(ch))}</div></div>
+    <button id="btnSkipChest" class="btn-ghost gem-skip w-full py-3 mt-3">Ouvrir maintenant · <span id="skipCost">${skipCost(ch)}</span> <i class="ic-gem"></i></button>`;
+  return `<div class="text-center text-sm font-bold text-[#e8cfa8] mt-3">⏱ Temps de déverrouillage : <b class="text-white">${fmtDur(CHEST_TIME[ch.type])}</b> · coffre ${CHEST_TIER[ch.type]}</div>
+    ${busy >= 0 ? `<button class="btn-main w-full py-3 text-lg mt-3" disabled>Un autre coffre se déverrouille</button>` : `<button id="btnUnlockChest" class="btn-main w-full py-3 text-xl mt-3">⏱ Déverrouiller</button>`}
+    <button id="btnSkipChest" class="btn-ghost gem-skip w-full py-2.5 mt-2">Ouvrir tout de suite · ${skipCost(ch)} <i class="ic-gem"></i></button>`;
+}
+function wireChestActions(i){
+  $('#btnOpenChest')?.addEventListener('click', () => openChest(i));
+  $('#btnUnlockChest')?.addEventListener('click', () => startUnlock(i));
+  $('#btnSkipChest')?.addEventListener('click', () => skipChest(i));
+}
+// compte à rebours en direct (emplacements, fiche du coffre) ; un coffre prêt rafraîchit l'affichage
+setInterval(() => {
+  if (!save?.chests?.length) return;
+  let done = false;
+  document.querySelectorAll('.ch-cd[data-until]').forEach(el => { const left = Math.max(0, Math.ceil((+el.dataset.until - Date.now())/1000)); el.textContent = fmtLeft(left); if (!left) done = true; });
+  document.querySelectorAll('.ch-prog i[data-until]').forEach(el => { const a = +el.dataset.pfrom, z = +el.dataset.until; el.style.width = clamp((Date.now() - a)/(z - a), 0, 1)*100 + '%'; });
+  const cd = $('#chestCd');
+  if (cd){ const left = Math.max(0, Math.ceil((+cd.dataset.until - Date.now())/1000)); cd.textContent = fmtLeft(left); const sc = $('#skipCost'); if (sc) sc.textContent = Math.max(1, Math.ceil(left/360));
+    if (!left){ const i = save.chests.findIndex(c => c.unlockAt === +cd.dataset.until); if (i >= 0 && !$('#modal').classList.contains('hidden')) showChestInfo(i); } }
+  if (done && currentScreen !== 'battle') renderHome();
+}, 1000);
 function openChest(i){
-  const ch = save.chests[i]; if (!ch || cine) return;
+  const ch = save.chests[i]; if (!ch || cine || chestState(ch) !== 'ready') return;
   const results = rollChest(ch.type);
   save.chests.splice(i, 1); persist(); renderHome();
   closeModal();
@@ -5446,9 +5558,40 @@ $('#playerName').addEventListener('change', async e => {
 function cloudRestart(){ if (!CLOUD.started) return; for (const D of CLOUD.drivers) if (D.ok) D.pub(LOBBY, { t:'bye', from:CLOUD.id }); location.reload(); }
 
 /* =====================================================================
+   NOUVEAUTÉS — pop-up affichée une fois par contenu (mémorisée sur le compte + l'appareil)
+   Pour une prochaine mise à jour : changer NEWS.id et le contenu, elle se réaffiche une fois.
+   ===================================================================== */
+const NEWS = {
+  id: 'maj-2026-11-voie-coffres',
+  title: 'NOUVEAUTÉS',
+  subtitle: 'Voie des trophées & coffres',
+  items: [
+    ['🏆', 'Voie des trophées', 'Monte en trophées et récupère <b>or</b>, <b>gemmes</b> et <b>coffres</b> à chaque palier. Touche 🎁 à côté de ta jauge !'],
+    ['⏱️', 'Coffres à déverrouiller', 'Commun <b>15 min</b> · Rare <b>45 min</b> · Épique <b>2 h</b>. Un coffre à la fois, ou ouverture immédiate avec des gemmes.'],
+    ['📇', 'Lots de doublons', 'Les coffres donnent des cartes en lots (<b>×3</b>, <b>×10</b>…). Doublons + or = cartes améliorées jusqu\'au <b>niveau 11</b>.'],
+    ['💎', 'Boutique à gemmes', 'Achète des coffres prêts à ouvrir, sans attente.'],
+  ],
+};
+const newsKey = () => 'coq_news_' + (AUTH?.user?.id || save.pid);
+function newsSeen(){ try{ if (localStorage.getItem(newsKey()) === NEWS.id) return true; }catch(e){} return save.newsSeen === NEWS.id; }
+function showNews(force){
+  if (!force && newsSeen()) return;
+  if ((B && !B.over) || (typeof cine !== 'undefined' && cine) || !$('#modal').classList.contains('hidden')){ setTimeout(() => showNews(force), 1500); return; }
+  modalLocked = true;
+  openModal(`<div class="news-ribbon"><span>${NEWS.title}</span></div>
+    <div class="news-sub">✨ ${NEWS.subtitle} ✨</div>
+    <div class="news-list">${NEWS.items.map(([ic, t, d], i) => `<div class="news-item" style="animation-delay:${120 + i*110}ms"><div class="news-ic">${ic}</div><div class="min-w-0"><div class="news-t">${t}</div><div class="news-d">${d}</div></div></div>`).join('')}</div>
+    <button id="newsGo" class="btn-main w-full py-3 text-2xl mt-4">C'est parti !</button>
+    <button id="newsRoad" class="block mx-auto text-xs font-bold text-[#ffd84a] underline mt-2.5">Voir la Voie des trophées</button>`, 'news-box');
+  const done = () => { try{ localStorage.setItem(newsKey(), NEWS.id); }catch(e){} save.newsSeen = NEWS.id; persist(); modalLocked = false; closeModal(); };
+  $('#newsGo').addEventListener('click', done);
+  $('#newsRoad').addEventListener('click', () => { done(); showRoad(); });
+}
+
+/* =====================================================================
    DÉMARRAGE
    ===================================================================== */
-preloadPhotos().then(async () => { await localBoot(); buildFaces(); showScreen('home'); await authBoot(); cloudStart(); });
+preloadPhotos().then(async () => { await localBoot(); buildFaces(); showScreen('home'); await authBoot(); cloudStart(); setTimeout(() => showNews(), 600); });
 </script>
 </body>
 </html>
