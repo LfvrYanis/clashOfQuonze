@@ -351,6 +351,20 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
   .net-spin{display:inline-block;animation:netSpin 1.6s linear infinite;}
   @keyframes netSpin{0%{transform:rotate(-20deg)}50%{transform:rotate(20deg) scale(1.1)}100%{transform:rotate(-20deg)}}
   .pvp-tile .stat-v{font-size:22px;}
+  /* ---------- Comptes joueurs ---------- */
+  .auth-modal{max-width:360px!important;padding:14px 16px 16px!important;}
+  .auth-logo{display:block;height:clamp(84px,17vh,128px);margin:-4px auto 6px;filter:drop-shadow(0 5px 8px rgba(0,0,0,.45));}
+  .auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:14px;background:rgba(11,26,54,.6);border:2px solid rgba(0,0,0,.35);margin-bottom:8px;}
+  .auth-tabs button{padding:7px 4px;border-radius:10px;font-family:'Lilita One',sans-serif;font-size:15px;color:#c9d8f7;transition:background .15s;}
+  .auth-tabs button.on{background:linear-gradient(180deg,#ffe27a,#f5a300);color:#4a2800;box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 2px 0 #6b3500;}
+  .auth-lb{display:block;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#d6e3ff;margin:6px 2px 3px;}
+  .auth-in{width:100%;padding:9px 12px;border-radius:12px;background:rgba(11,26,54,.65);border:2px solid #0b1a36;color:#fff;font-weight:800;font-size:16px;outline:none;box-shadow:inset 0 2px 4px rgba(0,0,0,.4);}
+  .auth-in:focus{border-color:#ffd34d;}
+  .auth-in::placeholder{color:rgba(255,255,255,.35);font-weight:700;}
+  .auth-msg{min-height:18px;font-size:12px;font-weight:800;margin:7px 2px;line-height:1.3;}
+  .auth-msg.err{color:#fca5a5;}.auth-msg.ok{color:#86efac;}
+  .account-row{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;font-size:11px;font-weight:700;color:#d6e3ff;}
+  .account-row:empty{display:none;}
   .home-logo{margin:0;line-height:0;}
   .home-logo img{display:block;margin:0 auto;height:clamp(118px,21vh,200px);width:auto;max-width:100%;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));animation:logoIn .5s ease-out;user-select:none;-webkit-user-drag:none;}
   @keyframes logoIn{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
@@ -517,7 +531,8 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
         <div class="font-ops text-[var(--khaki)] mb-2">Raretés & collection</div>
         <div id="rarityList" class="space-y-2.5"></div>
       </div>
-      <button id="btnReset" class="shrink-0 w-full text-xs text-[var(--muted)] underline mt-3">Réinitialiser la progression</button>
+      <div id="accountRow" class="account-row"></div>
+      <button id="btnReset" class="shrink-0 w-full text-xs text-[var(--muted)] underline mt-2">Réinitialiser la progression</button>
     </section>
   </div>
 
@@ -790,7 +805,7 @@ function loadSave(){
   };
 }
 const isOwned = id => save.owned.includes(id);
-function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){} }
+function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){} if (typeof AUTH !== 'undefined' && AUTH && AUTH.user) authSyncSoon(); }
 let save = loadSave();
 
 /* =====================================================================
@@ -3879,7 +3894,7 @@ function toast(text){
    • Par défaut : relais MQTT publics gratuits (EMQX, HiveMQ, Mosquitto) en WebSocket TLS — aucune inscription.
    • Recommandé pour le régiment : votre propre projet Supabase (Realtime, port 443). Renseignez l'URL et la clé
      « anon public » ci-dessous avant d'envoyer le fichier aux potes, ou dans le jeu : onglet Amis → ⚙️ Serveur. */
-const CLOUD_CONFIG = { supabaseUrl:'', supabaseKey:'' };
+const CLOUD_CONFIG = { supabaseUrl:'https://jgxgartipkojdxrwqskp.supabase.co', supabaseKey:'sb_publishable_LkuFLiDteZyCAxbTU-g12w_JCJTvUlT' };
 const CLOUD_NS = 'clashofquonze/v6';
 const MQTT_BROKERS = [
   { name:'EMQX',      url:'wss://broker.emqx.io:8084/mqtt' },
@@ -4035,7 +4050,7 @@ function mqttDriver(b, idx){
 function supaDriver(url, key){
   const D = { name:'Supabase', idx:0, ok:false, sub(){}, pub(){}, end(){}, wake(){} };
   let sb;
-  try { sb = supabase.createClient(url, key, { realtime:{ params:{ eventsPerSecond:50 } }, auth:{ persistSession:false, autoRefreshToken:false } }); } catch(e){ return D; }
+  try { sb = AUTH.sb || supabase.createClient(url, key, { realtime:{ params:{ eventsPerSecond:50 } }, auth:{ persistSession:false, autoRefreshToken:false } }); } catch(e){ return D; }
   const chans = new Map(), handlers = new Map();
   const join = t => {
     let ch = chans.get(t); if (ch) return ch;
@@ -4777,9 +4792,192 @@ $('#btnRoomCreate').addEventListener('click', () => roomCreate());
 $('#btnRoomJoin').addEventListener('click', () => roomJoinModal());
 
 /* =====================================================================
+   COMPTES JOUEURS — Supabase Auth (email + mot de passe + pseudo)
+   La progression (trophées, collection, deck, coffres, stats, amis) est stockée dans la table
+   « profiles » liée à auth.users.id, et rechargée sur n'importe quel appareil à la connexion.
+   ===================================================================== */
+var AUTH = { sb:null, user:null, enabled:false, offline:false, syncT:0, lastPushed:'', lastSync:'', pushing:false };
+const authSyncSoon = () => { if (!AUTH.user || AUTH.applying) return; clearTimeout(AUTH.syncT); AUTH.syncT = setTimeout(authPush, 1200); };
+async function authPush(){
+  if (!AUTH.user || AUTH.pushing) return;
+  const body = JSON.stringify(save);
+  if (body === AUTH.lastPushed) return;
+  AUTH.pushing = true;
+  const at = new Date().toISOString();
+  try {
+    const { error } = await AUTH.sb.from('profiles').upsert({ id:AUTH.user.id, pseudo:String(save.name || 'Soldat').slice(0, 18), save:JSON.parse(body), updated_at:at });
+    if (error) throw error;
+    AUTH.lastPushed = body; AUTH.lastSync = at;
+  } catch(e){ clearTimeout(AUTH.syncT); AUTH.syncT = setTimeout(authPush, 8000); }   // hors ligne : nouvel essai plus tard
+  finally { AUTH.pushing = false; }
+}
+// Applique la sauvegarde du compte sur cet appareil
+function authApply(row, user){
+  AUTH.applying = true;
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(row.save)); }catch(e){}
+  save = loadSave();
+  if (row.pseudo) save.name = String(row.pseudo).slice(0, 18);
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){}
+  AUTH.lastPushed = JSON.stringify(save); AUTH.lastSync = row.updated_at || '';
+  AUTH.applying = false;
+}
+async function authLoad(user){
+  const { data, error } = await AUTH.sb.from('profiles').select('pseudo, save, updated_at').eq('id', user.id).maybeSingle();
+  if (error) throw error;
+  if (data && data.save && typeof data.save === 'object' && Object.keys(data.save).length) authApply(data, user);
+  else { // tout nouveau compte : il démarre avec la progression de cet appareil
+    const ps = String(user.user_metadata?.pseudo || '').trim();
+    if (ps) save.name = ps.slice(0, 18);
+    try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){}
+    AUTH.lastPushed = ''; await authPush();
+  }
+  AUTH.user = user;
+}
+// Retour sur l'appli : si la progression a avancé sur un autre appareil, on la récupère
+async function authPull(){
+  if (!AUTH.user || (B && !B.over) || AUTH.pushing) return;
+  if (JSON.stringify(save) !== AUTH.lastPushed) return authPush();   // modifs locales en attente : elles passent d'abord
+  try {
+    const { data } = await AUTH.sb.from('profiles').select('pseudo, save, updated_at').eq('id', AUTH.user.id).maybeSingle();
+    if (data && data.updated_at && data.updated_at !== AUTH.lastSync && data.updated_at > AUTH.lastSync){ authApply(data, AUTH.user); renderHome(); renderAccount(); toast('☁️ Progression synchronisée'); }
+  } catch(e){}
+}
+document.addEventListener('visibilitychange', () => { if (!AUTH.user) return; if (document.hidden){ clearTimeout(AUTH.syncT); authPush(); } else authPull(); });
+
+const AUTH_ERR = [
+  [/invalid login credentials/i, 'Email ou mot de passe incorrect.'],
+  [/already registered|already exists/i, 'Un compte existe déjà avec cet email : connecte-toi.'],
+  [/email not confirmed/i, 'Confirme d\'abord ton email (lien reçu par mail), puis connecte-toi.'],
+  [/password should be at least|weak password/i, 'Mot de passe trop court (6 caractères minimum).'],
+  [/invalid email|unable to validate email|email address .* is invalid/i, 'Adresse email invalide.'],
+  [/rate limit|too many/i, 'Trop de tentatives : patiente une minute.'],
+  [/failed to fetch|network|load failed/i, 'Pas de connexion internet : réessaie dans un instant.'],
+];
+const authMsg = e => { const m = String(e?.message || e || ''); for (const [re, t] of AUTH_ERR) if (re.test(m)) return t; return m ? 'Erreur : ' + m : 'Erreur inconnue.'; };
+
+// Modale de connexion / inscription (bloquante tant que le joueur n'est pas connecté)
+function authModal(mode='login', opts={}){
+  return new Promise(resolve => {
+    modalLocked = true;
+    const draw = (msg='', kind='err') => {
+      const create = mode === 'signup';
+      openModal(`<div class="auth-box">
+        <img class="auth-logo" src="${LOGO_FULL}" alt="Clash of Quonze">
+        <div class="auth-tabs"><button data-am="login" class="${!create ? 'on' : ''}">Se connecter</button><button data-am="signup" class="${create ? 'on' : ''}">Créer un compte</button></div>
+        <form id="authForm" autocomplete="on" novalidate>
+          ${create ? `<label class="auth-lb">Pseudo</label><input id="auPseudo" class="auth-in" maxlength="18" autocomplete="nickname" placeholder="Ton nom de soldat" value="${esc(opts.pseudo || (save.name !== 'Soldat' ? save.name : ''))}">` : ''}
+          <label class="auth-lb">Email</label><input id="auEmail" class="auth-in" type="email" inputmode="email" autocomplete="email" placeholder="toi@exemple.fr" value="${esc(opts.email || '')}">
+          <label class="auth-lb">Mot de passe</label>
+          <div class="relative"><input id="auPass" class="auth-in pr-12" type="password" autocomplete="${create ? 'new-password' : 'current-password'}" placeholder="${create ? '6 caractères minimum' : '••••••'}">
+            <button type="button" id="auEye" class="absolute right-2 top-1/2 -translate-y-1/2 text-lg" title="Afficher">👁️</button></div>
+          <div id="auMsg" class="auth-msg ${kind}">${msg}</div>
+          <button id="auGo" class="btn-main w-full py-3 text-xl mt-1">${create ? '🎖️ Créer mon compte' : '⚔️ Se connecter'}</button>
+        </form>
+        <div class="text-[11px] text-[#d6e3ff] text-center mt-2 leading-snug">${create ? 'Ta progression (trophées, cartes, deck, stats) sera liée à ton compte et retrouvée sur tous tes appareils.' : 'Retrouve ta progression sur n\'importe quel appareil.'}</div>
+        ${!create ? '<button id="auForgot" class="block mx-auto text-[11px] text-[var(--muted)] underline mt-1">Mot de passe oublié ?</button>' : ''}
+        ${opts.offline ? '<button id="auOffline" class="block mx-auto text-xs text-amber-300 underline mt-2 font-bold">Jouer hors ligne sur cet appareil</button>' : ''}
+      </div>`, 'auth-modal');
+      document.querySelectorAll('[data-am]').forEach(b => b.addEventListener('click', () => { opts.email = $('#auEmail').value; opts.pseudo = $('#auPseudo')?.value || opts.pseudo; mode = b.dataset.am; draw(); }));
+      $('#auEye').addEventListener('click', () => { const i = $('#auPass'); i.type = i.type === 'password' ? 'text' : 'password'; });
+      $('#auForgot')?.addEventListener('click', async () => {
+        const email = $('#auEmail').value.trim(); if (!email) return draw('Indique ton email pour recevoir le lien de réinitialisation.');
+        opts.email = email;
+        const { error } = await AUTH.sb.auth.resetPasswordForEmail(email, { redirectTo: location.protocol.startsWith('http') ? location.href.split('#')[0] : undefined });
+        draw(error ? authMsg(error) : '📧 Si ce compte existe, un lien de réinitialisation vient d\'être envoyé.', error ? 'err' : 'ok');
+      });
+      $('#auOffline')?.addEventListener('click', () => { modalLocked = false; closeModal(); AUTH.offline = true; resolve(null); });
+      $('#authForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const email = $('#auEmail').value.trim(), pass = $('#auPass').value, pseudo = ($('#auPseudo')?.value || '').trim();
+        opts.email = email; opts.pseudo = pseudo || opts.pseudo;
+        if (create && (pseudo.length < 2 || pseudo.length > 18)) return draw('Choisis un pseudo de 2 à 18 caractères.');
+        if (!/^\S+@\S+\.\S+$/.test(email)) return draw('Adresse email invalide.');
+        if (pass.length < 6) return draw('Mot de passe trop court (6 caractères minimum).');
+        const go = $('#auGo'); go.disabled = true; go.textContent = create ? 'Création du compte…' : 'Connexion…';
+        try {
+          const r = create
+            ? await AUTH.sb.auth.signUp({ email, password:pass, options:{ data:{ pseudo }, emailRedirectTo: location.protocol.startsWith('http') ? location.href.split('#')[0] : undefined } })
+            : await AUTH.sb.auth.signInWithPassword({ email, password:pass });
+          if (r.error) throw r.error;
+          if (create && r.data?.user && Array.isArray(r.data.user.identities) && !r.data.user.identities.length) throw new Error('already registered');
+          if (!r.data?.session){ mode = 'login'; return draw('📧 Compte créé ! Clique sur le lien de confirmation reçu par email, puis connecte-toi ici.', 'ok'); }
+          go.textContent = 'Chargement de ta progression…';
+          await authLoad(r.data.session.user);
+          modalLocked = false; closeModal();
+          toast(create ? `🎖️ Bienvenue dans la section, <b>${esc(save.name)}</b> !` : `☁️ Content de te revoir, <b>${esc(save.name)}</b> !`);
+          resolve(r.data.session.user);
+        } catch(err){ draw(authMsg(err)); }
+      });
+      setTimeout(() => (mode === 'signup' && !$('#auPseudo')?.value ? $('#auPseudo') : !$('#auEmail').value ? $('#auEmail') : $('#auPass'))?.focus(), 60);
+    };
+    draw(opts.msg || '', opts.kind || 'err');
+  });
+}
+// Démarrage : session existante → progression du compte ; sinon modale de connexion
+async function authBoot(){
+  const cfg = cloudCfg();
+  if (!(cfg.supabaseUrl && cfg.supabaseKey)){ renderAccount(); return; }   // pas de serveur de comptes configuré : jeu local
+  AUTH.enabled = true;
+  try {
+    await loadScript(SUPA_LIB, 'supabase');
+    AUTH.sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey, {
+      auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, storageKey:'coq-auth-' + TAB_SLOT },
+      realtime:{ params:{ eventsPerSecond:50 } },
+    });
+  } catch(e){
+    await authModalOffline('Impossible de joindre le serveur de comptes. Vérifie ta connexion internet.');
+    return;
+  }
+  let user = null;
+  try {
+    const { data } = await AUTH.sb.auth.getSession();
+    if (data?.session?.user){ await authLoad(data.session.user); user = data.session.user; }
+  } catch(e){
+    if (/fetch|network|load failed/i.test(String(e?.message || e))){ await authModalOffline('Pas de connexion internet : ta progression du compte sera synchronisée au retour du réseau.'); return; }
+  }
+  if (!user) user = await authModal('login', { offline:true });
+  renderHome(); renderAccount();
+}
+async function authModalOffline(msg){
+  modalLocked = true;
+  await new Promise(resolve => {
+    openModal(`<div class="auth-box text-center"><img class="auth-logo" src="${LOGO_FULL}" alt="Clash of Quonze">
+      <div class="font-ops text-2xl text-[#ffd84a]">Connexion impossible</div><p class="text-sm mt-2">${msg}</p>
+      <div class="flex gap-2 mt-4"><button id="auOff" class="btn-ghost flex-1 py-2.5 font-bold">Jouer hors ligne</button><button id="auRetry" class="btn-main flex-1 py-2.5">Réessayer</button></div></div>`, 'auth-modal');
+    $('#auOff').addEventListener('click', () => { AUTH.offline = true; modalLocked = false; closeModal(); resolve(); });
+    $('#auRetry').addEventListener('click', () => location.reload());
+  });
+  renderAccount();
+}
+async function authLogout(){
+  if (!AUTH.user) return;
+  clearTimeout(AUTH.syncT); await authPush();
+  try{ await AUTH.sb.auth.signOut(); }catch(e){}
+  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}   // la progression reste sur le compte, pas sur l'appareil
+  location.reload();
+}
+function renderAccount(){
+  const el = $('#accountRow'); if (!el) return;
+  if (AUTH.user){
+    el.innerHTML = `<span class="truncate">👤 ${esc(AUTH.user.email || save.name)} · <span class="text-green-300">☁️ sauvegarde en ligne</span></span><button id="btnLogout" class="underline shrink-0">Se déconnecter</button>`;
+    $('#btnLogout').addEventListener('click', () => {
+      openModal(`<div class="text-center"><div class="font-ops text-2xl text-[var(--khaki)]">Se déconnecter ?</div>
+        <p class="text-sm mt-2 text-[#d6e3ff]">Ta progression est sauvegardée sur ton compte. Tu la retrouveras en te reconnectant, sur cet appareil ou un autre.</p>
+        <div class="flex gap-2 mt-4"><button onclick="closeModal()" class="btn-ghost flex-1 py-2.5 font-bold">Annuler</button><button id="confirmLogout" class="flex-1 py-2.5 font-bold rounded-xl bg-red-600 text-white">Déconnexion</button></div></div>`);
+      $('#confirmLogout').addEventListener('click', authLogout);
+    });
+  } else if (AUTH.enabled){
+    el.innerHTML = `<span class="truncate">💾 Progression sur cet appareil uniquement</span><button id="btnLogin" class="underline shrink-0">Se connecter</button>`;
+    $('#btnLogin').addEventListener('click', async () => { if (!AUTH.sb) return location.reload(); const u = await authModal('login', { offline:false }); if (u){ renderHome(); renderAccount(); cloudRestart(); } });
+  } else el.innerHTML = '';
+}
+// Après une connexion en cours de partie, le code joueur peut changer : on relance la présence en ligne
+function cloudRestart(){ if (!CLOUD.started) return; for (const D of CLOUD.drivers) if (D.ok) D.pub(LOBBY, { t:'bye', from:CLOUD.id }); location.reload(); }
+
+/* =====================================================================
    DÉMARRAGE
    ===================================================================== */
-preloadPhotos().then(async () => { await localBoot(); buildFaces(); showScreen('home'); cloudStart(); });
+preloadPhotos().then(async () => { await localBoot(); buildFaces(); showScreen('home'); await authBoot(); cloudStart(); });
 </script>
 </body>
 </html>
