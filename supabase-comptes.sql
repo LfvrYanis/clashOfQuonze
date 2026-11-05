@@ -21,3 +21,25 @@ create policy "profil : création par son propriétaire" on public.profiles
   for insert with check (auth.uid() = id);
 create policy "profil : modification par son propriétaire" on public.profiles
   for update using (auth.uid() = id) with check (auth.uid() = id);
+
+-- ---------------------------------------------------------------------------
+-- Pseudos uniques (insensible à la casse) : « Yanis » et « yanis » ne peuvent pas coexister
+create unique index if not exists profiles_pseudo_unique on public.profiles (lower(pseudo));
+
+-- Vérification du pseudo AVANT la création du compte (appelable sans être connecté).
+-- Renvoie true si le pseudo est libre. Ne révèle aucune autre donnée des profils.
+create or replace function public.pseudo_disponible(p text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select not exists (
+    select 1 from public.profiles
+    where lower(pseudo) = lower(trim(p))
+      and id <> coalesce(auth.uid(), '00000000-0000-0000-0000-000000000000'::uuid)
+  );
+$$;
+revoke all on function public.pseudo_disponible(text) from public;
+grant execute on function public.pseudo_disponible(text) to anon, authenticated;
