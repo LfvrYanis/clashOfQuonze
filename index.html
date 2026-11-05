@@ -382,6 +382,56 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
   @media (max-height:700px){ #screen-home h1{font-size:28px!important;} #screen-home h1 + div{display:none;} .btn-battle{padding:7px 0 6px;} .btn-battle .text-\[28px\]{font-size:24px;} .btn-pvp{padding:5px 0 4px;} .trophy-bar{margin-top:3px;} }
 
 
+
+  /* =================== PROGRESSION : niveaux, voie des trophées, boutique =================== */
+  .clvl.max{background:linear-gradient(120deg,#fde047,#f97316,#ec4899,#22d3ee)!important;}
+  .ccell{display:flex;flex-direction:column;gap:3px;}
+  .cbar{position:relative;height:14px;border-radius:7px;background:linear-gradient(180deg,#1b0f05,#2e1a0b);border:2px solid var(--ink);overflow:hidden;}
+  .cbar.off{visibility:hidden;}
+  .cbar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(180deg,#7cc4ff,#2f7de1);}
+  .cbar.full i{background:linear-gradient(180deg,#7ef08e,#22a447);}
+  .cbar.max i{display:none}.cbar.max{background:linear-gradient(120deg,#fde047,#f97316,#ec4899);}
+  .cbar span{position:relative;display:block;text-align:center;font-family:'Lilita One',sans-serif;font-size:10px;line-height:10px;color:#fff;text-shadow:0 1px 0 #000,-1px 0 0 #000,1px 0 0 #000;}
+  .cbar.ready{animation:upPulse 1.2s ease-in-out infinite;}
+  @keyframes upPulse{50%{box-shadow:0 0 8px #4ade80}}
+  .cd-upbar{position:relative;height:18px;border-radius:9px;background:linear-gradient(180deg,#0b1a36,#162a52);border:2px solid #0b1a36;overflow:hidden;margin-bottom:5px;}
+  .cd-upbar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(180deg,#7cc4ff,#2f7de1);}
+  .cd-upbar.full i{background:linear-gradient(180deg,#7ef08e,#22a447);}
+  .cd-upbar span{position:relative;display:block;text-align:center;font-weight:900;font-size:11px;line-height:14px;color:#fff;text-shadow:0 1px 0 #000;}
+  .cd-up-ready{background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.15) 34%,rgba(255,255,255,0) 35%),linear-gradient(180deg,#7ef08e,#35c25a 50%,#178a37)!important;text-shadow:0 2px 0 #0b4a1c!important;}
+  .cd-actions .flex .cd-btn{font-size:15px;padding-left:4px;padding-right:4px;}
+  /* voie des trophées */
+  .road-chip{position:relative;width:30px;height:24px;flex-shrink:0;border-radius:8px;font-size:15px;line-height:1;border:2px solid var(--ink);
+    background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.12) 40%,rgba(255,255,255,0) 41%),linear-gradient(180deg,#ffa149,#c9520b);box-shadow:0 2px 0 var(--ink);}
+  .road-chip .nav-badge{top:-9px;right:-9px;}
+  .road-chip.pulse{animation:roadPulse 1.3s ease-in-out infinite;}
+  @keyframes roadPulse{50%{transform:scale(1.12)}}
+  .arena-banner{cursor:pointer;}
+  .road-list{display:flex;flex-direction:column;gap:6px;min-height:0;padding:2px 2px 6px;}
+  .road-step{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:14px;border:3px solid var(--ink);background:linear-gradient(180deg,#2d63b8,#1d4585);box-shadow:inset 0 2px 0 rgba(255,255,255,.25),0 3px 0 var(--ink);}
+  .road-step.lock{filter:saturate(.35) brightness(.75);}
+  .road-step.got{background:linear-gradient(180deg,#245b33,#163d22);}
+  .road-step.ok{background:linear-gradient(180deg,#3d8ff0,#1f5fc2);box-shadow:inset 0 2px 0 rgba(255,255,255,.35),0 3px 0 var(--ink),0 0 14px rgba(255,216,74,.55);}
+  .road-t{width:62px;flex-shrink:0;font-family:'Lilita One',sans-serif;font-size:14px;color:#ffd84a;text-shadow:0 2px 0 var(--ink);}
+  .road-ic{width:46px;height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .road-lb{flex:1;min-width:0;font-family:'Lilita One',sans-serif;font-size:15px;color:#fff;text-shadow:0 2px 0 var(--ink);}
+  .road-st{width:72px;text-align:center;font-size:20px;flex-shrink:0;}
+  .road-claim{width:84px;flex-shrink:0;padding:6px 0;font-size:15px;min-height:0!important;}
+  .road-arena{margin:6px 4px 0;padding:4px 10px;border-radius:999px;text-align:center;font-family:'Lilita One',sans-serif;font-size:14px;color:#fff;text-shadow:0 2px 0 var(--ink);
+    background:linear-gradient(180deg,#9a6334,#5a3519);border:2px solid var(--ink);}
+  .road-arena b{color:#ffd84a;font-weight:400;}
+  /* boutique à gemmes */
+  .gem-wallet{display:flex;align-items:center;gap:5px;padding:2px 10px;border-radius:999px;background:linear-gradient(180deg,#1b0f05,#2e1a0b);border:2px solid var(--ink);}
+  .gem-wallet b{font-family:'Lilita One',sans-serif;font-weight:400;color:#fff;font-size:15px;text-shadow:0 1px 0 #000;}
+  .shop-offer{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 5px 7px;border-radius:14px;border:3px solid var(--ink);text-align:center;
+    background:radial-gradient(circle at 50% 30%,rgba(255,240,180,.35),transparent 60%),linear-gradient(180deg,#3d8ff0,#1d4585);box-shadow:inset 0 2px 0 rgba(255,255,255,.3),0 4px 0 var(--ink);}
+  .shop-offer.offer-elite{background:radial-gradient(circle at 50% 30%,rgba(255,220,255,.35),transparent 60%),linear-gradient(180deg,#a855f7,#4c1d95);}
+  .shop-chest{height:58px;display:flex;align-items:center;justify-content:center;}
+  .shop-name{font-family:'Lilita One',sans-serif;font-size:13px;line-height:1.05;color:#fff;text-shadow:0 2px 0 var(--ink);min-height:28px;display:flex;align-items:center;}
+  .shop-sub{font-size:10px;font-weight:900;color:#e0ecff;display:flex;align-items:center;gap:2px;}
+  .shop-odds{font-size:9px;font-weight:900;line-height:1.2;}
+  .shop-offer .gem-buy{width:100%;margin-top:3px;justify-content:center;}
+  .gem-buy.poor{filter:grayscale(.6) brightness(.85);}
   /* =================== BARRE DU HAUT SUPERCELL =================== */
   #topbar{position:relative;padding:8px 0 9px!important;padding-top:calc(8px + env(safe-area-inset-top))!important;border-bottom:4px solid var(--ink)!important;
     background:repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 2px,transparent 2px 8px),repeating-linear-gradient(0deg,rgba(0,0,0,.10) 0 1px,transparent 1px 6px),
@@ -591,13 +641,13 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
         <div id="chestSlots" class="grid grid-cols-3 gap-2"></div>
         <div class="text-xs text-[var(--muted)] mt-2">1 victoire = 1 coffre · touche un coffre pour l'ouvrir.</div>
       </div>
-      <div class="panel p-3 mt-3 flex-1 min-h-0 overflow-y-auto">
-        <div class="font-ops text-[var(--khaki)] mb-2">Coffres disponibles</div>
-        <div id="chestTypes" class="space-y-2"></div>
+      <div class="panel p-3 mt-3 flex-1 min-h-0 scroll-y">
+        <div class="flex items-center justify-between mb-2"><div class="font-ops text-[var(--khaki)]">💎 Boutique à gemmes</div><div class="gem-wallet"><i class="ic-gem"></i><b id="shopGems">0</b></div></div>
+        <div id="chestTypes" class="grid grid-cols-3 gap-2"></div>
       </div>
       <div class="panel p-3 mt-3 shrink-0 flex items-center gap-3">
         <div class="emblem w-12 h-12 text-2xl shrink-0"><i class="ic-gold" style="font-size:30px"></i></div>
-        <div class="text-xs text-[var(--muted)] flex-1">Chaque doublon rapporte de l'<b class="text-[var(--text)]">or</b>. Utilise-le pour débloquer la carte de ton choix. Les <b class="text-[var(--text)]">gemmes</b> se gagnent en remportant des combats.</div>
+        <div class="text-xs text-[var(--muted)] flex-1">Les <b class="text-[var(--text)]">doublons</b> des coffres + de l'<b class="text-[var(--text)]">or</b> permettent d'<b class="text-[var(--text)]">améliorer</b> tes cartes jusqu'au niveau 11.</div>
         <button data-nav="deck" class="btn-ghost px-3 py-2 text-sm font-bold shrink-0">Cartes ›</button>
       </div>
     </section>
@@ -647,7 +697,7 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
       </div>
       <div class="arena-card flex-1 min-h-0 mt-3">
         <div class="arena-banner"><span id="arenaNum" class="font-ops">ARÈNE 1</span><span class="text-[var(--muted)]">·</span><span id="arenaName">Camp d'entraînement</span></div>
-        <div class="trophy-bar"><span>🏆 <b id="homeTrophies">0</b></span><div class="track"><div id="trophyFill" class="fill" style="width:0%"></div></div><span id="trophyNext" class="text-[11px] opacity-90">300</span></div>
+        <div class="trophy-bar"><span>🏆 <b id="homeTrophies">0</b></span><div class="track"><div id="trophyFill" class="fill" style="width:0%"></div></div><span id="trophyNext" class="text-[11px] opacity-90">300</span><button id="btnRoad" class="road-chip" title="Voie des trophées">🎁<span id="roadBadge" class="nav-badge hidden">0</span></button></div>
         <div id="arenaArt" class="flex-1 min-h-0 flex items-center justify-center px-2 pb-2"></div>
       </div>
       <button id="btnPlay" class="btn-main btn-battle w-full mt-3 shrink-0">
@@ -847,8 +897,8 @@ const RAW_CARDS = [
   { id:'paul', name:'Paul', icon:'🚒', rarity:'commun', cost:3, ability:"Tank costaud… mais 1 chance sur 2 qu'il fasse demi-tour au déploiement : « J'm'en branle, j'me barre... »",
     hp:1300, dmg:125, hitSpeed:1.4, speed:0.8, range:0.8, radius:0.55, lazy:0.5,
     height:'1m76', weight:'80 kg', desc:"Grosse tête, fan de pompiers. Lourd et maladroit en sport co, mais il encaisse." },
-  { id:'bicoise', name:'Bicoise', icon:'🏋️', rarity:'commun', cost:4, ability:'Mini-tank très résistant',
-    hp:1400, dmg:105, hitSpeed:1.5, speed:0.8, range:0.9, radius:0.62,
+  { id:'bicoise', name:'Bicoise', icon:'🏋️', rarity:'commun', cost:4, ability:"Mini-tank très résistant… mais maladroit : un mur surgit parfois devant lui, il s'écrase dessus et perd quelques PV",
+    hp:1400, dmg:105, hitSpeed:1.5, speed:0.8, range:0.9, radius:0.62, stumble:{ min:3, max:6.5, dmg:0.07, dur:0.9 },
     height:'1m87', weight:'90 kg', desc:"Géant haltérophile." },
   { id:'dongui', name:'Dongui', icon:'📖', rarity:'commun', cost:2, ability:'Ses attaques sur une tour se propagent et touchent 2 tours en même temps',
     hp:300, dmg:115, hitSpeed:2.2, speed:0.7, range:5, projIcon:'📜', chain:true,
@@ -915,7 +965,7 @@ const RAW_CARDS = [
     hp:880, dmg:170, hitSpeed:1.6, speed:0.9, range:5, pierce:true,
     height:'1m75', weight:'75 kg', desc:"Musclé et tatoué, lance des barres de musculation." },
   { id:'pneumo', name:'Pneumothorax', icon:'🫁', rarity:'epique', cost:6, ability:'Claques monumentales en zone qui repoussent les troupes',
-    hp:1700, dmg:250, splash:1.0, hitSpeed:1.6, speed:0.8, range:1.0, radius:0.8, knockback:2,
+    hp:1360, dmg:250, splash:1.0, hitSpeed:1.6, speed:0.8, range:1.0, radius:0.8, knockback:2,
     height:'2m00', weight:'100 kg', desc:"Le colosse." },
 
   // 🟡 LÉGENDAIRES
@@ -923,7 +973,7 @@ const RAW_CARDS = [
     hp:700, dmg:0, hitSpeed:1, range:0, radius:0.8, lifetime:40, generator:{ every:6, amount:1 },
     height:'1m70', weight:'73 kg', desc:"L'Adjoint du matériel." },
   { id:'benjamin', name:'Benjamin', icon:'🎖️', rarity:'legendaire', cost:6, ability:'Cible UNIQUEMENT les tours. Aura : alliés proches +30 % dégâts, +30 % cadence, +25 % vitesse',
-    hp:1900, dmg:180, hitSpeed:1.3, speed:1.0, range:1.0, radius:0.6, onlyTowers:true, aura:{ radius:4, haste:1.3, dmg:1.3, speed:1.25 },
+    hp:1700, dmg:160, hitSpeed:1.3, speed:1.0, range:1.0, radius:0.6, onlyTowers:true, aura:{ radius:4, haste:1.3, dmg:1.3, speed:1.25 },
     height:'1m75', weight:'70 kg', desc:"Le Chef. Lieutenant de la section." },
 ];
 const CARDS = RAW_CARDS.map(c => {
@@ -954,6 +1004,9 @@ const CHEST_TYPES = {
   elite:    { name:"Coffre d'élite",   cards:5, drop:5,  odds:{ commun:20, rare:45, epique:28, legendaire:7 }, colors:['#6d28d9','#2e1065','#fde047'] },
 };
 const DUPE_INSIGNES = { commun:5, rare:15, epique:40, legendaire:100 };
+// cartes par tirage selon le coffre (les doublons servent à améliorer) et or gagné par coffre
+const CHEST_STACK = { caisse:{ commun:2, rare:1, epique:1, legendaire:1 }, renforce:{ commun:3, rare:2, epique:1, legendaire:1 }, elite:{ commun:5, rare:3, epique:2, legendaire:1 } };
+const CHEST_GOLD = { caisse:[20,40], renforce:[60,110], elite:[180,300] };
 const UNLOCK_COST = { commun:40, rare:120, epique:300, legendaire:600 };
 const RAR_BAR = { commun:'#cbd5e1', rare:'#60a5fa', epique:'#c084fc', legendaire:'#facc15' };
 
@@ -983,7 +1036,7 @@ function loadSave(){
   let s = null;
   try{ s = JSON.parse(localStorage.getItem(SAVE_KEY)); }catch(e){}
   if (s && typeof s === 'object'){ if (Array.isArray(s.owned)) s.owned = s.owned.map(migId); if (Array.isArray(s.deck)) s.deck = s.deck.map(migId); }
-  const base = { v:SAVE_VERSION, name:'Soldat', wins:0, losses:0, deck:[...DEFAULT_DECK], owned:starterOwned(), chests:[], insignes:0, gems:20, ...socialOf(s) };
+  const base = { v:SAVE_VERSION, name:'Soldat', wins:0, losses:0, deck:[...DEFAULT_DECK], owned:starterOwned(), chests:[], insignes:0, gems:20, levels:{}, copies:{}, road:[], ...socialOf(s) };
   if (!s || typeof s !== 'object') return base;
   // ancienne sauvegarde (collection de départ plus large) → collection remise au départ, bilan et coffres conservés
   if (s.v !== SAVE_VERSION) return { ...base, name: s.name || 'Soldat', wins: +s.wins || 0, losses: +s.losses || 0,
@@ -996,6 +1049,9 @@ function loadSave(){
     chests: Array.isArray(s.chests) ? s.chests.filter(c => c && CHEST_TYPES[c.type]).slice(0, MAX_CHESTS) : [],
     insignes: +s.insignes || 0,
     gems: Number.isFinite(+s.gems) && s.gems !== undefined ? Math.max(0, +s.gems) : 20,
+    levels: s.levels && typeof s.levels === 'object' ? Object.fromEntries(Object.entries(s.levels).filter(([k, v]) => CARD_MAP[k] && v >= 1 && v <= 11)) : {},
+    copies: s.copies && typeof s.copies === 'object' ? Object.fromEntries(Object.entries(s.copies).filter(([k, v]) => CARD_MAP[k] && v >= 0).map(([k, v]) => [k, Math.floor(v)])) : {},
+    road: Array.isArray(s.road) ? s.road.filter(n => Number.isFinite(n)) : [],
   };
 }
 const isOwned = id => save.owned.includes(id);
@@ -1008,14 +1064,37 @@ let save = loadSave();
 const $ = s => document.querySelector(s);
 $('#homeLogo').src = LOGO_FULL;
 const avgCost = ids => ids.length ? (ids.reduce((a,id)=>a+CARD_MAP[id].cost,0)/ids.length).toFixed(1) : '0';
-// Niveau affiché : niveau de départ de la rareté (le bonus de PV/dégâts correspondant est déjà appliqué)
-const CARD_LEVEL = { commun:1, rare:3, epique:6, legendaire:9 };
+/* ---------- Niveaux des cartes (1 → 11) ----------
+   Niveau de départ selon la rareté (son bonus de PV/dégâts est déjà inclus dans les stats de base),
+   puis +10 % de PV et de dégâts par niveau gagné. Amélioration = doublons (cartes des coffres) + or. */
+const LV_START = { commun:1, rare:3, epique:6, legendaire:9 }, LV_MAX = 11;
+const UP_COPIES = { commun:[2,4,6,10,15,20,30,40,50,60], rare:[2,4,6,10,15,20,25,30], epique:[2,4,6,8,10], legendaire:[1,2] };
+const UP_GOLD = { 2:10, 3:25, 4:50, 5:100, 6:200, 7:400, 8:700, 9:1000, 10:1500, 11:2500 };
+const levelOf = id => { const c = CARD_MAP[id], st = LV_START[c.rarity]; return clamp(Math.floor(+save.levels?.[id] || st), st, LV_MAX); };
+const copiesOf = id => Math.max(0, Math.floor(+save.copies?.[id] || 0));
+const levelMultFor = (id, lvl) => 1 + 0.1*(lvl - LV_START[CARD_MAP[id].rarity]);
+function nextUp(id){ const c = CARD_MAP[id], l = levelOf(id); if (l >= LV_MAX) return null; return { to:l + 1, copies:UP_COPIES[c.rarity][l - LV_START[c.rarity]], gold:UP_GOLD[l + 1] }; }
+const canUpgrade = id => { const n = nextUp(id); return !!n && isOwned(id) && copiesOf(id) >= n.copies && save.insignes >= n.gold; };
+function addCopies(id, n){ save.copies = save.copies || {}; save.copies[id] = copiesOf(id) + n; }
+function upgradeCard(id){
+  const n = nextUp(id); if (!n || !canUpgrade(id)) return false;
+  save.copies[id] = copiesOf(id) - n.copies; save.insignes -= n.gold; save.levels = save.levels || {}; save.levels[id] = n.to; persist(); return true;
+}
+function leveledCard(c, lvl){ const m = levelMultFor(c.id, lvl); return { ...c, hp:Math.round(c.hp*m), dmg:Math.round((c.dmg || 0)*m) }; }
+const deckLevels = () => Object.fromEntries(save.deck.map(id => [id, levelOf(id)]));
+const validLv = o => Object.fromEntries(Object.entries(o && typeof o === 'object' ? o : {}).filter(([k, v]) => CARD_MAP[k] && v >= 1 && v <= LV_MAX).map(([k, v]) => [k, Math.floor(v)]));
+// multiplicateur des unités en combat : mes niveaux / ceux de l'adversaire JcJ / IA calée à mi-chemin de mon niveau moyen
+function unitMult(team, id){
+  if (team === 'p') return levelMultFor(id, levelOf(id));
+  if (B?.net) return levelMultFor(id, clamp(B.net.opp.lv?.[id] || LV_START[CARD_MAP[id].rarity], LV_START[CARD_MAP[id].rarity], LV_MAX));
+  return B?.aiMult || 1;
+}
 function cardHTML(c, size='md', extra=''){
   const r = RARITIES[c.rarity];
   return `<div class="card ${size} ${r.cls} ${extra}" data-id="${c.id}">
     <div class="cost"><span>${c.cost}</span></div>
     <img class="avatar" src="${avatarURL(c)}" alt="" draggable="false"><div class="badge">${c.icon}</div>
-    <div class="clvl lv-${c.rarity}">Niv. ${CARD_LEVEL[c.rarity]}</div>
+    <div class="clvl lv-${c.rarity}${levelOf(c.id) >= LV_MAX ? ' max' : ''}">Niv. ${levelOf(c.id)}</div>
     <div class="cname">${c.name}</div>
   </div>`;
 }
@@ -1117,23 +1196,68 @@ function renderCombat(){
   $('#homeTrophies').textContent = save.trophies;
   $('#trophyFill').style.width = (ar.next ? clamp((save.trophies - ar.min)/(ar.next - ar.min), 0, 1)*100 : 100) + '%';
   $('#trophyNext').textContent = ar.next ? `${ar.next} 🏆 → Arène ${ar.num + 1}` : 'Arène max !';
+  { const n = roadClaimable(), b = $('#roadBadge'); b.textContent = n; b.classList.toggle('hidden', !n); $('#btnRoad').classList.toggle('pulse', n > 0); }
   const ok = save.deck.length === DECK_SIZE;
   $('#btnPlay').disabled = !ok;
   $('#deckWarn').classList.toggle('hidden', ok);
+}
+/* ---------- Voie des Trophées : paliers de récompenses (selon le record de trophées) ---------- */
+const ROAD = [
+  [20,'gold',50], [50,'chest','caisse'], [80,'gems',10], [120,'gold',100], [160,'chest','renforce'], [200,'gems',15], [250,'gold',200],
+  [300,'chest','renforce'], [380,'gems',20], [450,'gold',300], [520,'chest','elite'], [600,'gems',30], [700,'gold',500], [800,'chest','renforce'],
+  [900,'gems',40], [1000,'chest','elite'], [1150,'gold',800], [1300,'gems',50], [1500,'chest','elite'], [1750,'gold',1200], [2000,'gems',80],
+  [2200,'chest','elite'], [2600,'gold',2000], [3000,'gems',150],
+];
+const roadClaimable = () => ROAD.filter(([t]) => save.best >= t && !save.road.includes(t)).length;
+function roadRewardHTML([t, kind, v], big){
+  if (kind === 'chest') return `<div class="road-ic">${chestSVG(v, big ? 46 : 38)}</div><div class="road-lb">${CHEST_TYPES[v].name}</div>`;
+  if (kind === 'gold') return `<div class="road-ic"><i class="ic-gold" style="font-size:30px"></i></div><div class="road-lb">${v} or</div>`;
+  return `<div class="road-ic"><i class="ic-gem" style="font-size:30px"></i></div><div class="road-lb">${v} gemmes</div>`;
+}
+function claimRoad(t){
+  const step = ROAD.find(r => r[0] === t); if (!step || save.best < t || save.road.includes(t)) return;
+  const [, kind, v] = step;
+  if (kind === 'chest'){ if (save.chests.length >= MAX_CHESTS) return toast('Emplacements de coffres pleins : ouvre d\'abord un coffre.'); save.chests.push({ type:v }); }
+  else if (kind === 'gold') save.insignes += v; else save.gems = (save.gems || 0) + v;
+  save.road.push(t); persist(); renderHome(); showRoad();
+  toast(kind === 'chest' ? `🎁 ${CHEST_TYPES[v].name} ajouté à tes coffres !` : kind === 'gold' ? `+${v} <i class="ic-gold"></i> récupérés !` : `+${v} <i class="ic-gem"></i> récupérées !`);
+}
+function showRoad(){
+  let html = '', lastArena = -1;
+  for (const step of ROAD){
+    const [t] = step, a = arenaIndex(t);
+    if (a !== lastArena && a > 0){ html += `<div class="road-arena">${ARENAS[a][2]} Arène ${a + 1} · ${ARENAS[a][1]} <b>${ARENAS[a][0]} 🏆</b></div>`; }
+    lastArena = a;
+    const got = save.road.includes(t), ok = save.best >= t;
+    html += `<div class="road-step ${got ? 'got' : ok ? 'ok' : 'lock'}">
+      <div class="road-t">🏆 ${t}</div>${roadRewardHTML(step)}
+      ${got ? '<div class="road-st">✓</div>' : ok ? `<button class="btn-main road-claim" data-road="${t}">Prendre</button>` : '<div class="road-st">🔒</div>'}
+    </div>`;
+  }
+  const next = ROAD.find(([t]) => save.best < t);
+  openModal(`<div class="flex flex-col" style="max-height:min(78vh,620px)">
+    <div class="text-center shrink-0"><div class="font-ops text-2xl text-[#ffd84a]">🏆 Voie des trophées</div>
+      <div class="text-xs font-bold text-[#e8cfa8] mt-0.5">Record : <b class="text-white">${save.best}</b> trophées${next ? ` · prochain palier à ${next[0]}` : ' · tout est débloqué !'}</div></div>
+    <div id="roadList" class="road-list scroll-y mt-3">${html}</div>
+    <button onclick="closeModal()" class="btn-ghost w-full py-2.5 font-bold mt-3 shrink-0">Fermer</button></div>`);
+  $('#roadList').addEventListener('click', e => { const b = e.target.closest('[data-road]'); if (b) claimRoad(+b.dataset.road); });
+  const first = $('#roadList .road-step.ok') || $('#roadList .road-step.lock'); if (first) first.scrollIntoView({ block:'center' });
 }
 const GEM_PRICE = Object.fromEntries(Object.keys(CHEST_TYPES).map((k, i) => [k, [15, 40, 100][i] || 100]));
 function renderShop(){
   renderChests();
   $('#chestCount').textContent = `${save.chests.length}/${MAX_CHESTS}`;
-  $('#chestTypes').innerHTML = Object.entries(CHEST_TYPES).map(([k,T]) => `
-    <div class="flex items-center gap-3 bg-black/25 rounded-xl p-2 border border-[var(--line)]">
-      <div class="shrink-0">${chestSVG(k,46)}</div>
-      <div class="flex-1 min-w-0">
-        <div class="font-bold leading-tight">${T.name} <span class="text-[var(--muted)] text-xs">· ${T.cards} cartes</span></div>
-        <div class="text-[11px] text-[var(--muted)] leading-tight mt-0.5"><span class="rar-rare">Rare ${T.odds.rare}%</span> · <span class="rar-epique">Épique ${T.odds.epique}%</span> · <span class="rar-legendaire">Légendaire ${T.odds.legendaire}%</span></div>
-      </div>
-      <div class="flex flex-col items-end gap-1 shrink-0"><button class="btn-main gem-buy" data-buy="${k}"><i class="ic-gem"></i>${GEM_PRICE[k]}</button><div class="text-[10px] font-bold text-[var(--muted)]">${T.drop}% / victoire</div></div>
-    </div>`).join('') + `<div class="text-[11px] text-[var(--muted)]">Achète un coffre avec tes gemmes, ou gagne-en un à chaque victoire (le % indique la chance de l'obtenir).</div>`;
+  $('#shopGems').textContent = save.gems || 0;
+  $('#chestTypes').innerHTML = Object.entries(CHEST_TYPES).map(([k,T]) => {
+    const [g0, g1] = CHEST_GOLD[k], afford = (save.gems || 0) >= GEM_PRICE[k];
+    return `<div class="shop-offer offer-${k}">
+      <div class="shop-chest">${chestSVG(k,62)}</div>
+      <div class="shop-name">${T.name}</div>
+      <div class="shop-sub">${T.cards} tirages · ${g0}-${g1} <i class="ic-gold"></i></div>
+      <div class="shop-odds"><span class="rar-rare">R ${T.odds.rare}%</span> <span class="rar-epique">É ${T.odds.epique}%</span> <span class="rar-legendaire">L ${T.odds.legendaire}%</span></div>
+      <button class="btn-main gem-buy ${afford ? '' : 'poor'}" data-buy="${k}"><i class="ic-gem"></i>${GEM_PRICE[k]}</button>
+    </div>`;
+  }).join('') + `<div class="col-span-3 text-[11px] text-[var(--muted)] leading-snug mt-1">Gemmes : +1 par victoire contre l'IA, +3 en JcJ classé, et sur la Voie des trophées 🎁. Chaque victoire peut aussi rapporter un coffre gratuit.</div>`;
 }
 function renderSection(){
   if (document.activeElement !== $('#playerName')) $('#playerName').value = save.name;
@@ -1150,6 +1274,8 @@ function renderSection(){
   $('#secAi').textContent = `🤖 Entraînement contre l'IA : ${aiW} V · ${aiL} D${aiT ? ` (${Math.round(aiW/aiT*100)} %)` : ''}`;
 }
 function renderHome(){ renderTopbar(); renderCombat(); renderShop(); renderSection(); if (typeof NET !== 'undefined') renderNetUI(); }
+$('#btnRoad').addEventListener('click', e => { e.stopPropagation(); showRoad(); });
+$('.arena-banner').addEventListener('click', () => showRoad());
 $('#chestTypes').addEventListener('click', e => {
   const b = e.target.closest('[data-buy]'); if (!b) return;
   const k = b.dataset.buy, price = GEM_PRICE[k];
@@ -1192,7 +1318,12 @@ function renderDeckScreen(){
     const list = CARDS.filter(c => c.rarity === r).sort((a,b) => (isOwned(b.id) - isOwned(a.id)) || a.cost - b.cost || a.name.localeCompare(b.name));
     const own = list.filter(c => isOwned(c.id)).length;
     return `<div class="coll-sec coll-${r}">${RARITIES[r].label}<b>${own}/${list.length}</b></div>
-      <div class="grid grid-cols-4 gap-2">${list.map(c => cardHTML(c,'md', !isOwned(c.id) ? 'locked' : save.deck.includes(c.id) ? 'in-deck opacity-60' : '')).join('')}</div>`;
+      <div class="grid grid-cols-4 gap-x-2 gap-y-1.5">${list.map(c => {
+        const own = isOwned(c.id), n = nextUp(c.id), have = copiesOf(c.id), ready = own && canUpgrade(c.id);
+        const bar = !own ? '<div class="cbar off"></div>' : !n ? '<div class="cbar max"><span>MAX</span></div>'
+          : `<div class="cbar ${have >= n.copies ? 'full' : ''} ${ready ? 'ready' : ''}"><i style="width:${Math.min(100, have/n.copies*100)}%"></i><span>${ready ? '⬆ ' : ''}${have}/${n.copies}</span></div>`;
+        return `<div class="ccell">${cardHTML(c,'md', !own ? 'locked' : save.deck.includes(c.id) ? 'in-deck opacity-60' : '')}${bar}</div>`;
+      }).join('')}</div>`;
   }).join('');
   $('#collCount').textContent = `${save.owned.length}/${CARDS.length} débloquées`;
 }
@@ -1245,7 +1376,7 @@ function cardStatsCR(c){
   return rows;
 }
 function showCardDetail(id){
-  const c = CARD_MAP[id], r = RARITIES[c.rarity];
+  const c0 = CARD_MAP[id], r = RARITIES[c0.rarity], lvl = levelOf(id), c = leveledCard(c0, lvl), up = nextUp(id);
   const owned = isOwned(id), inDeck = save.deck.includes(id), full = save.deck.length >= DECK_SIZE;
   const typeLabel = { troop:'Troupe', building:'Bâtiment', spell:'Sort' }[c.type];
   const cost = UNLOCK_COST[c.rarity] || 0;
@@ -1255,11 +1386,18 @@ function showCardDetail(id){
   else if (inDeck) action = `<button id="mRemove" class="btn-ghost w-full cd-btn font-bold">Retirer du deck</button>`;
   else if (full) action = `<button id="mSwap" class="btn-main w-full cd-btn">Remplacer une carte</button>`;
   else action = `<button id="mAdd" class="btn-main w-full cd-btn">Ajouter au deck</button>`;
+  if (owned){
+    const have = copiesOf(id), need = up ? up.copies : 0, pct = up ? Math.min(100, have/need*100) : 100, ready = canUpgrade(id);
+    const upBtn = !up ? `<button class="btn-ghost w-full cd-btn" disabled>Niveau max</button>`
+      : `<button id="mUp" class="btn-main w-full cd-btn ${ready ? 'cd-up-ready' : ''}" ${ready ? '' : 'disabled'}>⬆️ Niv. ${up.to} · ${up.gold} ${'<i class="ic-gold"></i>'}</button>`;
+    action = `<div class="cd-upbar ${up && have >= need ? 'full' : ''}"><i style="width:${pct}%"></i><span>${up ? `📇 ${have}/${need} cartes · ${save.insignes >= up.gold ? '' : 'or insuffisant · '}niv. ${lvl} → ${up.to}` : `Niveau ${LV_MAX} atteint`}</span></div>
+      <div class="flex gap-2">${action.replace('w-full', 'flex-1')}${upBtn.replace('w-full', 'flex-1')}</div>`;
+  }
   openModal(`
     <button onclick="closeModal()" class="cd-close">×</button>
     <div class="cd-head">
       <div class="cd-name">${c.name}</div>
-      <div class="cd-ribbon cd-rib-${c.rarity}">${r.label}</div>
+      <div class="cd-ribbon cd-rib-${c.rarity}">${r.label} · Niv. ${lvl}</div>
     </div>
     <div class="cd-hero cd-bg-${c.rarity} ${owned ? '' : 'cd-locked'}">
       <div class="rays rays-${c.rarity}" style="width:420px;height:420px;margin:-210px 0 0 -210px;left:50%;top:60%;opacity:.5"></div>
@@ -1301,6 +1439,11 @@ function showCardDetail(id){
   $('#mRemove')?.addEventListener('click', () => { save.deck = save.deck.filter(x => x!==id); persist(); closeModal(); renderDeckScreen(); });
   $('#mAdd')?.addEventListener('click', () => { save.deck.push(id); persist(); closeModal(); renderDeckScreen(); });
   $('#mSwap')?.addEventListener('click', () => { swapCandidate = id; closeModal(); renderDeckScreen(); window.scrollTo({top:0,behavior:'smooth'}); });
+  $('#mUp')?.addEventListener('click', () => {
+    if (!upgradeCard(id)) return;
+    renderHome(); renderDeckScreen(); showCardDetail(id);
+    toast(`⬆️ <b>${c0.name}</b> passe au niveau ${levelOf(id)} ! +10 % PV et dégâts`);
+  });
   $('#mUnlock')?.addEventListener('click', () => {
     if (save.insignes < cost) return;
     save.insignes -= cost; save.owned.push(id); persist(); renderDeckScreen(); showCardDetail(id);
@@ -1352,6 +1495,7 @@ function startBattle(opts={}){
     for (const c of [NET.lastConn]) if (c && c !== net.conn) try{ c.close(); }catch(e){}
     NET.lastConn = net.conn; }
   const aiDeck = net ? net.opp.deck : shuffle(CARDS.map(c=>c.id)).slice(0, DECK_SIZE);
+  const aiMult = 1 + 0.05*save.deck.reduce((a, id) => a + levelOf(id) - LV_START[CARD_MAP[id].rarity], 0)/Math.max(1, save.deck.length);
   B = {
     time: MATCH_TIME, over:false, last:performance.now(),
     elixir:5, crownsP:0, crownsE:0,
@@ -1363,7 +1507,7 @@ function startBattle(opts={}){
     player: makeHand(save.deck),
     ai: { ...makeHand(aiDeck), elixir:5, timer:3 },
     selected:null, hover:null, dragging:false, handDirty:true,
-    mode: opts.mode || 'ai', net,
+    mode: opts.mode || 'ai', net, aiMult,
   };
   if (net && !net.host){ B.netMap = new Map(); B.netFx = new Map(); B.alertT = MATCH_TIME; }
   $('#battleOpp').textContent = net ? `${net.opp.name} · 🏆 ${net.opp.trophies}` : 'Section Rouge (IA)';
@@ -1399,7 +1543,8 @@ function canPlace(team, card, x, y){
 }
 
 function deploy(team, cardId, x, y){
-  const c = CARD_MAP[cardId];
+  const c0 = CARD_MAP[cardId], lm = unitMult(team, cardId);
+  const c = lm === 1 ? c0 : { ...c0, hp:Math.round(c0.hp*lm), dmg:Math.round((c0.dmg || 0)*lm) };
   if (c.type === 'spell'){
     B.fx.push({ kind:'strike', team, x, y, r:c.radius, dmg:c.dmg, delay:c.delay, t:0, dur:c.delay+0.5, icon:c.icon, hit:false });
     return;
@@ -1532,6 +1677,19 @@ function effSpeed(e){
 }
 
 /* ---------- Pouvoirs spéciaux ---------- */
+// Bicoise : un mur surgit devant lui, il s'écrase dessus, perd quelques PV et saigne
+function stumble(e, S){
+  const dx = e._dx ?? 0, dy = e._dy ?? (e.team === 'p' ? -1 : 1);
+  e.stumbleCd = S.min + Math.random()*(S.max - S.min);
+  e.tripT = S.dur; e.tripDir = dx >= 0 ? 1 : -1; e.stun = Math.max(e.stun, S.dur); e.walking = false;
+  B.fx.push({ kind:'wall', x:e.x + dx*0.9, y:e.y + dy*0.9, t:0, dur:1.5 });
+  const hurt = Math.max(0, Math.min(e.hp - 1, e.maxHp*S.dmg));
+  if (hurt > 0){ e.hp -= hurt; e.flash = 0.12; }
+  B.fx.push({ kind:'blood', x:e.x - dx*0.3, y:e.y - dy*0.3 + 0.3, vx:-dx, vy:-dy, t:0, dur:8, seed:(Math.random()*1e6)|0 });
+  B.fx.push({ kind:'text', x:e.x, y:e.y - 1.5, text:'AÏE ! -' + Math.round(hurt), color:'#fca5a5', t:0, dur:1 });
+  burst(e.x + dx*0.7, e.y + dy*0.7 - 0.3, '#c2410c', 9, 3, 0.1, 0.45);
+  burst(e.x, e.y - 0.2, '#dc2626', 7, 2.5, 0.08, 0.45);
+}
 // Climoune : extraction par NH90 Caïman juste avant de mourir, puis capture d'un ennemi au hasard
 function startEvac(u){
   if (u.extracting) return;
@@ -1764,6 +1922,7 @@ function update(dt){
 
   for (const e of B.ents){
     if (e.flash>0) e.flash -= dt;
+    if (e.tripT > 0) e.tripT -= dt;
     if (e.atkT>0) e.atkT -= dt;
     if (e.deploy > 0){ e.deploy -= dt; if (!e.landed && e.deploy <= (e.deployTotal||1)*0.18){ e.landed = true; landingFx(e); } continue; }
     const c = e.card || {};
@@ -1847,6 +2006,7 @@ function update(dt){
       if (e.cd <= 0){ attack(e,t); e.cd = e.hitSpeed; }
     } else {
       const moved = moveToward(e, t.x, t.y, dt, effSpeed(e));
+      if (c.stumble && moved > 0){ if (e.stumbleCd === undefined) e.stumbleCd = c.stumble.min + Math.random()*(c.stumble.max - c.stumble.min); e.stumbleCd -= dt; if (e.stumbleCd <= 0) stumble(e, c.stumble); }
       e.walking = moved > 0;
       if (c.charge && !e.charged){ e.moved += moved; if (e.moved >= c.charge.dist) e.charged = true; }
       if (c.sprint) e.sprint = Math.min(c.sprint.max, e.sprint + c.sprint.rate*dt);
@@ -1973,7 +2133,8 @@ function endBattle(forced){
     const g = mode === 'ranked' ? 3 : 1; save.gems = (save.gems || 0) + g;
     reward += `<div class="mt-3 inline-flex items-center gap-1.5 font-ops text-xl text-green-300 new-pop">+${g} <i class="ic-gem"></i> gemme${g > 1 ? 's' : ''}</div>`;
   }
-  if (result==='win' && mode !== 'friendly'){
+  // coffre : toute victoire, y compris en amical si elle est gagnée au chrono ou aux 3 tours (pas par abandon / déconnexion)
+  if (result==='win' && (mode !== 'friendly' || !B.oppLeft)){
     if (save.chests.length < MAX_CHESTS){
       const type = rollChestType();
       save.chests.push({ type });
@@ -3233,6 +3394,29 @@ function render(){
   }
 
   // couche sol : flaques, fumée
+  for (const f of B.fx) if (f.kind==='blood'){        // trace de sang de Bicoise
+    const a = f.t > f.dur - 1.5 ? Math.max(0, (f.dur - f.t)/1.5) : Math.min(1, f.t*5), R0 = rng(f.seed || 1);
+    c.save(); c.globalAlpha = a*0.9; c.fillStyle = '#7f0b0b';
+    c.beginPath(); c.ellipse(f.x*s, f.y*s, s*0.34, s*0.15, 0, 0, 7); c.fill();
+    for (let i=0;i<6;i++){ const d = 0.25 + i*0.16 + R0()*0.08, ox = (R0()-0.5)*0.35, r = s*(0.13 - i*0.016);
+      c.beginPath(); c.ellipse((f.x + (f.vx||0)*d + ox*(f.vy||0))*s, (f.y + (f.vy||0)*d*0.6 + ox*0.2)*s, Math.max(2, r), Math.max(1.5, r*0.6), 0, 0, 7); c.fill(); }
+    c.fillStyle = '#b91c1c'; c.beginPath(); c.ellipse(f.x*s - s*0.06, f.y*s - s*0.03, s*0.18, s*0.07, 0, 0, 7); c.fill();
+    c.restore();
+  }
+  for (const f of B.fx) if (f.kind==='wall'){         // mur qui surgit devant Bicoise
+    const k = f.t/f.dur, pop = Math.min(1, f.t/0.12), fade = k > 0.72 ? Math.max(0, (1 - k)/0.28) : 1;
+    const w = 1.3*s, h = 0.95*s*pop, bx = f.x*s - w/2, by = f.y*s + 0.3*s - h;
+    c.save(); c.globalAlpha = fade;
+    c.fillStyle = 'rgba(0,0,0,.25)'; c.beginPath(); c.ellipse(f.x*s, f.y*s + 0.3*s, w*0.6, s*0.16, 0, 0, 7); c.fill();
+    c.fillStyle = '#b45309'; c.fillRect(bx, by, w, h);
+    c.strokeStyle = '#5c2a06'; c.lineWidth = Math.max(1, s*0.04);
+    const rows = 4; for (let r=0;r<rows;r++){ const yy = by + h*r/rows; c.beginPath(); c.moveTo(bx, yy); c.lineTo(bx + w, yy); c.stroke();
+      for (let q=0;q<4;q++){ const xx = bx + w*((q + (r%2 ? 0.5 : 0))/4); if (xx > bx && xx < bx + w){ c.beginPath(); c.moveTo(xx, yy); c.lineTo(xx, yy + h/rows); c.stroke(); } } }
+    c.fillStyle = '#7c3a0a'; c.fillRect(bx - s*0.04, by - s*0.08, w + s*0.08, s*0.1);
+    c.strokeStyle = '#2a1405'; c.lineWidth = Math.max(1.5, s*0.05); c.strokeRect(bx, by, w, h);
+    if (k > 0.35){ c.strokeStyle = 'rgba(30,10,0,.8)'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(f.x*s - s*0.1, by); c.lineTo(f.x*s + s*0.05, by + h*0.4); c.lineTo(f.x*s - s*0.08, by + h*0.75); c.stroke(); }
+    c.restore();
+  }
   for (const f of B.fx) if (f.kind==='puddle'){
     const k = f.t/f.dur, a = k>0.8 ? (1-k)/0.2 : Math.min(1, f.t*4);
     c.globalAlpha = 0.8*a;
@@ -3518,6 +3702,7 @@ function drawUnit(e){
   if (e.slow > 0) filt += ' sepia(.55) saturate(1.6) hue-rotate(35deg)';
   c.save();
   c.translate(Math.round(x*B.dpr)/B.dpr, Math.round(fy*B.dpr)/B.dpr);
+  if (e.tripT > 0){ const tt = 1 - e.tripT/0.9, a = (tt < 0.22 ? tt/0.22 : tt > 0.72 ? Math.max(0, (1 - tt)/0.28) : 1) * 1.25 * (e.tripDir || 1); c.rotate(a); }   // Bicoise tombe
   if (squash){ c.scale(1 + squash*0.14, 1 - squash*0.18); }
   if (filt) c.filter = filt.trim();
   c.imageSmoothingQuality = 'high';
@@ -3604,6 +3789,7 @@ function chestLogo(elite){
   return `<image href="${LOGO_MARK}" x="24.5" y="39" width="15" height="15"/>` +
     (elite ? '<path d="M50 34 l1.5 3 3.3.5-2.4 2.3.6 3.3-3-1.6-3 1.6.6-3.3-2.4-2.3 3.3-.5z" fill="#fde047" stroke="#2e1065" stroke-width=".6"/>' : '');
 }
+const upLabel = id => { const n = nextUp(id); return n ? `${copiesOf(id)}/${n.copies} pour le niv. ${n.to}` : 'niveau max'; };
 function rollChestType(){
   let r = Math.random()*100;
   for (const [k, T] of Object.entries(CHEST_TYPES)){ r -= T.drop; if (r < 0) return k; }
@@ -3616,9 +3802,12 @@ function rollChest(type){
     for (const k of RARITY_ORDER){ r -= T.odds[k]; if (r < 0){ rar = k; break; } }
     const pool = CARDS.filter(c => c.rarity===rar);
     const c = pool[Math.random()*pool.length|0];
-    if (!isOwned(c.id)){ save.owned.push(c.id); results.push({ id:c.id, isNew:true }); }
-    else { const n = DUPE_INSIGNES[rar]; save.insignes += n; results.push({ id:c.id, isNew:false, insignes:n }); }
+    const n = (CHEST_STACK[type] || CHEST_STACK.caisse)[rar];
+    if (!isOwned(c.id)){ save.owned.push(c.id); if (n > 1) addCopies(c.id, n - 1); results.push({ id:c.id, isNew:true, n }); }
+    else { addCopies(c.id, n); results.push({ id:c.id, isNew:false, n }); }
   }
+  const [g0, g1] = CHEST_GOLD[type] || CHEST_GOLD.caisse, gold = Math.round(g0 + Math.random()*(g1 - g0));
+  save.insignes += gold; results.gold = gold;
   // la meilleure carte en dernier, pour le suspense
   return results.sort((a,b) => RARITY_ORDER.indexOf(CARD_MAP[a.id].rarity) - RARITY_ORDER.indexOf(CARD_MAP[b.id].rarity) || (a.isNew - b.isNew));
 }
@@ -3990,7 +4179,7 @@ async function playChestCinematic(type, results){
       cineSparks(cx, cy, cfx.sparks, [14, 24, 40, 70][ri], 1 + ri*0.15);
       if (ri >= 2) cineFlash(cfx, ri===3 ? .9 : .6, ri===3 ? 800 : 450);
       info.innerHTML = `<div class="cine-name">${c.name}</div><div class="cine-rar ${RARITIES[c.rarity].txt}">${RARITIES[c.rarity].label}</div>
-        ${r.isNew ? '<div class="cine-new">NOUVELLE CARTE !</div>' : `<div class="cine-dupe">Doublon · +${r.insignes} <i class="ic-gold"></i> or</div>`}`;
+        ${r.isNew ? '<div class="cine-new">NOUVELLE CARTE !</div>' : `<div class="cine-dupe">Doublon · +${r.n} carte${r.n > 1 ? 's' : ''} · ${upLabel(r.id)}</div>`}`;
       info.animate([{ opacity:0, transform:'translate(-50%,12px)' }, { opacity:1, transform:'translate(-50%,0)' }], { duration:350, easing:'ease-out', fill:'forwards' });
       await cineWait(320);
       await cineTap(i+1 < results.length ? 'Touche pour la carte suivante' : 'Touche pour voir le butin');
@@ -4020,13 +4209,13 @@ function showCineSummary(){
   root.querySelectorAll('.cine-card,.cine-left').forEach(e => e.remove());
   root.querySelectorAll('.cine-rig,.cine-heli-shadow').forEach(e => e.animate([{ opacity:1 }, { opacity:0 }], { duration:300, fill:'forwards' }));
   root.querySelector('.cine-dim').animate([{ opacity:getComputedStyle(root.querySelector('.cine-dim')).opacity }, { opacity:1 }], { duration:300, fill:'forwards' });
-  const ins = results.reduce((a,r) => a + (r.insignes||0), 0), nNew = results.filter(r => r.isNew).length;
+  const ins = results.gold || 0, nNew = results.filter(r => r.isNew).length;
   const panel = cineEl('cine-summary panel', `
     <div class="text-center">
       <div class="font-ops text-3xl">Butin</div>
       <div class="text-sm text-[var(--muted)]">${nNew ? `<b class="text-green-300">${nNew} nouvelle${nNew>1?'s':''} carte${nNew>1?'s':''}</b>` : 'Aucune nouvelle carte'}${ins ? ` · <b class="text-amber-300">+${ins} <i class="ic-gold"></i></b>` : ''}</div>
       <div class="grid grid-cols-3 gap-2 mt-4">
-        ${results.map((r,i) => `<div class="relative cine-sum-card" style="animation-delay:${i*90}ms">${cardHTML(CARD_MAP[r.id],'md')}${r.isNew ? '<span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-green-400 text-black px-1.5 rounded z-10">NEW</span>' : `<span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-amber-300 text-black px-1.5 rounded z-10 whitespace-nowrap">+${r.insignes} <i class="ic-gold"></i></span>`}</div>`).join('')}
+        ${results.map((r,i) => `<div class="relative cine-sum-card" style="animation-delay:${i*90}ms">${cardHTML(CARD_MAP[r.id],'md')}${r.isNew ? '<span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-green-400 text-black px-1.5 rounded z-10">NEW</span>' : `<span class="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-black bg-amber-300 text-black px-1.5 rounded z-10 whitespace-nowrap">+${r.n} 📇</span>`}</div>`).join('')}
       </div>
       <div class="flex gap-2 mt-5">
         <button class="cine-close btn-ghost flex-1 py-2.5 font-bold">Fermer</button>
@@ -4478,7 +4667,7 @@ function netShowInvite(conn, pid, m){
 }
 function netAccept(conn, pid, mode){
   NET.pendingGuest = { pid, conn, mode };
-  conn.send({ t:'acc', ...myCard(), deck:save.deck });
+  conn.send({ t:'acc', ...myCard(), deck:save.deck, lv:deckLevels() });
   if (mode === 'friendly'){ modalLocked = true; openModal(`<div class="text-center"><div class="text-5xl net-pulse">📡</div><div class="font-ops text-xl text-[var(--khaki)] mt-1">Liaison en cours…</div></div>`); }
   setTimeout(() => { if (NET.pendingGuest?.conn === conn){ NET.pendingGuest = null; modalLocked = false; closeModal(); toast('La liaison a échoué.'); netStatus('idle'); } }, 12000);
 }
@@ -4503,9 +4692,9 @@ function netOnMsg(conn, pid, m){
     case 'acc':
       if (NET.outInvite?.conn === conn){
         const o = NET.outInvite; clearTimeout(o.tm); NET.outInvite = null; modalLocked = false; closeModal();
-        const opp = { pid:m.pid || pid, name:String(m.name || 'Adversaire').slice(0, 18), trophies:Math.max(0, +m.trophies || 0), deck:validDeck(m.deck) };
+        const opp = { pid:m.pid || pid, name:String(m.name || 'Adversaire').slice(0, 18), trophies:Math.max(0, +m.trophies || 0), deck:validDeck(m.deck), lv:validLv(m.lv) };
         const mid = newPid() + newPid();
-        conn.send({ t:'go', mode:o.mode, mid, ...myCard(), deck:save.deck });
+        conn.send({ t:'go', mode:o.mode, mid, ...myCard(), deck:save.deck, lv:deckLevels() });
         startBattle({ mode:o.mode, net:{ host:true, conn, opp, mid } });
       }
       break;
@@ -4523,7 +4712,7 @@ function netOnMsg(conn, pid, m){
       if (NET.pendingGuest?.conn === conn){
         const room = NET.pendingGuest.room;
         NET.pendingGuest = null; modalLocked = false; closeModal();
-        const opp = { pid:m.pid || pid, name:String(m.name || 'Adversaire').slice(0, 18), trophies:Math.max(0, +m.trophies || 0), deck:validDeck(m.deck) };
+        const opp = { pid:m.pid || pid, name:String(m.name || 'Adversaire').slice(0, 18), trophies:Math.max(0, +m.trophies || 0), deck:validDeck(m.deck), lv:validLv(m.lv) };
         startBattle({ mode: m.mode === 'ranked' ? 'ranked' : 'friendly', net:{ host:false, conn, opp, mid:m.mid, room } });
       }
       break;
@@ -4614,7 +4803,7 @@ function netSendSnap(){
     E, EI:B.ents.map(e => e.id), F, FI:B.fx.map(f => f._n), P, X:N.bursts });
   N.bursts = [];
 }
-const MIRX = new Set(['x','x1','x2','hx','sx','tx','ex']), MIRY = new Set(['y','y1','y2','sy','ty']), MNEG = new Set(['dir','vx','vy','atkDx','atkDy']);
+const MIRX = new Set(['x','x1','x2','hx','sx','tx','ex']), MIRY = new Set(['y','y1','y2','sy','ty']), MNEG = new Set(['dir','vx','vy','atkDx','atkDy','tripDir']);
 const swapTeam = t => t === 'p' ? 'e' : t === 'e' ? 'p' : t;
 function mirrorVal(k, v, isText){
   if (k === 'team') return swapTeam(v);
@@ -4796,9 +4985,9 @@ function roomModal(){
 function roomClose(){ const R = NET.room; NET.room = null; modalLocked = false; closeModal(); if (R) R.waiting = false; netAnnounce(true); }
 function roomStart(conn, m){
   const R = NET.room; R.waiting = false; R.conn = conn; modalLocked = false; closeModal();
-  const opp = { pid:/^[A-Z0-9]{6}$/.test(m.pid) ? m.pid : 'SALON' + R.code.slice(-1), name:String(m.name || 'Adversaire').slice(0, 18), trophies:Math.max(0, +m.trophies || 0), deck:validDeck(m.deck) };
+  const opp = { pid:/^[A-Z0-9]{6}$/.test(m.pid) ? m.pid : 'SALON' + R.code.slice(-1), name:String(m.name || 'Adversaire').slice(0, 18), trophies:Math.max(0, +m.trophies || 0), deck:validDeck(m.deck), lv:validLv(m.lv) };
   const mid = newPid() + newPid();
-  conn.send({ t:'go', mode:R.mode, mid, ...myCard(), deck:save.deck });
+  conn.send({ t:'go', mode:R.mode, mid, ...myCard(), deck:save.deck, lv:deckLevels() });
   startBattle({ mode:R.mode, net:{ host:true, conn, opp, mid, room:R.code } });
   netAnnounce(true);
 }
@@ -4874,7 +5063,7 @@ async function roomJoin(code, deadlineMs=25000){
     stage('🤝 Négociation du combat…', 'text-green-300');
     const res = await new Promise(resolve => {
       NET.pendingGuest = { conn, pid:'', mode:'friendly', room:code, onDec: why => resolve(why || 'closed') };
-      conn.send({ t:'join', ...myCard(), deck:save.deck });
+      conn.send({ t:'join', ...myCard(), deck:save.deck, lv:deckLevels() });
       const chk = setInterval(() => { if (NET.pendingGuest?.conn !== conn){ clearInterval(chk); resolve(B?.net?.conn === conn ? 'ok' : 'lost'); } }, 100);
       setTimeout(() => { clearInterval(chk); resolve(NET.pendingGuest?.conn === conn ? 'timeout' : (B?.net?.conn === conn ? 'ok' : 'lost')); }, 10000);
     });
