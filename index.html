@@ -62,7 +62,7 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
   .btn-ghost{background:var(--panel2);border:1px solid var(--line);border-radius:10px;}
   .chip{border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-weight:600;font-size:13px;background:var(--panel2);}
   .chip.active{background:var(--khaki);color:#1a1f16;border-color:var(--khaki);}
-  .stripes{background:repeating-linear-gradient(135deg,#3a4430 0 10px,#333c2a 10px 20px); }
+  .stripes{background:repeating-linear-gradient(135deg,#3a4430 0 10px,#333c2a 10px 20px);}
 
   /* ---------- Coquille de l'application (onglets) ---------- */
   body{overflow:hidden;}
@@ -715,6 +715,47 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
   .news-btn .nb-ic{font-size:20px;line-height:1;filter:drop-shadow(0 1px 0 rgba(0,0,0,.5));}
   .news-btn .nb-lb{font-family:'Lilita One',sans-serif;font-size:8.5px;letter-spacing:.04em;color:#fff;text-shadow:0 1px 0 #0b2a5c,-1px 0 0 #0b2a5c,1px 0 0 #0b2a5c;}
   @media (max-height:700px){ .news-btn{bottom:0;padding:3px 5px 2px;} .news-btn .nb-ic{font-size:17px;} }
+
+  /* ---- v7 : son, coffre à couronnes, événements ---- */
+  .news-btn.snd-btn{right:auto;left:0;background:linear-gradient(180deg,#9ff0a8,#2fae4a 55%,#1b7a31);}
+  .news-btn.snd-btn.off{background:linear-gradient(180deg,#d4d4d8,#71717a 55%,#3f3f46);}
+  .home-extra{display:flex;align-items:center;gap:6px;min-width:0;padding:4px 7px 4px 4px;border-radius:13px;border:3px solid #2a1405;text-align:left;color:#fff;
+    background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0) 40%),linear-gradient(180deg,#3d5a96,#223a6b);box-shadow:inset 0 2px 0 rgba(255,255,255,.25),0 3px 0 #2a1405;transition:transform .08s;}
+  .home-extra:active{transform:translateY(2px);box-shadow:inset 0 2px 0 rgba(255,255,255,.25),0 1px 0 #2a1405;}
+  .home-extra.event-tile{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,0) 40%),linear-gradient(180deg,#a14fd6,#5d1f8f);}
+  .home-extra.crown-tile.ready{background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0) 40%),linear-gradient(180deg,#ffcf3d,#d98a0b);animation:hxPulse 1.1s ease-in-out infinite;}
+  .home-extra.crown-tile.claimed{filter:saturate(.45) brightness(.85);}
+  @keyframes hxPulse{50%{transform:scale(1.035);box-shadow:inset 0 2px 0 rgba(255,255,255,.4),0 3px 0 #2a1405,0 0 16px rgba(255,210,60,.8);}}
+  .hx-ic{position:relative;flex-shrink:0;width:38px;height:38px;display:flex;align-items:center;justify-content:center;}
+  .hx-ic svg{width:36px;height:36px;}
+  .hx-ic b{position:absolute;top:-6px;right:-4px;font-size:15px;filter:drop-shadow(0 1px 0 #000);}
+  .hx-ic.ev{font-size:26px;border-radius:10px;background:rgba(0,0,0,.25);filter:drop-shadow(0 1px 0 rgba(0,0,0,.5));}
+  .hx-body{flex:1;min-width:0;line-height:1.1;}
+  .hx-t{font-family:'Lilita One',sans-serif;font-size:11px;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #000;}
+  .hx-n{font-family:'Lilita One',sans-serif;font-size:13px;color:#ffe27a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #000;}
+  .hx-s{font-size:9.5px;font-weight:800;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .hx-bar{position:relative;height:13px;margin:2px 0 1px;border-radius:7px;background:rgba(0,0,0,.45);overflow:hidden;border:1px solid rgba(0,0,0,.5);}
+  .hx-bar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(180deg,#fff08a,#f5b70b);}
+  .hx-bar span{position:relative;display:block;text-align:center;font-size:9px;font-weight:900;line-height:12px;text-shadow:0 1px 0 #000,0 0 2px #000;white-space:nowrap;}
+  @media (max-height:700px){ .home-extra{padding:2px 6px 2px 3px;} .hx-ic{width:30px;height:30px;} .hx-ic svg{width:28px;height:28px;} .hx-ic.ev{font-size:20px;} .hx-s{display:none;} }
+  .ev-big{font-size:46px;line-height:1.1;margin-top:4px;filter:drop-shadow(0 3px 0 rgba(0,0,0,.4));}
+  .ev-ladder{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+  .ev-step{border-radius:12px;padding:6px 4px;text-align:center;background:rgba(0,0,0,.3);border:2px solid rgba(255,255,255,.08);}
+  .ev-step.next{border-color:#ffd84a;box-shadow:0 0 10px rgba(255,216,74,.35);}
+  .ev-step.done{background:rgba(34,197,94,.18);border-color:rgba(74,222,128,.5);}
+  .ev-n{font-family:'Lilita One',sans-serif;font-size:16px;}
+  .ev-l{font-size:9.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+  .ev-r{font-size:11.5px;font-weight:800;margin-top:2px;line-height:1.15;}
+  .ev-badges{display:flex;justify-content:center;gap:6px;}
+  .ev-badge{position:relative;width:40px;height:44px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;
+    clip-path:polygon(50% 0,100% 18%,100% 70%,50% 100%,0 70%,0 18%);background:rgba(255,255,255,.08);}
+  .ev-badge.on{background:linear-gradient(180deg,#ffe27a,#c98a12);}
+  .ev-badge i{position:absolute;bottom:4px;font-size:9px;font-style:normal;font-weight:900;color:#2a1405;}
+  .home-extras{margin:7px 8px 0;}
+  .home-extra{height:46px;}
+  #arenaArt{overflow:hidden;}
+  @media (max-height:700px){ .home-extras{margin:3px 6px 5px;gap:6px;} .home-extra{height:30px;border-width:2px;} #arenaArt{padding:0!important;} .hx-ic svg{width:24px;height:24px;} .hx-ic{width:26px;height:26px;} .hx-ic.ev{font-size:17px;} .hx-t{font-size:10px;} .hx-bar{height:12px;margin:1px 0 0;} .hx-n{font-size:11.5px;} }
+  @media (max-height:700px){ .btn-battle .text-\[11px\]{display:none;} }
 </style>
 </head>
 <body>
@@ -807,11 +848,16 @@ const LOGO_MARK = 'data:image/webp;base64,UklGRiIyAABXRUJQVlA4WAoAAAAQAAAAnwAAnw
             <circle cx="338" cy="17.5" r="5" fill="url(#cfGold)" stroke="#2a1405" stroke-width="2"/></g>
         </svg>
         <h1 class="home-logo"><img id="homeLogo" alt="Clash of Quonze" draggable="false"></h1>
+        <button id="btnSound" class="news-btn snd-btn" title="Couper / remettre le son"><span class="nb-ic">🔊</span><span class="nb-lb">SON</span></button>
         <button id="btnNews" class="news-btn" title="Revoir les nouveautés"><span class="nb-ic">📰</span><span class="nb-lb">NOUVEAUTÉS</span></button>
       </div>
       <div class="arena-card flex-1 min-h-0 mt-3">
         <div class="arena-banner"><span id="arenaNum" class="font-ops">ARÈNE 1</span><span class="text-[var(--muted)]">·</span><span id="arenaName">Camp d'entraînement</span></div>
         <div class="trophy-bar"><span>🏆 <b id="homeTrophies">0</b></span><div class="track"><div id="trophyFill" class="fill" style="width:0%"></div></div><span id="trophyNext" class="text-[11px] opacity-90">300</span><button id="btnRoad" class="road-chip" title="Voie des trophées">🎁<span id="roadBadge" class="nav-badge hidden">0</span></button></div>
+        <div class="home-extras grid grid-cols-2 gap-2 shrink-0">
+          <button id="homeCrown" class="home-extra crown-tile"></button>
+          <button id="homeEvent" class="home-extra event-tile"></button>
+        </div>
         <div id="arenaArt" class="flex-1 min-h-0 flex items-center justify-center px-2 pb-2"></div>
       </div>
       <button id="btnPlay" class="btn-main btn-battle w-full mt-3 shrink-0">
@@ -1194,10 +1240,209 @@ function loadSave(){
     road: Array.isArray(s.road) ? s.road.filter(n => Number.isFinite(n)) : [],
     lvSys: 2,
     newsSeen: typeof s.newsSeen === 'string' ? s.newsSeen : '',
+    crownDay: s.crownDay && Number.isFinite(+s.crownDay.day) ? { day:+s.crownDay.day, n:Math.max(0, Math.min(CROWN_QUOTA, +s.crownDay.n || 0)), claimed:!!s.crownDay.claimed } : null,
+    event: s.event && Number.isFinite(+s.event.day) ? { day:+s.event.day, id:String(s.event.id || ''), wins:Math.max(0, +s.event.wins || 0) } : null,
+    badges: s.badges && typeof s.badges === 'object' ? Object.fromEntries(Object.entries(s.badges).filter(([k, v]) => EVENT_MAP[k] && v > 0).map(([k, v]) => [k, Math.floor(v)])) : {},
   };
 }
 const isOwned = id => save.owned.includes(id);
 function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){} if (typeof AUTH !== 'undefined' && AUTH && AUTH.user) authSyncSoon(); }
+/* =====================================================================
+   SON — bruitages synthétisés en direct (Web Audio API, aucun fichier)
+   ===================================================================== */
+const SFX = (() => {
+  let ctx = null, out = null, noise = null, muted = false;
+  try{ muted = localStorage.getItem('coq_mute') === '1'; }catch(e){}
+  const last = {}, loops = new Map(), VOL = 0.6;
+  function ac(){
+    if (!ctx){
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+      try{
+        ctx = new AC();
+        const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 6;
+        out = ctx.createGain(); out.gain.value = muted ? 0 : VOL; out.connect(comp); comp.connect(ctx.destination);
+        noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); const d = noise.getChannelData(0); for (let i=0;i<d.length;i++) d[i] = Math.random()*2 - 1;
+      }catch(e){ ctx = null; return null; }
+    }
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+    return ctx;
+  }
+  const ok = (key, ms) => { if (muted) return false; if (key){ const n = performance.now(); if (last[key] && n - last[key] < ms) return false; last[key] = n; } return !!ac(); };
+  function env(g, t0, a, d, v){ g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(v, t0 + a); g.gain.exponentialRampToValueAtTime(0.0001, t0 + a + d); }
+  function tone(f, d, o={}){
+    const t0 = ctx.currentTime + (o.at || 0), osc = ctx.createOscillator(), g = ctx.createGain();
+    osc.type = o.type || 'sine'; osc.frequency.setValueAtTime(f, t0); if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t0 + d);
+    env(g, t0, o.a || 0.005, d, o.v || 0.2); osc.connect(g); g.connect(out); osc.start(t0); osc.stop(t0 + d + (o.a || 0.005) + 0.05);
+  }
+  function hiss(d, o={}){
+    const t0 = ctx.currentTime + (o.at || 0), src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = noise; src.loop = true; f.type = o.ft || 'lowpass'; f.frequency.setValueAtTime(o.f || 1000, t0); if (o.to) f.frequency.exponentialRampToValueAtTime(o.to, t0 + d); f.Q.value = o.q || 0.8;
+    env(g, t0, o.a || 0.004, d, o.v || 0.3); src.connect(f); f.connect(g); g.connect(out); src.start(t0, Math.random()*0.5); src.stop(t0 + d + 0.1);
+  }
+  const P = {
+    click(){ if (ok('click', 40)) tone(880, 0.05, { type:'triangle', to:620, v:0.16 }); },
+    error(){ if (!ok('err', 200)) return; tone(190, 0.12, { type:'square', v:0.07 }); tone(150, 0.16, { type:'square', v:0.07, at:0.09 }); },
+    hit(){ if (!ok('hit', 55)) return; hiss(0.06, { ft:'bandpass', f:1500 + Math.random()*900, q:1.2, v:0.32 }); tone(160 + Math.random()*60, 0.08, { to:60, v:0.22 }); },
+    towerHit(){ if (!ok('thit', 110)) return; hiss(0.1, { f:700, to:200, v:0.3 }); tone(95, 0.1, { to:50, v:0.2, type:'triangle' }); },
+    shot(){ if (ok('shot', 70)) hiss(0.09, { ft:'bandpass', f:3200, to:900, q:2, v:0.13 }); },
+    boom(big){ if (!ok(big ? 'bigboom' : 'boom', big ? 150 : 90)) return; hiss(big ? 0.9 : 0.45, { f:big ? 1400 : 1100, to:80, v:big ? 0.75 : 0.5 }); tone(big ? 70 : 95, big ? 0.7 : 0.35, { to:28, v:big ? 0.5 : 0.35 }); },
+    whistle(){ if (ok('whis', 150)) tone(1500, 0.55, { to:500, v:0.06 }); },
+    deploy(){ if (ok('dep', 60)) tone(420, 0.09, { to:180, type:'triangle', v:0.12 }); },
+    land(){ if (!ok('land', 60)) return; hiss(0.12, { f:500, to:120, v:0.28 }); tone(120, 0.12, { to:55, v:0.25 }); },
+    death(){ if (!ok('death', 90)) return; tone(380, 0.28, { to:90, type:'sawtooth', v:0.07 }); hiss(0.15, { f:900, to:200, v:0.12 }); },
+    towerDown(){ P.boom(true); if (ok()) [523, 659, 784].forEach((f, i) => tone(f, 0.18, { type:'triangle', v:0.12, at:0.25 + i*0.1 })); },
+    crown(mine){ if (ok('crown' + mine, 300)) (mine ? [784, 988, 1319] : [392, 330, 262]).forEach((f, i) => tone(f, 0.22, { type:'triangle', v:0.14, at:i*0.11 })); },
+    pop(){ if (ok('pop', 60)) tone(500, 0.07, { to:1400, v:0.18 }); },
+    bonk(){ if (ok('bonk', 80)) tone(300, 0.12, { to:120, type:'square', v:0.1 }); },
+    whiff(){ if (ok('whiff', 90)) hiss(0.12, { ft:'bandpass', f:600, to:2400, q:1.5, v:0.12 }); },
+    zap(){ if (ok('zap', 100)) for (let i=0;i<5;i++) tone(1200 + Math.random()*1400, 0.03, { type:'square', v:0.06, at:i*0.03 }); },
+    coin(){ if (!ok('coin', 80)) return; tone(988, 0.09, { type:'square', v:0.09 }); tone(1319, 0.22, { type:'square', v:0.09, at:0.08 }); },
+    zip(){ if (!ok('zip', 100)) return; tone(220, 0.35, { to:1300, type:'sawtooth', v:0.05 }); hiss(0.35, { ft:'bandpass', f:800, to:3000, q:3, v:0.08 }); },
+    thud(){ if (!ok('thud', 100)) return; hiss(0.25, { f:400, to:80, v:0.55 }); tone(80, 0.3, { to:35, v:0.45 }); },
+    chestOpen(){ if (!ok('copen', 200)) return; hiss(0.12, { f:2500, to:600, v:0.25 }); [784, 988, 1175, 1568, 1976].forEach((f, i) => tone(f, 0.25, { type:'triangle', v:0.09, at:0.08 + i*0.06 })); },
+    reveal(r){ if (!ok('rev', 100)) return; const b = [523, 659, 784, 1047][r] || 523; tone(b, 0.25, { type:'triangle', v:0.12 }); tone(b*1.5, 0.35, { v:0.08, at:0.07 }); if (r >= 2) tone(b*2, 0.5, { v:0.07, at:0.16 }); },
+    wow(){ if (ok('wow', 500)) [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.3, { type:'triangle', v:0.1, at:i*0.08 })); },
+    win(){ if (ok('end', 1000)) [523, 659, 784, 1047].forEach((f, i) => tone(f, i === 3 ? 0.6 : 0.18, { type:'square', v:0.08, at:i*0.14 })); },
+    lose(){ if (ok('end', 1000)) [392, 370, 349, 262].forEach((f, i) => tone(f, i === 3 ? 0.7 : 0.25, { type:'triangle', v:0.12, at:i*0.22 })); },
+    draw(){ if (!ok('end', 1000)) return; tone(440, 0.3, { type:'triangle', v:0.1 }); tone(440, 0.4, { type:'triangle', v:0.1, at:0.3 }); },
+    alert(){ if (!ok('alert', 400)) return; tone(880, 0.12, { type:'square', v:0.07 }); tone(880, 0.12, { type:'square', v:0.07, at:0.18 }); },
+  };
+  // hélicoptère : souffle grave haché par les pales, en boucle jusqu'à stop()
+  function heli(key, vol=0.5){
+    if (muted || loops.has(key) || !ac()) return;
+    const t0 = ctx.currentTime, src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), chop = ctx.createGain(), g = ctx.createGain(), lfo = ctx.createOscillator(), depth = ctx.createGain();
+    src.buffer = noise; src.loop = true; f.type = 'lowpass'; f.frequency.value = 420; f.Q.value = 1.2;
+    lfo.type = 'square'; lfo.frequency.value = 13; depth.gain.value = 0.45; chop.gain.value = 0.55; lfo.connect(depth); depth.connect(chop.gain);
+    const hum = ctx.createOscillator(), hg = ctx.createGain(); hum.type = 'sawtooth'; hum.frequency.value = 52; hg.gain.value = 0.05; hum.connect(hg); hg.connect(chop);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + 0.6);
+    src.connect(f); f.connect(chop); chop.connect(g); g.connect(out);
+    src.start(t0); lfo.start(t0); hum.start(t0);
+    loops.set(key, { g, nodes:[src, lfo, hum] });
+  }
+  function stop(key, fade=0.6){
+    const L = loops.get(key); if (!L) return; loops.delete(key);
+    try{ const t0 = ctx.currentTime; L.g.gain.cancelScheduledValues(t0); L.g.gain.setValueAtTime(Math.max(0.0001, L.g.gain.value), t0); L.g.gain.exponentialRampToValueAtTime(0.0001, t0 + fade); L.nodes.forEach(n => n.stop(t0 + fade + 0.05)); }catch(e){}
+  }
+  function stopAll(fade){ for (const k of [...loops.keys()]) stop(k, fade); }
+  function setMuted(m){ muted = !!m; try{ localStorage.setItem('coq_mute', muted ? '1' : '0'); }catch(e){} if (out) out.gain.setValueAtTime(muted ? 0 : VOL, ctx.currentTime); if (muted) stopAll(0.1); }
+  return { ...P, heli, stop, stopAll, setMuted, isMuted:() => muted, unlock:() => ac(), loops };
+})();
+// Écoute du combat (hôte, solo ET invité JcJ) : on compare chaque image à la précédente
+const SFXW = { B:null, ids:new Map(), proj:0, cp:0, ce:0 };
+function sfxObserve(){
+  if (!B) return;
+  const fresh = SFXW.B !== B;
+  if (fresh){ SFXW.B = B; SFXW.ids = new Map(); SFXW.proj = B.proj.length; SFXW.cp = B.crownsP; SFXW.ce = B.crownsE; }
+  const seen = new Map();
+  for (const e of B.ents){
+    seen.set(e.id, e);
+    const dep = (e.deploy || 0) > 0;
+    if (!SFXW.ids.has(e.id)){ if (!fresh && !e.isTower) SFX.deploy(); e._sh = e.hp; e._sd = dep; continue; }
+    if (e.hp < (e._sh ?? e.hp) - 0.5){ if (e.isTower) SFX.towerHit(); else SFX.hit(); }
+    if (e._sd && !dep) SFX.land();
+    e._sh = e.hp; e._sd = dep;
+  }
+  if (!fresh) for (const [id, e] of SFXW.ids) if (!seen.has(id) && !e.silent && !e.leaving && !e.extracting){ if (e.isTower) SFX.towerDown(); else SFX.death(); }
+  SFXW.ids = seen;
+  if (B.proj.length > SFXW.proj) SFX.shot();
+  SFXW.proj = B.proj.length;
+  const evacs = new Set();
+  for (const f of B.fx){
+    if (f.kind === 'evac'){ const k = 'evac' + (f._n || (f._n = 'L' + Math.random())); evacs.add(k); if (f.t < f.dur - 0.05) SFX.heli(k, 0.4); }
+    if (f._s) continue; f._s = 1; if (fresh) continue;
+    if (f.kind === 'boom') SFX.boom((f.r || 0) >= 1.6);
+    else if (f.kind === 'strike') SFX.whistle();
+    else if (f.kind === 'chain') SFX.zap();
+    else if (f.kind === 'text'){ const t = String(f.text || ''); if (/POP/.test(t)) SFX.pop(); else if (/BONK/.test(t)) SFX.bonk(); else if (/raté/.test(t)) SFX.whiff(); }
+  }
+  for (const k of [...SFX.loops.keys()]) if (k.startsWith('evac') && !evacs.has(k)) SFX.stop(k, 1.2);
+  if (B.crownsP > SFXW.cp) SFX.crown(true);
+  if (B.crownsE > SFXW.ce) SFX.crown(false);
+  SFXW.cp = B.crownsP; SFXW.ce = B.crownsE;
+}
+// clics d'interface + déblocage audio au premier geste (obligatoire sur mobile)
+document.addEventListener('pointerdown', e => {
+  SFX.unlock();
+  if (e.target.closest('button,[data-chest],.chip,#hand .card,[data-id]')) SFX.click();
+}, true);
+
+/* =====================================================================
+   COFFRE À COURONNES JOURNALIER + ÉVÉNEMENTS SPÉCIAUX
+   ===================================================================== */
+const CROWN_QUOTA = 10;
+const dayIdx = () => Math.floor((Date.now() - new Date().getTimezoneOffset()*60000)/86400000);
+const msToMidnight = () => { const d = new Date(); d.setHours(24, 0, 0, 0); return d - Date.now(); };
+const fmtHM = ms => { const m = Math.max(1, Math.ceil(ms/60000)), h = Math.floor(m/60); return h ? `${h} h ${String(m%60).padStart(2,'0')}` : `${m} min`; };
+function crownState(){
+  const d = dayIdx();
+  if (!save.crownDay || save.crownDay.day !== d) save.crownDay = { day:d, n:0, claimed:false };
+  return save.crownDay;
+}
+function addCrowns(n){ const c = crownState(); if (c.claimed) return c; c.n = Math.min(CROWN_QUOTA, c.n + Math.max(0, n|0)); return c; }
+function openCrownChest(){
+  const c = crownState(); if (cine) return;
+  if (c.claimed) return toast(`👑 Coffre déjà récupéré : il revient dans ${fmtHM(msToMidnight())}.`);
+  if (c.n < CROWN_QUOTA) return toast(`👑 Encore ${CROWN_QUOTA - c.n} couronne${CROWN_QUOTA - c.n > 1 ? 's' : ''} à prendre aujourd'hui pour ouvrir ce coffre !`);
+  c.claimed = true;
+  const results = rollChest('renforce');
+  results.gold += 250; save.insignes += 250; save.gems = (save.gems || 0) + 4;
+  persist(); renderHome(); SFX.coin();
+  playChestCinematic('renforce', results);
+  setTimeout(() => toast('👑 Coffre à couronnes : +4 <i class="ic-gem"></i> en bonus !'), 900);
+}
+const EVENTS = [
+  { id:'x2',      icon:'💧', name:'Élixir x2 permanent',     desc:'L\'élixir coule deux fois plus vite pendant <b>tout</b> le match.', rules:{ elixir:2 } },
+  { id:'ms',      icon:'💀', name:'Mort subite instantanée', desc:'Le match démarre <b>directement en prolongation</b> : la première tour détruite gagne, l\'élixir s\'emballe.', rules:{ sudden:true } },
+  { id:'carton',  icon:'📦', name:'Tours en carton',          desc:'Toutes les tours ont <b>50 % de PV</b> en moins et le chrono ne dure que <b>2 min</b>.', rules:{ towerHp:0.5, time:120 } },
+  { id:'rush',    icon:'⚡', name:'Rush x3',                  desc:'Départ à <b>10 élixirs</b> et élixir <b>x3</b> en continu : ça part dans tous les sens.', rules:{ elixir:3, startElixir:10 } },
+  { id:'muscle',  icon:'💪', name:'Troupes surentraînées',    desc:'Toutes les cartes des deux camps ont <b>+50 % de PV et de dégâts</b>.', rules:{ unit:1.5 } },
+];
+const EVENT_MAP = Object.fromEntries(EVENTS.map(e => [e.id, e]));
+const EVENT_LADDER = [
+  { gems:5,  label:'+5 <i class="ic-gem"></i>' },
+  { gold:500, label:'+500 <i class="ic-gold"></i>' },
+  { gems:10, badge:true, label:'Écusson exclusif + 10 <i class="ic-gem"></i>' },
+];
+const currentEvent = () => EVENTS[((dayIdx() % EVENTS.length) + EVENTS.length) % EVENTS.length];
+function eventState(){
+  const d = dayIdx(), ev = currentEvent();
+  if (!save.event || save.event.day !== d || save.event.id !== ev.id) save.event = { day:d, id:ev.id, wins:0 };
+  return save.event;
+}
+function startEvent(){ if (!deckOk()) return; closeModal(); startBattle({ mode:'event', event:currentEvent().id }); }
+function showEventModal(){
+  const ev = currentEvent(), st = eventState(), nxt = EVENTS[(EVENTS.indexOf(ev) + 1) % EVENTS.length], badges = save.badges || {};
+  openModal(`<button onclick="closeModal()" class="absolute top-2 right-3 text-2xl text-[var(--muted)]">×</button>
+    <div class="text-center">
+      <div class="text-[11px] font-extrabold tracking-widest text-[#ffd84a]">ÉVÉNEMENT SPÉCIAL · CONTRE L'IA</div>
+      <div class="ev-big">${ev.icon}</div>
+      <div class="font-ops text-2xl text-white leading-tight">${ev.name}</div>
+      <div class="text-sm text-[#d6e3ff] mt-1">${ev.desc}</div>
+      <div class="text-[11px] font-bold text-[var(--muted)] mt-1">⏳ Se termine dans <b class="text-white">${fmtHM(msToMidnight())}</b> · demain : ${nxt.icon} ${nxt.name}</div>
+    </div>
+    <div class="ev-ladder mt-3">${EVENT_LADDER.map((r, i) => `<div class="ev-step ${st.wins > i ? 'done' : st.wins === i ? 'next' : ''}"><div class="ev-n">${st.wins > i ? '✅' : '🎁'}</div><div class="ev-l">${['1re', '2e', '3e'][i]} victoire</div><div class="ev-r">${r.label}</div></div>`).join('')}</div>
+    <div class="text-[11px] font-extrabold tracking-widest text-[var(--muted)] mt-3">TES ÉCUSSONS D'ÉVÉNEMENT</div>
+    <div class="ev-badges mt-1">${EVENTS.map(e => `<div class="ev-badge ${badges[e.id] ? 'on' : ''}" title="${e.name}"><span>${badges[e.id] ? e.icon : '🔒'}</span>${badges[e.id] > 1 ? `<i>x${badges[e.id]}</i>` : ''}</div>`).join('')}</div>
+    <div class="text-[11px] text-[var(--muted)] mt-2 text-center">Chaque victoire rapporte aussi un coffre de victoire. Pas de trophées en jeu.</div>
+    <button id="evPlay" class="btn-main w-full py-3 text-xl mt-3">${ev.icon} JOUER L'ÉVÉNEMENT</button>`);
+  $('#evPlay').addEventListener('click', startEvent);
+}
+function renderExtras(){
+  const c = crownState(), ev = currentEvent(), st = eventState(), el = $('#homeCrown'), ee = $('#homeEvent');
+  if (el){
+    const ready = c.n >= CROWN_QUOTA && !c.claimed;
+    el.className = 'home-extra crown-tile' + (ready ? ' ready' : '') + (c.claimed ? ' claimed' : '');
+    el.innerHTML = `<div class="hx-ic">${chestSVG('renforce', 34)}<b>👑</b></div><div class="hx-body"><div class="hx-t">${ready ? 'COFFRE PRÊT !' : 'COURONNES DU JOUR'}</div>
+      <div class="hx-bar"><i style="width:${Math.min(100, c.n/CROWN_QUOTA*100)}%"></i><span>${c.claimed ? '✅ Récupéré' : ready ? 'TOUCHE POUR OUVRIR' : `👑 ${c.n}/${CROWN_QUOTA}`}</span></div>
+      <div class="hx-s">⟳ ${fmtHM(msToMidnight())}</div></div>`;
+  }
+  if (ee){
+    ee.innerHTML = `<div class="hx-ic ev">${ev.icon}</div><div class="hx-body"><div class="hx-t">ÉVÉNEMENT</div><div class="hx-n">${ev.name}</div>
+      <div class="hx-s">${Math.min(st.wins, EVENT_LADDER.length)}/${EVENT_LADDER.length} récompenses · ⏳ ${fmtHM(msToMidnight())}</div></div>`;
+  }
+}
+setInterval(() => { if (typeof currentScreen !== 'undefined' && currentScreen === 'home') renderExtras(); }, 30000);
+
 let save = loadSave();
 
 /* =====================================================================
@@ -1228,6 +1473,8 @@ const deckLevels = () => Object.fromEntries(save.deck.map(id => [id, levelOf(id)
 const validLv = o => Object.fromEntries(Object.entries(o && typeof o === 'object' ? o : {}).filter(([k, v]) => CARD_MAP[k] && v >= 1 && v <= LV_MAX).map(([k, v]) => [k, Math.floor(v)]));
 // multiplicateur des unités en combat : mes niveaux / ceux de l'adversaire JcJ / IA calée à mi-chemin de mon niveau moyen
 function unitMult(team, id){
+  const em = B?.rules?.unit || 1;
+  if (em !== 1 && !B?.net) return em*(team === 'p' ? levelMultFor(id, levelOf(id)) : (B?.aiMult || 1));
   if (team === 'p') return levelMultFor(id, levelOf(id));
   if (B?.net) return levelMultFor(id, clamp(B.net.opp.lv?.[id] || LV_START[CARD_MAP[id].rarity], LV_START[CARD_MAP[id].rarity], LV_MAX));
   return B?.aiMult || 1;
@@ -1363,7 +1610,7 @@ function claimRoad(t){
   const [, kind, v] = step;
   if (kind === 'chest'){ if (save.chests.length >= MAX_CHESTS) return toast('Emplacements de coffres pleins : ouvre d\'abord un coffre.'); save.chests.push({ type:v }); }
   else if (kind === 'gold') save.insignes += v; else save.gems = (save.gems || 0) + v;
-  save.road.push(t); persist(); renderHome(); showRoad();
+  save.road.push(t); persist(); renderHome(); showRoad(); SFX.coin();
   toast(kind === 'chest' ? `🎁 ${CHEST_TYPES[v].name} ajouté à tes coffres !` : kind === 'gold' ? `+${v} <i class="ic-gold"></i> récupérés !` : `+${v} <i class="ic-gem"></i> récupérées !`);
 }
 function showRoad(){
@@ -1417,7 +1664,7 @@ function renderSection(){
   const aiW = Math.max(0, save.wins - save.pvp.w), aiL = Math.max(0, save.losses - save.pvp.l), aiT = aiW + aiL;
   $('#secAi').textContent = `🤖 Entraînement contre l'IA : ${aiW} V · ${aiL} D${aiT ? ` (${Math.round(aiW/aiT*100)} %)` : ''}`;
 }
-function renderHome(){ renderTopbar(); renderCombat(); renderShop(); renderSection(); if (typeof NET !== 'undefined') renderNetUI(); }
+function renderHome(){ renderTopbar(); renderCombat(); renderShop(); renderSection(); renderExtras(); renderSound(); if (typeof NET !== 'undefined') renderNetUI(); }
 $('#btnRoad').addEventListener('click', e => { e.stopPropagation(); showRoad(); });
 $('.arena-banner').addEventListener('click', () => showRoad());
 $('#chestTypes').addEventListener('click', e => {
@@ -1425,7 +1672,7 @@ $('#chestTypes').addEventListener('click', e => {
   const k = b.dataset.buy, price = GEM_PRICE[k];
   if (save.chests.length >= MAX_CHESTS) return toast('Emplacements de coffres pleins : ouvre d\'abord un coffre.');
   if ((save.gems || 0) < price) return toast(`Il te manque ${price - (save.gems || 0)} <i class="ic-gem"></i> : gagne des combats !`);
-  save.gems -= price; save.chests.push({ type:k, unlockAt:Date.now() }); persist(); renderHome();
+  save.gems -= price; save.chests.push({ type:k, unlockAt:Date.now() }); persist(); renderHome(); SFX.coin();
   toast(`${CHEST_TYPES[k].name} acheté : prêt à ouvrir !`);
 });
 $('#btnReset').addEventListener('click', () => {
@@ -1585,12 +1832,13 @@ function showCardDetail(id){
   $('#mSwap')?.addEventListener('click', () => { swapCandidate = id; closeModal(); renderDeckScreen(); window.scrollTo({top:0,behavior:'smooth'}); });
   $('#mUp')?.addEventListener('click', () => {
     if (!upgradeCard(id)) return;
+    SFX.coin(); SFX.wow();
     renderHome(); renderDeckScreen(); showCardDetail(id);
     toast(`⬆️ <b>${c0.name}</b> passe au niveau ${levelOf(id)} ! +10 % PV et dégâts`);
   });
   $('#mUnlock')?.addEventListener('click', () => {
     if (save.insignes < cost) return;
-    save.insignes -= cost; save.owned.push(id); persist(); renderDeckScreen(); showCardDetail(id);
+    save.insignes -= cost; save.owned.push(id); persist(); SFX.coin(); renderDeckScreen(); showCardDetail(id);
   });
 }
 
@@ -1655,7 +1903,15 @@ function startBattle(opts={}){
     mode: opts.mode || 'ai', net, aiMult,
   };
   if (net && !net.host){ B.netMap = new Map(); B.netFx = new Map(); B.alertT = MATCH_TIME; }
-  $('#battleOpp').textContent = net ? `${net.opp.name} · 🏆 ${net.opp.trophies}` : 'Section Rouge (IA)';
+  const ev = !net && B.mode === 'event' ? EVENT_MAP[opts.event] : null;
+  if (ev){
+    const r = B.rules = ev.rules; B.eventId = ev.id;
+    if (r.time) B.time = r.time;
+    if (r.startElixir){ B.elixir = r.startElixir; B.ai.elixir = r.startElixir; }
+    if (r.towerHp) for (const t of B.ents) if (t.isTower){ t.hp = Math.round(t.hp*r.towerHp); t.maxHp = t.hp; }
+    if (r.sudden){ B.overtime = true; B.otT = 0; }
+  }
+  $('#battleOpp').textContent = net ? `${net.opp.name} · 🏆 ${net.opp.trophies}` : ev ? `${ev.icon} Événement · ${ev.name}` : 'Section Rouge (IA)';
   if (net) netStatus('battle');
   $('#battleName').textContent = save.name;
   showScreen('battle');
@@ -1664,9 +1920,11 @@ function startBattle(opts={}){
   resizeArena();
   requestAnimationFrame(resizeArena);
   updateCrowns();
-  showBanner('⚔️ COMBAT !');
+  showBanner(ev ? `${ev.icon} ${ev.name.toUpperCase()}` : '⚔️ COMBAT !');
+  if (ev?.rules.sudden) setTimeout(() => { if (B && !B.over) showAlert('MORT SUBITE !<div class="alert-sub">1re TOUR DÉTRUITE = VICTOIRE</div>', 'msg'); }, 900);
   requestAnimationFrame(loop);
 }
+
 
 /* ---------- Déploiement ---------- */
 const DROP_CLEAR = 1.7;   // distance minimale de largage autour d'une tour ennemie
@@ -1690,6 +1948,31 @@ function canPlace(team, card, x, y){
   return !onTower;
 }
 
+// Pose « magnétique » : une position interdite est ramenée au point autorisé le plus proche
+function snapPlace(team, card, x, y){
+  x = clamp(x, 0.55, W - 0.55); y = clamp(y, 0.55, H - 0.55);
+  if (canPlace(team, card, x, y)) return { x, y };
+  const tests = [];
+  if (!card.anywhere && !card.onBuilding && card.type !== 'spell'){   // ramène d'abord sur la ligne de sa zone
+    const foe = team === 'p' ? 'e' : 'p', side = x < W/2 ? 'L' : 'R';
+    const foePoste = B.ents.find(t => t.isTower && t.team === foe && t.kind === 'poste' && (side === 'L' ? t.x < W/2 : t.x > W/2));
+    const lim = team === 'p' ? (foePoste ? RIVER_BOT + 0.5 : 10) + 0.05 : (foePoste ? RIVER_TOP - 0.5 : 22) - 0.05;
+    tests.push({ x, y: team === 'p' ? Math.max(y, lim) : Math.min(y, lim) });
+  }
+  tests.push({ x, y });
+  for (const o of tests){
+    if (canPlace(team, card, o.x, o.y)) return o;
+    for (let r = 0.25; r <= 9; r += 0.25){
+      const n = Math.max(8, Math.round(r*10)), a0 = team === 'p' ? Math.PI/2 : -Math.PI/2;   // on teste d'abord vers son propre camp
+      let best = null;
+      for (let i=0;i<n;i++){ const a = a0 + (i % 2 ? 1 : -1)*Math.ceil(i/2)*(2*Math.PI/n), px = o.x + Math.cos(a)*r, py = o.y + Math.sin(a)*r;
+        if (px < 0.55 || px > W - 0.55 || py < 0.55 || py > H - 0.55) continue;
+        if (canPlace(team, card, px, py)){ best = { x:px, y:py }; break; } }
+      if (best) return best;
+    }
+  }
+  return null;
+}
 function deploy(team, cardId, x, y){
   const c0 = CARD_MAP[cardId], lm = unitMult(team, cardId);
   const c = lm === 1 ? c0 : { ...c0, hp:Math.round(c0.hp*lm), dmg:Math.round((c0.dmg || 0)*lm) };
@@ -2068,7 +2351,7 @@ function gainElixir(team, n){
   if (team==='p') B.elixir = Math.min(10, B.elixir+n); else B.ai.elixir = Math.min(10, B.ai.elixir+n);
 }
 // Élixir : x2 dans la dernière minute ; en prolongation il accélère en continu (x2 → x6)
-const elixirMult = () => B.overtime ? Math.min(6, 2 + B.otT/30) : B.time <= 60 ? 2 : 1;
+const elixirMult = () => Math.max(B.rules?.elixir || 1, B.overtime ? Math.min(6, 2 + B.otT/30) : B.time <= 60 ? 2 : 1);
 function startOvertime(){
   B.overtime = true; B.otT = 0;
   showAlert('PROLONGATION !<div class="alert-sub">MORT SUBITE · 1re TOUR DÉTRUITE</div>', 'msg');
@@ -2261,6 +2544,7 @@ function loop(now){
     if (B.net?.host && !B.over){ B.net.acc += dt; if (B.net.acc >= (B.net.conn?.local ? 1/15 : 1/10)){ B.net.acc = 0; netSendSnap(); } }
     if (B.net) netWatchdog();
   }
+  sfxObserve();
   render();
   updateHUD();
   if (!B.over) requestAnimationFrame(loop);
@@ -2315,6 +2599,23 @@ function endBattle(forced){
   $('#netLost')?.remove();
   if (B.endNote) pvpHtml = `<div class="mt-3 text-sm font-bold text-amber-300">${B.endNote}</div>` + pvpHtml;
   else if (B.oppLeft) pvpHtml = `<div class="mt-3 text-sm font-bold text-amber-300">📴 Adversaire : ${B.oppLeft}</div>` + pvpHtml;
+  // Événement : échelle de récompenses exclusives (3 victoires par jour)
+  if (mode === 'event' && result === 'win'){
+    const st = eventState(), ev = EVENT_MAP[B.eventId] || currentEvent();
+    if (st.id === ev.id && st.wins < EVENT_LADDER.length){
+      const r = EVENT_LADDER[st.wins]; st.wins++;
+      if (r.gems) save.gems = (save.gems || 0) + r.gems;
+      if (r.gold) save.insignes += r.gold;
+      if (r.badge){ save.badges = save.badges || {}; save.badges[ev.id] = (save.badges[ev.id] || 0) + 1; }
+      pvpHtml += `<div class="mt-4 bg-black/30 rounded-xl p-2 new-pop"><div class="text-[11px] font-extrabold tracking-widest text-[#ffd84a]">${ev.icon} ÉVÉNEMENT · RÉCOMPENSE ${st.wins}/${EVENT_LADDER.length}</div>
+        <div class="font-ops text-xl text-white mt-0.5">${r.badge ? `<span class="ev-badge on inline-flex align-middle mr-1"><span>${ev.icon}</span></span>` : ''}${r.label}</div></div>`;
+    } else pvpHtml += `<div class="mt-3 text-xs font-bold text-[var(--muted)]">${ev.icon} Toutes les récompenses de l'événement sont prises aujourd'hui.</div>`;
+  }
+  // Coffre à couronnes journalier : chaque couronne prise compte, quel que soit le mode
+  { const cb = crownState(), before = cb.n, cs = addCrowns(B.crownsP);
+    if (!cs.claimed && B.crownsP > 0) pvpHtml += `<div class="mt-3 text-sm font-bold ${cs.n >= CROWN_QUOTA ? 'text-green-300' : 'text-[#ffd84a]'}">👑 Coffre à couronnes : ${before} → <b class="text-white">${cs.n}/${CROWN_QUOTA}</b>${cs.n >= CROWN_QUOTA ? ' · prêt à ouvrir !' : ''}</div>`; }
+  SFX.stopAll(0.4);
+  setTimeout(() => result === 'win' ? SFX.win() : result === 'loss' ? SFX.lose() : SFX.draw(), 300);
   // Récompense : un coffre par victoire (3 emplacements max)
   let reward = pvpHtml;
   if (result==='win' && mode !== 'friendly'){   // gemmes : +1 contre l'IA, +3 en JcJ classé
@@ -2349,11 +2650,11 @@ function endBattle(forced){
       ${reward}
       <div class="flex gap-2 mt-5">
         <button id="endHome" class="btn-ghost flex-1 py-2.5 font-bold">Retour base</button>
-        <button id="endAgain" class="btn-main flex-1 py-2.5 text-lg">${net?.room || mode === 'friendly' ? 'Revanche' : mode === 'ranked' ? 'Rejouer JcJ' : 'Rejouer'}</button>
+        <button id="endAgain" class="btn-main flex-1 py-2.5 text-lg">${net?.room || mode === 'friendly' ? 'Revanche' : mode === 'ranked' ? 'Rejouer JcJ' : mode === 'event' ? 'Rejouer l\'événement' : 'Rejouer'}</button>
       </div>
     </div>`);
     $('#endHome').addEventListener('click', () => { closeModal(); B=null; showScreen('home'); });
-    $('#endAgain').addEventListener('click', () => { closeModal(); if (mode === 'ai') return startBattle(); const room = net.room, host = net.host; B = null; showScreen('home'); if (room){ if (host) roomCreate({ code:room, mode }); else roomJoin(room, 30000); } else if (mode === 'ranked') netQueue(); else netInvite(opp.pid, 'friendly'); });
+    $('#endAgain').addEventListener('click', () => { closeModal(); if (mode === 'ai') return startBattle(); if (mode === 'event') return startEvent(); const room = net.room, host = net.host; B = null; showScreen('home'); if (room){ if (host) roomCreate({ code:room, mode }); else roomJoin(room, 30000); } else if (mode === 'ranked') netQueue(); else netInvite(opp.pid, 'friendly'); });
   }, 1700);
 }
 $('#btnQuit').addEventListener('click', () => {
@@ -2386,9 +2687,9 @@ function updateHUD(){
   const ot = B.overtime, s = ot ? Math.floor(B.otT || 0) : Math.ceil(B.time), txt = (ot ? '+' : '') + `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
   if (txt !== lastTimerTxt){ $('#timer').textContent = txt; lastTimerTxt = txt; }
   $('#timer').style.color = ot ? '#ffd84a' : B.time<=30 ? '#f87171' : '';
-  const tag = ot ? `MORT SUBITE · ÉLIXIR x${elixirMult().toFixed(1)}` : 'ÉLIXIR x2';
+  const tag = ot ? `MORT SUBITE · ÉLIXIR x${elixirMult().toFixed(1)}` : `ÉLIXIR x${elixirMult()}`;
   if ($('#doubleTag').textContent !== tag) $('#doubleTag').textContent = tag;
-  $('#doubleTag').classList.toggle('hidden', !ot && B.time > 60);
+  $('#doubleTag').classList.toggle('hidden', !ot && elixirMult() < 2);
   document.querySelectorAll('#hand .card').forEach(el => {
     const c = CARD_MAP[el.dataset.id];
     const ratio = Math.max(0, 1 - B.elixir / c.cost);
@@ -2402,10 +2703,13 @@ function pointerToTile(ev){
   return { x:(ev.clientX-r.left)/r.width*W, y:(ev.clientY-r.top)/r.height*H };
 }
 function tryDeploy(pos){
+  /* la position est éventuellement « aimantée » vers la zone autorisée */
   if (!B || B.over || B.selected===null || !pos) return;
   const id = B.player.hand[B.selected], c = CARD_MAP[id];
-  if (c.cost > B.elixir){ flashMsg('Pas assez d\'élixir'); return; }
-  if (!canPlace('p', c, pos.x, pos.y)){ flashMsg('Zone interdite'); return; }
+  if (c.cost > B.elixir){ SFX.error(); flashMsg('Pas assez d\'élixir'); return; }
+  const sp = snapPlace('p', c, pos.x, pos.y);
+  if (!sp){ SFX.error(); flashMsg(c.onBuilding ? 'Victor se pose sur un bâtiment allié' : 'Zone interdite'); return; }
+  pos = sp;
   B.elixir -= c.cost;
   if (B.net && !B.net.host){ // invité : l'hôte valide et déploie, on garde la main en local
     const seq = ++B.net.seq; B.net.pend.push({ seq, cost:c.cost });
@@ -3734,14 +4038,23 @@ function render(){
   // aperçu de pose
   if (B.selected!==null && B.hover){
     const card = CARD_MAP[B.player.hand[B.selected]];
-    const ok = canPlace('p', card, B.hover.x, B.hover.y) && card.cost <= B.elixir;
+    const hk = B.hover.x.toFixed(2) + ',' + B.hover.y.toFixed(2) + ',' + card.id + ',' + B.ents.length;
+    if (B.snapKey !== hk){ B.snapKey = hk; B.snapPos = snapPlace('p', card, B.hover.x, B.hover.y); }
+    const sp = B.snapPos, ok = !!sp && card.cost <= B.elixir, hx0 = B.hover.x, hy0 = B.hover.y;
     const r = Math.max(card.radius||0.6, 0.6)*1.25*s;
+    if (sp && Math.hypot(sp.x - hx0, sp.y - hy0) > 0.3){   // aimantation : trait pointillé du doigt vers la vraie position
+      c.save(); c.globalAlpha = 0.8; c.strokeStyle = 'rgba(255,255,255,.75)'; c.lineWidth = 2; c.setLineDash([5,5]);
+      c.beginPath(); c.moveTo(hx0*s, hy0*s); c.lineTo(sp.x*s, sp.y*s); c.stroke(); c.setLineDash([]);
+      c.fillStyle = 'rgba(239,68,68,.6)'; c.beginPath(); c.arc(hx0*s, hy0*s, 4, 0, 7); c.fill(); c.restore();
+      B.hover = { x:sp.x, y:sp.y, raw:true };
+    }
     c.globalAlpha = 0.7;
     c.fillStyle = ok ? 'rgba(255,255,255,.3)' : 'rgba(239,68,68,.45)';
     c.beginPath(); c.arc(B.hover.x*s, B.hover.y*s, r+4, 0, 7); c.fill();
     const fr = unitR(card.radius||0.45, s);
     if (card.generator) drawNicoDepot(c, B.hover.x*s, B.hover.y*s, fr, card, 'p', B.dpr); else if (card.type==='building') drawCrate(c, B.hover.x*s, B.hover.y*s, r, card, 'p'); else drawFigure(c, B.hover.x*s, B.hover.y*s, fr, card, 'p', B.dpr);
     c.globalAlpha = 1;
+    if (B.hover.raw) B.hover = { x:hx0, y:hy0 };
   }
 }
 
@@ -3839,6 +4152,17 @@ function drawUnit(e){
     c.save(); c.translate(e.x*s, e.y*s + R*0.82); c.scale(1, 0.38);
     c.strokeStyle = TEAM_COLOR[e.team]; c.lineWidth = 3; c.setLineDash([8,6]); c.lineDashOffset = -time*40;
     c.beginPath(); c.arc(0, 0, R*(1.5 - 0.5*fall), 0, 7); c.stroke(); c.setLineDash([]); c.restore();
+  }
+  // anneau de déploiement : se remplit pendant ~1 s, l'unité n'agit qu'une fois l'anneau bouclé
+  if (e.deploy > 0){
+    const rr = R*1.25, gx = e.x*s, gy = e.y*s + R*0.82;
+    c.save(); c.translate(gx, gy); c.scale(1, 0.42);
+    c.lineWidth = 5; c.strokeStyle = 'rgba(0,0,0,.45)'; c.beginPath(); c.arc(0, 0, rr, 0, 7); c.stroke();
+    c.strokeStyle = TEAM_COLOR[e.team]; c.lineCap = 'round'; c.beginPath(); c.arc(0, 0, rr, -Math.PI/2, -Math.PI/2 + Math.PI*2*prog); c.stroke();
+    c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 1.6; c.beginPath(); c.arc(0, 0, rr, -Math.PI/2, -Math.PI/2 + Math.PI*2*prog); c.stroke();
+    c.restore();
+    c.save(); c.font = `${Math.max(10, R*0.75)}px sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.globalAlpha = 0.95;
+    c.fillText('⏳', gx + rr*0.95, gy - R*0.1); c.restore();
   }
   // ombre qui grandit pendant la chute
   const sh = 0.3 + 0.7*fall;
@@ -4168,6 +4492,7 @@ function cloudSVG(){ return `<svg viewBox="0 0 120 50" width="100%" height="100%
 
 /* Effets */
 function cineSfx(text, x, y, size=28, opts={}){
+  if (/ZIP/.test(text)) SFX.zip(); else if (/BOUM/.test(text)) SFX.thud(); else if (/CLAC/.test(text)) SFX.chestOpen(); else if (/WOW/.test(text)) SFX.wow();
   const st = cine.root.querySelector('.cine-fx');
   const d = cineEl('cine-sfx' + (opts.burst ? ' burst' : ''), opts.burst ? `<svg viewBox="0 0 200 110" class="sfx-star"><polygon points="${starPoints(100,55,98,52,60,32,16)}" fill="#ffd34d" stroke="#c2410c" stroke-width="5"/></svg><span>${text}</span>` : text,
     `left:${x}px;top:${y}px;font-size:${size}px;color:${opts.color||'#fff'}`);
@@ -4275,6 +4600,7 @@ async function playChestCinematic(type, results){
 
   try {
     // 1. Arrivée de l'hélico
+    SFX.heli('cine', 0.55);
     bob.animate([{ transform:'translateY(0)' }, { transform:'translateY(-6px)' }], { duration:850, iterations:Infinity, direction:'alternate', easing:'ease-in-out' });
     const enter = { duration:2100, easing:'cubic-bezier(.22,.8,.28,1)', fill:'forwards' };
     rig.animate([
@@ -4329,7 +4655,7 @@ async function playChestCinematic(type, results){
     const leave = { duration:1700, easing:'cubic-bezier(.55,0,.8,.4)', fill:'forwards' };
     rig.animate([{ transform:`translate(${rigX}px,${rigY}px) rotate(0)` }, { transform:`translate(${W + 80}px,${rigY - 140}px) rotate(12deg)` }], leave);
     shadow.animate([{ transform:`translateX(${rigX + heliW*0.15}px) scale(1)`, opacity:1 }, { transform:`translateX(${W + 80}px) scale(.5)`, opacity:0 }], leave);
-    setTimeout(() => clearInterval(tchop), 1300);
+    setTimeout(() => clearInterval(tchop), 1300); SFX.stop('cine', 1.6);
     await cineWait(500);
 
     // 5. Ouverture
@@ -4395,6 +4721,7 @@ async function playChestCinematic(type, results){
         await cineWait(ri===3 ? 1000 : 650);
       }
       // retournement
+      SFX.reveal(ri);
       inner.animate([
         { transform:'rotateY(0) scale(1)' },
         { transform:'rotateY(90deg) scale(1.12)', offset:.5 },
@@ -4430,6 +4757,7 @@ function showCineSummary(){
   if (!cine || cine.done) return;
   cine.done = true; cine.tap = null;
   cine.timers.forEach(t => clearInterval(t));
+  SFX.stop('cine', 0.3); SFX.coin();
   const { root, results } = cine;
   cineHint('');
   root.querySelector('.cine-skip').remove();
@@ -4457,7 +4785,7 @@ function showCineSummary(){
 }
 function closeCinematic(goto){
   if (!cine) return;
-  const root = cine.root; cine = null;
+  const root = cine.root; cine = null; SFX.stop('cine', 0.2);
   root.animate([{ opacity:1 }, { opacity:0 }], { duration:250 }).onfinish = () => root.remove();
   if (goto) showScreen(goto); else renderHome();
 }
@@ -4465,6 +4793,7 @@ function closeCinematic(goto){
 
 /* ---------- Alertes de fin de partie ---------- */
 function showAlert(html, kind){
+  if (kind !== 'end') SFX.alert();
   const el = $('#alert');
   el.innerHTML = '';
   const d = document.createElement('div');
@@ -5104,9 +5433,10 @@ function netGuestDeploy(m){
   const c = CARD_MAP[m.id];
   if (!c || !B.net.opp.deck.includes(m.id) || !isFinite(m.x) || !isFinite(m.y)) return;
   const x = W - m.x, y = H - m.y;
-  if (c.cost > B.ai.elixir + 0.05 || !canPlace('e', c, x, y)) return;
+  const sp = c.cost > B.ai.elixir + 0.05 ? null : snapPlace('e', c, x, y);
+  if (!sp) return;
   B.ai.elixir = Math.max(0, B.ai.elixir - c.cost);
-  deploy('e', m.id, x, y);
+  deploy('e', m.id, sp.x, sp.y);
 }
 function netWatchdog(){
   if (!B?.net || B.over) return;
@@ -5625,15 +5955,17 @@ function cloudRestart(){ if (!CLOUD.started) return; for (const D of CLOUD.drive
    Pour une prochaine mise à jour : changer NEWS.id et le contenu, elle se réaffiche une fois.
    ===================================================================== */
 const NEWS = {
-  id: 'maj-2026-11-coffres-ia',
+  id: 'maj-2026-11-son-evenements',
   title: 'NOUVEAUTÉS',
-  subtitle: 'Coffres contre l\'IA, prolongations & équilibrage',
+  subtitle: 'Son, événements & coffre à couronnes',
   items: [
+    ['🔊', 'Effets sonores', 'Coups, tirs, explosions, chute des tours, clics, achats, ouverture des coffres… et le <b>vrai bruit d\'hélico</b> au largage des coffres et à l\'extraction de Climoune. Bouton <b>SON</b> pour couper.'],
+    ['👑', 'Coffre à couronnes du jour', 'Prends <b>10 couronnes</b> sur les tours ennemies dans la journée (tous modes confondus) pour ouvrir un <b>coffre renforcé bonus</b> + or + gemmes. Remise à zéro chaque nuit à minuit.'],
+    ['🎪', 'Événements spéciaux', 'Un mode différent chaque jour : <b>Élixir x2</b>, <b>Mort subite instantanée</b>, Tours en carton, Rush x3, Troupes surentraînées. 3 victoires = récompenses + <b>écusson exclusif</b>.'],
+    ['⏳', 'Déploiement façon Clash', 'Un <b>anneau-sablier</b> se remplit sous la troupe pendant ~1 s avant qu\'elle agisse. Posée côté ennemi ou hors zone ? Elle est <b>replacée au point valide le plus proche</b>.'],
     ['🤖', 'Coffres contre l\'IA', 'Bats l\'IA pour gagner un <b>coffre de victoire</b> et des <b>trophées</b>, comme en <b>classé</b> et en <b>amical</b>. Il faut gagner pour de vrai : au chrono, en prolongation ou en rasant ses <b>3 tours</b>.'],
-    ['🏆', 'Voie des trophées', 'Or, gemmes et coffres à chaque palier : touche 🎁 à côté de ta jauge de trophées.'],
-    ['⏳', 'Prolongations', 'Égalité à la fin du chrono ? <b>Mort subite sans limite de temps</b> : l\'élixir accélère de plus en plus, la <b>première tour détruite</b> gagne.'],
+    ['🔥', 'Prolongations', 'Égalité à la fin du chrono ? <b>Mort subite sans limite de temps</b> : l\'élixir accélère de plus en plus, la <b>première tour détruite</b> gagne.'],
     ['⏱️', 'Coffres', 'Commun <b>15 min</b> · Rare <b>45 min</b> · Épique <b>2 h</b>. Un coffre à chaque victoire : contre l\'IA, en classé et en amical.'],
-    ['🪙', 'Prix des cartes', 'Commun <b>300</b> · Rare <b>600</b> · Épique <b>800</b> · Légendaire <b>1500</b> pièces d\'or.'],
     ['🔧', 'Victor, nouveau rôle', 'Se pose <b>uniquement sur un bâtiment</b> et le répare de <b>1,5× ses PV</b>. En vie, il accélère l\'élixir de Nico de <b>1,5 s</b> (il ne répare plus sa caisse).'],
     ['⚖️', 'Équilibrage', '<b>Pneumothorax</b> et <b>Benjamin</b> affaiblis. <b>Bicoise</b> trébuche : un mur surgit, il tombe, perd des PV et laisse une trace de sang.'],
   ],
@@ -5655,7 +5987,11 @@ function showNews(force){
   $('#newsGo').addEventListener('click', done);
   $('#newsRoad').addEventListener('click', () => { done(); showRoad(); });
 }
-$('#btnNews').addEventListener('click', () => showNews(true));   // revoir la pop-up à tout moment
+$('#btnNews').addEventListener('click', () => showNews(true));
+function renderSound(){ const b = $('#btnSound'); if (!b) return; const m = SFX.isMuted(); b.querySelector('.nb-ic').textContent = m ? '🔇' : '🔊'; b.querySelector('.nb-lb').textContent = m ? 'MUET' : 'SON'; b.classList.toggle('off', m); }
+$('#btnSound').addEventListener('click', () => { SFX.setMuted(!SFX.isMuted()); renderSound(); if (!SFX.isMuted()) SFX.coin(); });
+$('#homeCrown').addEventListener('click', openCrownChest);
+$('#homeEvent').addEventListener('click', showEventModal);   // revoir la pop-up à tout moment
 
 /* =====================================================================
    DÉMARRAGE
